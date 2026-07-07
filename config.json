@@ -1,0 +1,72 @@
+{
+  "botName": "CODEX-AI V3.0",
+  "prefix": ".",
+  "owner": {
+    "name": "Owner",
+    "number": "2349064626405@s.whatsapp.net"
+  },
+  "mods": [],
+  "sudo": [],
+  "mode": "public",
+  "autoTyping": true,
+  "autoRecording": false,
+  "autoRead": false,
+  "alwaysOnline": false,
+  "statusView": {
+    "enabled": true
+  },
+  "statusReact": {
+    "enabled": true,
+    "emoji": "\ud83d\udc40"
+  },
+  "antiCall": true,
+  "antiLink": {
+    "enabled": true,
+    "action": "warn",
+    "maxWarns": 3
+  },
+  "antiSpam": {
+    "enabled": true,
+    "action": "warn",
+    "maxWarns": 3,
+    "limit": 5,
+    "cooldown": 10000
+  },
+  "antiTag": {
+    "enabled": true,
+    "action": "warn",
+    "maxWarns": 3
+  },
+  "antiGame": {
+    "enabled": false,
+    "action": "warn",
+    "maxWarns": 3
+  },
+  "antiGroupMention": {
+    "enabled": false,
+    "action": "warn",
+    "maxWarns": 3
+  },
+  "antiDelete": {
+    "enabled": false,
+    "forwardTo": "dm"
+  },
+  "antiEdit": {
+    "enabled": false,
+    "forwardTo": "dm"
+  },
+  "mentionReact": {
+    "enabled": false,
+    "emoji": "\u2764\ufe0f"
+  },
+  "autoReact": {
+    "enabled": false,
+    "emoji": "\u2764\ufe0f"
+  },
+  "welcome": true,
+  "goodbye": true,
+  "sessionName": "session",
+  "sessionId": "",
+  "STICKER_PACKNAME": "CODEX AI",
+  "STICKER_AUTHOR": "CODEX"
+}
