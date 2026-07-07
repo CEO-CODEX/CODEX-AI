@@ -213,13 +213,25 @@ class CODEXAI {
   }
 
   async start() {
-    console.log(chalk.cyan("\n╔════════════════════════════════════╗"));
-    console.log(chalk.cyan("║       🤖 CODEX-AI V3.0              ║"));
-    console.log(chalk.cyan("╚════════════════════════════════════╝"));
+    // ── Big ASCII art banner ─────────────────────────────────────────────────
+    const B = chalk.bold.blue;
+    console.log('');
+    console.log(B('  ██████╗ ██████╗ ██████╗ ███████╗██╗  ██╗'));
+    console.log(B('  ██╔════╝██╔═══██╗██╔══██╗██╔════╝╚██╗██╔╝'));
+    console.log(B('  ██║     ██║   ██║██║  ██║█████╗   ╚███╔╝ '));
+    console.log(B('  ██║     ██║   ██║██║  ██║██╔══╝   ██╔██╗ '));
+    console.log(B('  ╚██████╗╚██████╔╝██████╔╝███████╗██╔╝ ██╗'));
+    console.log(B('   ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝'));
+    console.log('');
+    console.log(chalk.blue('  ──────────────────────────────────────────────'));
+    console.log(chalk.bold.white('           This script was created by CODEX'));
+    console.log(chalk.blue('  ──────────────────────────────────────────────'));
+    console.log('');
     const { loaded, failed } = await this.reloader.loadCommands();
-    console.log(chalk.yellow(`\n📦 Commands loaded: ${chalk.bold(loaded)}`));
-    if (failed > 0) console.log(chalk.red(`❌ Failed: ${failed} commands`));
-    console.log("");
+    console.log(chalk.bold.blue(`  📦  Commands loaded: ${chalk.bold.white(loaded)}`));
+    if (failed > 0) console.log(chalk.red(`  ❌  Failed: ${failed} commands`));
+    console.log(chalk.blue('  ──────────────────────────────────────────────'));
+    console.log('');
     await startConnection(this);
   }
 
@@ -559,11 +571,11 @@ ${newText || "(could not read new text)"}
     const CHANNEL_LINK =
       "https://whatsapp.com/channel/0029Vb4Z7mD8KMqnVFSZIy1K";
     const GROUP_LINK =
-      "https://chat.whatsapp.com/FIqZQ9u40SbH1E3zIEBfcs?mode=gi_t";
-    const CODEX_IMG = "https://i.ibb.co/5W3NWVV/codex.jpg";
+      "https://chat.whatsapp.com/Gmhs6wJq7R63vEcitVBrj6?s=cl&p=a&ilr=0&amv=0";
+    const CODEX_IMG =
+      "https://cdn.crysnovax.link/files/1782641945104-66399a32-3e86-4e1f-9a13-32c3b4031dd4.jpeg";
     const botName = c.settings?.title || c.botName || "CODEX AI";
     const prefix = c.prefix || ".";
-    // owner.number can be object {number} or plain string
     const ownerNum =
       (typeof c.owner === "object" ? c.owner?.number : c.owner) || "";
     const ownerJid = ownerNum.replace(/[^0-9]/g, "") + "@s.whatsapp.net";
@@ -599,84 +611,41 @@ ${GROUP_LINK}
 
 𝗖𝗢𝗗𝗘𝗫 𝐀𝐈 𝐕𝟑`;
 
-    let thumbBuf = null;
-    let rawImgBuf = null;
     try {
       const axios = require("axios");
-      const resp = await axios.get(
-        c.thumbUrl || c.settings?.thumbUrl || CODEX_IMG,
-        { responseType: "arraybuffer", timeout: 10000 },
-      );
-      rawImgBuf = Buffer.from(resp.data);
+
+      // Download the startup image
+      let imgBuf = null;
       try {
-        const sharp = require("sharp");
-        thumbBuf = await sharp(rawImgBuf)
-          .resize(192, 192, { fit: "cover" })
-          .jpeg({ quality: 70 })
-          .toBuffer();
-      } catch {
-        thumbBuf = rawImgBuf; // sharp unavailable — use the raw image as-is
-      }
-    } catch (e1) {
-      console.log("[Startup] thumbnail fetch failed:", e1.message);
-    }
-
-    // Context info — newsletter forward badge (green V channel card)
-    const ctxInfo = {
-      forwardingScore: 999,
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: CHANNEL_JID,
-        newsletterName: "𝘾𝗢𝗗𝗘𝗫 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟 ✓",
-        serverMessageId: 143,
-      },
-      externalAdReply: {
-        title: "𝘾𝗢𝗗𝗘𝗫 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟 ✓",
-        body: "TAP TO JOIN CHANNEL",
-        sourceUrl: CHANNEL_LINK,
-        mediaType: 1,
-        renderLargerThumbnail: true,
-        showAdAttribution: false,
-        thumbnailUrl: CODEX_IMG,
-        // WhatsApp clients mostly ignore thumbnailUrl for ad-reply cards and
-        // need the actual embedded JPEG bytes to render anything but a blank
-        // dark box — this is what was missing.
-        ...(thumbBuf ? { jpegThumbnail: thumbBuf } : {}),
-      },
-    };
-
-    try {
-      const axios = require("axios");
-      let imgBuf = rawImgBuf;
-      const imgUrl = c.thumbUrl || c.settings?.thumbUrl || CODEX_IMG;
-      if (!imgBuf) {
-        try {
-          const resp = await axios.get(imgUrl, {
-            responseType: "arraybuffer",
-            timeout: 10000,
-          });
-          imgBuf = Buffer.from(resp.data);
-        } catch (e2) {
-          console.log("[Startup] img fetch failed:", e2.message);
-        }
+        const resp = await axios.get(CODEX_IMG, {
+          responseType: "arraybuffer",
+          timeout: 15000,
+        });
+        imgBuf = Buffer.from(resp.data);
+      } catch (e1) {
+        console.log("[Startup] image fetch failed:", e1.message);
       }
 
-      // Step 1 — Send text with green channel badge (contextInfo works on text)
-      await this.sock
-        .sendMessage(ownerJid, {
-          text: startupText,
-          contextInfo: ctxInfo,
-        })
-        .catch(() => {});
-
-      // Step 2 — Send image separately (clean, no caption)
+      // Send as a forwarded image message with the startup text as caption
+      // (no externalAdReply — clean forward style)
       if (imgBuf) {
-        await new Promise((r) => setTimeout(r, 1500));
         await this.sock
           .sendMessage(ownerJid, {
             image: imgBuf,
-            caption: `🤖 *${botName}* is now online and ready.`,
+            caption: startupText,
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterJid: CHANNEL_JID,
+              newsletterName: "𝘾𝗢𝗗𝗘𝗫 𝗢𝗙𝗙𝗜𝗖𝗜𝗔𝗟 ✓",
+              serverMessageId: 143,
+            },
           })
+          .catch(() => {});
+      } else {
+        // Fallback: text only if image couldn't be fetched
+        await this.sock
+          .sendMessage(ownerJid, { text: startupText })
           .catch(() => {});
       }
     } catch (e) {
