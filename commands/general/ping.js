@@ -1,27 +1,22 @@
-const os = require('os');
-const { formatUptime, formatBytes } = require('../../lib/utils');
-
 module.exports = {
     name: 'ping',
-    aliases: ['speed', 'latency'],
-    category: 'general',
-    description: 'Check bot response time and stats',
+    alias: ['speed', 'latency', 'test'],
+    desc: 'Check bot response speed',
+    category: 'Bot',
+    reactions: { start: '', success: '' },
 
-    async execute(bot, m, args) {
+    execute: async (sock, m, { reply }) => {
         const start = Date.now();
-        // Small delay to calculate latency
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const latency = Date.now() - start;
 
-        const uptime = formatUptime(process.uptime());
-        const ramUsage = formatBytes(process.memoryUsage().heapUsed);
-        const totalRam = formatBytes(os.totalmem());
+        // Send initial "PINGING..." message
+        const pingMsg = await reply('*❦ PINGING...*');
 
-        const responseText = `📡 PONG!\n` +
-                             `  🕣 ${latency}ms\n` +
-                             `  🥏 ACTIVE\n` +
-                             `  🧬 ${totalRam}  SERVER RAM`;
+        const ms = Date.now() - start;
 
-        await m.reply(responseText);
+        // Edit the message to "PONG!" with ms
+        await sock.sendMessage(m.chat, {
+            edit: pingMsg.key,
+            text: `*☙ P☯︎NG ! ${ms}ms*`
+        });
     }
 };
