@@ -16,7 +16,7 @@
     "author": "CODEX-AI",
     "license": "MIT",
     "dependencies": {
-        "@crysnovax/baileys": "2.6.2",
+        "@crysnovax/baileys": "2.6.7",
         "@hapi/boom": "^10.0.1",
         "qrcode-terminal": "^0.12.0",
         "pino": "^8.17.0",
@@ -25,6 +25,7 @@
         "moment-timezone": "^0.5.44",
         "axios": "^1.6.5",
         "form-data": "^4.0.0",
+        "node-cron": "^3.0.3",
         "cheerio": "^1.0.0-rc.12",
         "node-cache": "^5.1.2",
         "child_process": "^1.0.2",
