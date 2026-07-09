@@ -1,4 +1,3 @@
-
 const os = require('os');
 
 module.exports = {
@@ -8,15 +7,26 @@ module.exports = {
     category: 'Bot',
     reactions: { start: '📊', success: '📡' },
 
-    execute: async (sock, m, { config, reply }) => {
+    // Changed to match your bot's architecture (bot, m, args)
+    async execute(bot, m, args) {
         try {
+            const sock = bot.sock;
+            const config = bot.config;
+
+            // 'this' now works properly because it's a standard async method
             if (this.reactions?.start) {
                 await sock.sendMessage(m.chat, { react: { text: this.reactions.start, key: m.key } });
             }
 
-            const botName  = config.settings?.botName || 'C☯︎DEX-AI V3.0';
+            const botName  = config.settings?.botName || config.botName || 'C☯︎DEX-AI V3.0';
             const up       = process.uptime();
-            const uptimeStr= Math.floor(up/86400)+'d '+Math.floor((up%86400)/3600)+'h '+Math.floor((up%3600)/60)+'m '+Math.floor(up%60)+'s';
+            const d        = Math.floor(up / 86400);
+            const h        = Math.floor((up % 86400) / 3600);
+            const min      = Math.floor((up % 3600) / 60);
+            const s        = Math.floor(up % 60);
+            
+            // Your backtick uptime pattern
+            const uptimeStr = `\`${d}d-${h}h-${min}m-${s}s\``;
             
             // Raw Metrics
             const memUsed  = parseFloat((process.memoryUsage().heapUsed/1024/1024).toFixed(1));
@@ -28,19 +38,18 @@ module.exports = {
             // Target maximums to calculate percentages accurately
             const maxMessages = 50000; 
             const maxCommands = 10000; 
-            const maxMemory   = memTotal * 1024; // Convert GB to MB
-            const maxUptime   = 2592000; // 30 Days in seconds
+            const maxMemory   = memTotal * 1024; 
+            const maxUptime   = 2592000; 
 
-            // Dynamic progress bar generator (Using Math.ceil so low stats still show life!)
+            // Dynamic progress bar generator 
             const makeBar = (value, max) => {
                 if (value === 0) return '░'.repeat(10);
                 const percentage = (value / max) * 10;
-                // Use Math.ceil so anything above 0% gets at least 1 block filled
                 const filledBlocks = Math.min(Math.max(Math.ceil(percentage), 1), 10);
                 return '█'.repeat(filledBlocks) + '░'.repeat(10 - filledBlocks);
             };
 
-            // Format the text dashboard
+            // ORIGINAL DESIGN PRESERVED
             const dashboardText = 
                 `*❦ ${botName.toUpperCase()} STATS*\n\n` +
                 `❞ *Messages:* ${msgs.toLocaleString()} / ${maxMessages.toLocaleString()}\n` +
@@ -62,9 +71,8 @@ module.exports = {
                 await sock.sendMessage(m.chat, { react: { text: this.reactions.success, key: m.key } });
             }
         } catch (e) {
-            await reply('❌ Stats failed: ' + e.message);
+            // Updated fallback error sending to match bot.sock structure
+            await bot.sock.sendMessage(m.chat, { text: '❌ Stats failed: ' + e.message }, { quoted: m });
         }
     }
 };
-
-
