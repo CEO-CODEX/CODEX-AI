@@ -1,42 +1,31 @@
-const { getTarget } = require('../../lib/getTarget');
-const muteStore = require('../../lib/muteStore');
-const scheduler = require('../../lib/scheduler');
-const { extractDuration, humanizeMs } = require('../../lib/duration');
+const { getTarget }                        = require('../../lib/getTarget');
+const muteStore                            = require('../../lib/muteStore');
+const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-core');
 
 module.exports = {
-    name: 'unmuteuser',
-    aliases: ['unmute'],
-    category: 'admin',
-    description: 'Unmute a user. Optional delay: ".unmuteuser @user after 10m" unmutes them in 10 minutes instead of right now.',
-    usage: '.unmuteuser @user | .unmuteuser @user after <duration>',
-    adminOnly: true,
-    groupOnly: true,
+    name: 'unmuteuser', aliases: ['unmute'], category: 'admin',
+    description: 'Unmute a user. .unmuteuser @user  OR  .unmuteuser @user after 1h (delayed)',
+    adminOnly: true, groupOnly: true,
 
     async execute(bot, m, args) {
         const target = getTarget(m);
-        if (!target) return await m.reply(`Tag a user or reply to their message.\nExample: ${bot.prefix}unmuteuser @user`);
+        if (!target) return m.reply(`Reply to a message or tag a user.\n${bot.prefix}unmuteuser @user [after 1h]`);
 
-        const key = muteStore._keyOf(target);
-        const { isAfter, ms } = extractDuration(args.filter(a => !a.startsWith('@')));
+        const key    = muteStore._keyOf(target);
+        const joined = args.filter(a => !a.startsWith('@')).join(' ').replace(/\bafter\b/i, '').trim();
+        const ms     = joined ? parseTime(joined) : null;
 
-        // ── Delayed unmute: ".unmuteuser @user after 10m" / ".unmuteuser @user 10m" ──
+        if (joined && !ms) return m.reply('⚠️ Bad duration. Use: 10m 1h 6h 1d 7d etc.');
+
         if (ms) {
-            scheduler.cancelMatching({ type: 'unmuteuser', chat: m.chat, target: key });
-            scheduler.schedule({ type: 'unmuteuser', dueAt: Date.now() + ms, chat: m.chat, target: key, issuedBy: m.sender });
-            return await m.reply(`⏳ @${target.split('@')[0]} will be unmuted in ${humanizeMs(ms)}.`, { mentions: [target] });
+            cancelAll({ chat: m.chat, target: key });
+            schedule({ type: 'unmuteuser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            return m.reply(`⏳ @${target.split('@')[0]} will be unmuted in ${humanize(ms)}.`, { mentions: [target] });
         }
 
-        const existing = muteStore.getMute(target);
-        if (!existing) {
-            return await m.reply(`@${target.split('@')[0]} isn't muted.`, { mentions: [target] });
-        }
-
+        if (!muteStore.getMute(target)) return m.reply(`@${target.split('@')[0]} isn't muted.`, { mentions: [target] });
         muteStore.clearMute(target);
-        scheduler.cancelMatching({ type: 'unmuteuser', chat: m.chat, target: key }); // a manual unmute cancels any pending scheduled one
-
-        await bot.sendMessage(m.chat, {
-            text: `🔊 @${target.split('@')[0]} has been unmuted.`,
-            mentions: [target]
-        });
+        cancelAll({ chat: m.chat, target: key });
+        await bot.sendMessage(m.chat, { text: `🔊 @${target.split('@')[0]} has been unmuted.`, mentions: [target] });
     }
 };
