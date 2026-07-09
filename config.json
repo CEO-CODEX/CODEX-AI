@@ -12,59 +12,20 @@
   "autoRecording": false,
   "autoRead": false,
   "alwaysOnline": false,
-  "statusView": {
-    "enabled": true
-  },
-  "statusReact": {
-    "enabled": true,
-    "emoji": "\ud83d\udc40"
-  },
-  "antiCall": true,
-  "antiLink": {
-    "enabled": true,
-    "action": "warn",
-    "maxWarns": 3
-  },
-  "antiSpam": {
-    "enabled": true,
-    "action": "warn",
-    "maxWarns": 3,
-    "limit": 5,
-    "cooldown": 10000
-  },
-  "antiTag": {
-    "enabled": true,
-    "action": "warn",
-    "maxWarns": 3
-  },
-  "antiGame": {
-    "enabled": false,
-    "action": "warn",
-    "maxWarns": 3
-  },
-  "antiGroupMention": {
-    "enabled": false,
-    "action": "warn",
-    "maxWarns": 3
-  },
-  "antiDelete": {
-    "enabled": false,
-    "forwardTo": "dm"
-  },
-  "antiEdit": {
-    "enabled": false,
-    "forwardTo": "dm"
-  },
-  "mentionReact": {
-    "enabled": false,
-    "emoji": "\u2764\ufe0f"
-  },
-  "autoReact": {
-    "enabled": false,
-    "emoji": "\u2764\ufe0f"
-  },
-  "welcome": true,
-  "goodbye": true,
+  "statusView":   { "enabled": false },
+  "statusReact":  { "enabled": false, "emoji": "👀" },
+  "antiCall": false,
+  "antiLink":          { "enabled": false, "action": "warn", "maxWarns": 3 },
+  "antiSpam":          { "enabled": false, "action": "warn", "maxWarns": 3, "limit": 5, "cooldown": 10000 },
+  "antiTag":           { "enabled": false, "action": "warn", "maxWarns": 3 },
+  "antiGame":          { "enabled": false, "action": "warn", "maxWarns": 3 },
+  "antiGroupMention":  { "enabled": false, "action": "warn", "maxWarns": 3 },
+  "antiDelete":        { "enabled": false, "forwardTo": "dm" },
+  "antiEdit":          { "enabled": false, "forwardTo": "dm" },
+  "mentionReact":      { "enabled": false, "emoji": "❤️" },
+  "autoReact":         { "enabled": false, "emoji": "❤️" },
+  "welcome": false,
+  "goodbye": false,
   "sessionName": "session",
   "sessionId": "",
   "STICKER_PACKNAME": "CODEX AI",
