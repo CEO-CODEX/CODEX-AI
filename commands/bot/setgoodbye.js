@@ -1,68 +1,72 @@
-const fs = require('fs-extra');
+const fs   = require('fs-extra');
+const path = require('path');
+
+const DB    = path.join(process.cwd(), 'database/groupEvents.json');
+const readDB = () => { try { return JSON.parse(fs.readFileSync(DB, 'utf8')); } catch { return {}; } };
+const saveDB = (d) => { fs.ensureDirSync(path.dirname(DB)); fs.writeFileSync(DB, JSON.stringify(d, null, 2)); };
 
 module.exports = {
     name: 'setgoodbye',
-    aliases: ['goodbyemsg', 'goodbye'],
+    aliases: ['goodbye', 'farewell'],
     category: 'bot',
-    description: 'Configure goodbye message for this group',
+    description: 'Set up the group goodbye message',
+    adminOnly: true,
     groupOnly: true,
 
     async execute(bot, m, args) {
-        const dbPath = './database/goodbye.json';
-        let db = {};
-        try { db = JSON.parse(fs.readFileSync(dbPath, 'utf8')); } catch {}
-        if (!db[m.chat]) db[m.chat] = { enabled: true, text: null };
+        const jid  = m.chat;
+        const a0   = (args[0] || '').toLowerCase();
+        const db   = readDB();
+        const cfg  = db[jid] || { welcomeEnabled: false, welcome: null, goodbyeEnabled: false, goodbye: null };
+        const P    = bot.prefix;
 
-        const sub = args[0]?.toLowerCase();
+        if (!a0 || a0 === 'status') {
+            return m.reply(
+`👋 *Goodbye Message Settings*
 
-        if (!sub) return await m.reply(
-`GOODBYE SETTINGS
+Status: \`${cfg.goodbyeEnabled ? '✅ ON' : '❌ OFF'}\`
+Message: ${cfg.goodbye ? '_Custom set_' : '_Default_'}
 
-Status: ${db[m.chat]?.enabled !== false ? 'ON' : 'OFF'}
-Message: ${db[m.chat]?.text || 'default'}
+*Commands:*
+${P}setgoodbye on / off
+${P}setgoodbye set <message>
+${P}setgoodbye reset
+${P}setgoodbye view
 
-Usage:
-${bot.prefix}setgoodbye on
-${bot.prefix}setgoodbye off
-${bot.prefix}setgoodbye set <message>
-${bot.prefix}setgoodbye reset
-
-Variables:
-@user  - tags the leaving member (can be anywhere in message)
-{group} - group name
-{count} - remaining member count
-
-Example:
-${bot.prefix}setgoodbye set Goodbye @user! We will miss you.`
-        );
-
-        if (sub === 'on') {
-            db[m.chat].enabled = true;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            return await m.reply('Goodbye message enabled for this group.');
+*Variables:*
+\`{user}\` — @mention the leaving member
+\`{group}\` — group name
+\`{count}\` — remaining members`
+            );
         }
 
-        if (sub === 'off') {
-            db[m.chat].enabled = false;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            return await m.reply('Goodbye message disabled for this group.');
+        if (a0 === 'on' || a0 === 'off') {
+            db[jid] = { ...cfg, goodbyeEnabled: a0 === 'on' };
+            saveDB(db);
+            return m.reply(a0 === 'on'
+                ? '✅ Goodbye message *ENABLED* for this group.'
+                : '❌ Goodbye message *DISABLED* for this group.');
         }
 
-        if (sub === 'reset') {
-            db[m.chat].text = null;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            return await m.reply('Goodbye message reset to default.');
-        }
-
-        if (sub === 'set') {
+        if (a0 === 'set') {
             const text = args.slice(1).join(' ').trim();
-            if (!text) return await m.reply(`Provide a message. Example:\n${bot.prefix}setgoodbye set Goodbye @user! We will miss you.`);
-            db[m.chat].text = text;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            const preview = text.replace('@user', '@YOU').replace('{group}', 'This Group').replace('{count}', '99');
-            return await m.reply(`Goodbye message set.\n\nPreview:\n${preview}`);
+            if (!text) return m.reply(`Usage: ${P}setgoodbye set <message>\n\nVariables: {user} {group} {count}`);
+            db[jid] = { ...cfg, goodbye: text, goodbyeEnabled: true };
+            saveDB(db);
+            return m.reply(`✅ *Goodbye message set and enabled!*\n\nPreview:\n${text.replace(/{user}/gi, '@You').replace(/{group}/gi, 'Group Name').replace(/{count}/gi, '49')}`);
         }
 
-        await m.reply(`Unknown option. Use ${bot.prefix}setgoodbye`);
+        if (a0 === 'reset') {
+            db[jid] = { ...cfg, goodbye: null };
+            saveDB(db);
+            return m.reply('🔄 Goodbye message reset to default.');
+        }
+
+        if (a0 === 'view') {
+            if (!cfg.goodbye) return m.reply('No custom goodbye message set. Using default.');
+            return m.reply(`*Current goodbye message:*\n\n${cfg.goodbye}`);
+        }
+
+        return m.reply(`Unknown option. Try ${P}setgoodbye status`);
     }
 };
