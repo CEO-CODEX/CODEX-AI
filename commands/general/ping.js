@@ -16,7 +16,7 @@ module.exports = {
         // Edit the message to "PONG!" with ms
         await sock.sendMessage(m.chat, {
             edit: pingMsg.key,
-            text: '```☙  P☯︎NG! ' +  ms + 'ms```'
+            text: '```☙ P☯︎NG! ' +  ms + 'ms```'
         });
     }
 };
