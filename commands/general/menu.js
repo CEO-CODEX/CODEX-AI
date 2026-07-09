@@ -1,7 +1,7 @@
-const fs   = require('fs');
-const path = require('path');
+const fs    = require('fs');
+const path  = require('path');
 const axios = require('axios');
-const os   = require('os');
+const os    = require('os');
 
 const DEFAULT_THUMB = 'https://media.codex-ai.workers.dev/bafb2d80-d0da-4c2c-b6be-9cbdd7edd0b7.jpg';
 const CACHED_IMG    = path.join(__dirname, '../../assets/menu.png');
@@ -20,7 +20,12 @@ module.exports = {
         const uniqueCount = Object.values(categories)
             .reduce((sum, cmds) => sum + cmds.length, 0);
 
-        const uptimeMin = Math.floor(process.uptime() / 60);
+        // --- NEW UPTIME PATTERN LOGIC ---
+        const up  = process.uptime();
+        const d   = Math.floor(up / 86400);
+        const h   = Math.floor((up % 86400) / 3600);
+        const min = Math.floor((up % 3600) / 60);
+        const s   = Math.floor(up % 60);
 
         const time = new Date().toLocaleTimeString('en-US', {
             hour: '2-digit', minute: '2-digit', second: '2-digit',
@@ -45,7 +50,8 @@ module.exports = {
         text += `║│ 𖣘 *HOST:* Pterodactyl (panel)\n`;
         text += `║│ 𖣘 *PREFIX:* ${prefix}\n`;
         text += `║│ 𖣘 *CMDS:* ${uniqueCount}\n`;
-        text += `║│ 𖣘 *UPTIME:* ${uptimeMin} MIN\n`;
+        // Applied the d-h-m-s pattern here inside backticks
+        text += `║│ 𖣘 *UPTIME:* \`${d}d-${h}h-${min}m-${s}s\`\n`;
         text += `║│ 𖣘 *MODE:* ${(c.mode || 'private').toUpperCase()}\n`;
         text += `║│ 𖣘 *STORAGE:* ${getRam()}\n`;
         text += `║│ 𖣘 *TIME:* ${time}\n`;
