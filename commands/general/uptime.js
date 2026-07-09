@@ -14,7 +14,7 @@ module.exports = {
         const min = Math.floor((up % 3600) / 60);
         const s   = Math.floor(up % 60);
 
-        // Separating the normal text from the backticked time completely
-        await reply('```❁ UPTIME !```' + `${d}d-${h}h-${min}m-${s}s` + '`');
+        // One clean string wrapped in triple backticks. No edits.
+        await reply('```❁ UPTIME ! ' + `${d}d-${h}h-${min}m-${s}s` + '```');
     }
 };
