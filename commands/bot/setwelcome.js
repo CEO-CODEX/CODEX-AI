@@ -1,68 +1,72 @@
-const fs = require('fs-extra');
+const fs   = require('fs-extra');
+const path = require('path');
+
+const DB    = path.join(process.cwd(), 'database/groupEvents.json');
+const readDB = () => { try { return JSON.parse(fs.readFileSync(DB, 'utf8')); } catch { return {}; } };
+const saveDB = (d) => { fs.ensureDirSync(path.dirname(DB)); fs.writeFileSync(DB, JSON.stringify(d, null, 2)); };
 
 module.exports = {
     name: 'setwelcome',
-    aliases: ['welcomemsg', 'welcome'],
+    aliases: ['welcome'],
     category: 'bot',
-    description: 'Configure welcome message for this group',
+    description: 'Set up the group welcome message',
+    adminOnly: true,
     groupOnly: true,
 
     async execute(bot, m, args) {
-        const dbPath = './database/welcome.json';
-        let db = {};
-        try { db = JSON.parse(fs.readFileSync(dbPath, 'utf8')); } catch {}
-        if (!db[m.chat]) db[m.chat] = { enabled: true, text: null };
+        const jid  = m.chat;
+        const a0   = (args[0] || '').toLowerCase();
+        const db   = readDB();
+        const cfg  = db[jid] || { welcomeEnabled: false, welcome: null, goodbyeEnabled: false, goodbye: null };
+        const P    = bot.prefix;
 
-        const sub = args[0]?.toLowerCase();
+        if (!a0 || a0 === 'status') {
+            return m.reply(
+`👋 *Welcome Message Settings*
 
-        if (!sub) return await m.reply(
-`WELCOME SETTINGS
+Status: \`${cfg.welcomeEnabled ? '✅ ON' : '❌ OFF'}\`
+Message: ${cfg.welcome ? '_Custom set_' : '_Default_'}
 
-Status: ${db[m.chat]?.enabled !== false ? 'ON' : 'OFF'}
-Message: ${db[m.chat]?.text || 'default'}
+*Commands:*
+${P}setwelcome on / off
+${P}setwelcome set <message>  — set a custom message
+${P}setwelcome reset          — go back to default message
+${P}setwelcome view           — see your current custom message
 
-Usage:
-${bot.prefix}setwelcome on
-${bot.prefix}setwelcome off
-${bot.prefix}setwelcome set <message>
-${bot.prefix}setwelcome reset
-
-Variables:
-@user  - tags the new member (can be anywhere in message)
-{group} - group name
-{count} - member count
-
-Example:
-${bot.prefix}setwelcome set Welcome @user to {group}! We are {count} members.`
-        );
-
-        if (sub === 'on') {
-            db[m.chat].enabled = true;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            return await m.reply('Welcome message enabled for this group.');
+*Variables you can use:*
+\`{user}\` — @mention the new member
+\`{group}\` — group name
+\`{count}\` — total members`
+            );
         }
 
-        if (sub === 'off') {
-            db[m.chat].enabled = false;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            return await m.reply('Welcome message disabled for this group.');
+        if (a0 === 'on' || a0 === 'off') {
+            db[jid] = { ...cfg, welcomeEnabled: a0 === 'on' };
+            saveDB(db);
+            return m.reply(a0 === 'on'
+                ? '✅ Welcome message *ENABLED* for this group.'
+                : '❌ Welcome message *DISABLED* for this group.');
         }
 
-        if (sub === 'reset') {
-            db[m.chat].text = null;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            return await m.reply('Welcome message reset to default.');
-        }
-
-        if (sub === 'set') {
+        if (a0 === 'set') {
             const text = args.slice(1).join(' ').trim();
-            if (!text) return await m.reply(`Provide a message. Example:\n${bot.prefix}setwelcome set Welcome @user to {group}!`);
-            db[m.chat].text = text;
-            fs.writeFileSync(dbPath, JSON.stringify(db, null, 2));
-            const preview = text.replace('@user', '@YOU').replace('{group}', 'This Group').replace('{count}', '100');
-            return await m.reply(`Welcome message set.\n\nPreview:\n${preview}`);
+            if (!text) return m.reply(`Usage: ${P}setwelcome set <message>\n\nVariables: {user} {group} {count}`);
+            db[jid] = { ...cfg, welcome: text, welcomeEnabled: true };
+            saveDB(db);
+            return m.reply(`✅ *Welcome message set and enabled!*\n\nPreview:\n${text.replace(/{user}/gi, '@You').replace(/{group}/gi, 'Group Name').replace(/{count}/gi, '50')}`);
         }
 
-        await m.reply(`Unknown option. Use ${bot.prefix}setwelcome`);
+        if (a0 === 'reset') {
+            db[jid] = { ...cfg, welcome: null };
+            saveDB(db);
+            return m.reply('🔄 Welcome message reset to default.');
+        }
+
+        if (a0 === 'view') {
+            if (!cfg.welcome) return m.reply('No custom welcome message set. Using default.');
+            return m.reply(`*Current welcome message:*\n\n${cfg.welcome}`);
+        }
+
+        return m.reply(`Unknown option. Try ${P}setwelcome status`);
     }
 };
