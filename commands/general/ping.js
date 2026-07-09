@@ -9,14 +9,14 @@ module.exports = {
         const start = Date.now();
 
         // Send initial "PINGING..." message
-        const pingMsg = await reply('*❦ PINGING...*');
+        const pingMsg = await reply('```❦ PINGING...```');
 
         const ms = Date.now() - start;
 
         // Edit the message to "PONG!" with ms
         await sock.sendMessage(m.chat, {
             edit: pingMsg.key,
-            text: `*☙ P☯︎NG ! ${ms}ms*`
+            text: '```☙  P☯︎NG! ' +  ms + 'ms```'
         });
     }
 };
