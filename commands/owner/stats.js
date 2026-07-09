@@ -5,18 +5,11 @@ module.exports = {
     alias: ['check', 'status'],
     desc: 'Bot statistics with full dynamic tracking bars',
     category: 'Bot',
-    reactions: { start: '📊', success: '📡' },
 
-    // Changed to match your bot's architecture (bot, m, args)
     async execute(bot, m, args) {
         try {
             const sock = bot.sock;
             const config = bot.config;
-
-            // 'this' now works properly because it's a standard async method
-            if (this.reactions?.start) {
-                await sock.sendMessage(m.chat, { react: { text: this.reactions.start, key: m.key } });
-            }
 
             const botName  = config.settings?.botName || config.botName || 'C☯︎DEX-AI V3.0';
             const up       = process.uptime();
@@ -67,9 +60,6 @@ module.exports = {
             // Send as pure text
             await sock.sendMessage(m.chat, { text: dashboardText }, { quoted: m });
 
-            if (this.reactions?.success) {
-                await sock.sendMessage(m.chat, { react: { text: this.reactions.success, key: m.key } });
-            }
         } catch (e) {
             // Updated fallback error sending to match bot.sock structure
             await bot.sock.sendMessage(m.chat, { text: '❌ Stats failed: ' + e.message }, { quoted: m });
