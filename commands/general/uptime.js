@@ -15,6 +15,6 @@ module.exports = {
         const s   = Math.floor(up % 60);
 
         // One clean string wrapped in triple backticks. No edits.
-        await reply('```❁ UPTIME ! ' + `${d}d-${h}h-${min}m-${s}s` + '```');
+        await reply('```UPTIME! ' + `${d}d-${h}h-${min}m-${s}s` + '```');
     }
 };
