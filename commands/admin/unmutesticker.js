@@ -1,42 +1,31 @@
-const { getTarget } = require('../../lib/getTarget');
-const muteStore = require('../../lib/muteStore');
-const scheduler = require('../../lib/scheduler');
-const { extractDuration, humanizeMs } = require('../../lib/duration');
+const { getTarget }                        = require('../../lib/getTarget');
+const muteStore                            = require('../../lib/muteStore');
+const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-core');
 
 module.exports = {
-    name: 'unmutesticker',
-    aliases: ['unstickermute'],
-    category: 'admin',
-    description: 'Lift a sticker-only mute. Optional delay: ".unmutesticker @user after 10m" unblocks them in 10 minutes instead of right now.',
-    usage: '.unmutesticker @user | .unmutesticker @user after <duration>',
-    adminOnly: true,
-    groupOnly: true,
+    name: 'unmutesticker', aliases: ['unstickermute'], category: 'admin',
+    description: 'Unblock a user\'s stickers. .unmutesticker @user  OR  after 1h',
+    adminOnly: true, groupOnly: true,
 
     async execute(bot, m, args) {
         const target = getTarget(m);
-        if (!target) return await m.reply(`Tag a user or reply to their message.\nExample: ${bot.prefix}unmutesticker @user`);
+        if (!target) return m.reply(`Reply to a message or tag a user.\n${bot.prefix}unmutesticker @user [after 1h]`);
 
-        const key = muteStore._keyOf(target);
-        const { ms } = extractDuration(args.filter(a => !a.startsWith('@')));
+        const key    = muteStore._keyOf(target);
+        const joined = args.filter(a => !a.startsWith('@')).join(' ').replace(/\bafter\b/i, '').trim();
+        const ms     = joined ? parseTime(joined) : null;
 
-        // ── Delayed unblock: ".unmutesticker @user after 10m" / "... 10m" ───
+        if (joined && !ms) return m.reply('⚠️ Bad duration. Use: 10m 1h 6h 1d 7d etc.');
+
         if (ms) {
-            scheduler.cancelMatching({ type: 'unmutesticker', chat: m.chat, target: key });
-            scheduler.schedule({ type: 'unmutesticker', dueAt: Date.now() + ms, chat: m.chat, target: key, issuedBy: m.sender });
-            return await m.reply(`⏳ @${target.split('@')[0]}'s stickers will be unblocked in ${humanizeMs(ms)}.`, { mentions: [target] });
+            cancelAll({ chat: m.chat, target: key });
+            schedule({ type: 'unmutesticker', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            return m.reply(`⏳ @${target.split('@')[0]}'s stickers unblocked in ${humanize(ms)}.`, { mentions: [target] });
         }
 
-        const existing = muteStore.getMute(target);
-        if (!existing?.stickersOnly) {
-            return await m.reply(`@${target.split('@')[0]}'s stickers aren't blocked.`, { mentions: [target] });
-        }
-
+        if (!muteStore.getMute(target)?.stickersOnly) return m.reply(`@${target.split('@')[0]}'s stickers aren't blocked.`, { mentions: [target] });
         muteStore.clearMute(target);
-        scheduler.cancelMatching({ type: 'unmutesticker', chat: m.chat, target: key });
-
-        await bot.sendMessage(m.chat, {
-            text: `✅ @${target.split('@')[0]}'s stickers are unblocked.`,
-            mentions: [target]
-        });
+        cancelAll({ chat: m.chat, target: key });
+        await bot.sendMessage(m.chat, { text: `✅ @${target.split('@')[0]}'s stickers are unblocked.`, mentions: [target] });
     }
 };
