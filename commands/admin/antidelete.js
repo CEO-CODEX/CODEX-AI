@@ -72,22 +72,33 @@ module.exports = {
         if (!sub) {
             const status     = db[chat] ? 'ON' : 'OFF';
             const globalPriv = db._globalPriv ? 'ON' : 'OFF';
+            const statusDel  = db._status ? 'ON' : 'OFF';
             const mode       = db._mode || 'dm';
             return reply(
                 `╭─❍ *ANTI-DELETE* 𓉤\n` +
-                `│ Status     : *${status}*\n` +
-                `│ Global DMs : *${globalPriv}*\n` +
-                `│ Send to    : *${mode.toUpperCase()}*\n` +
+                `│ Status      : *${status}*\n` +
+                `│ Global DMs  : *${globalPriv}*\n` +
+                `│ Del Status  : *${statusDel}*\n` +
+                `│ Send to     : *${mode.toUpperCase()}*\n` +
                 `│\n` +
                 `│ Commands:\n` +
                 `│ .antidelete on\n` +
                 `│ .antidelete off\n` +
                 `│ .antidelete on all\n` +
                 `│ .antidelete off all\n` +
+                `│ .antidelete status on\n` +
+                `│ .antidelete status off\n` +
                 `│ .antidelete mode dm\n` +
                 `│ .antidelete mode chat\n` +
                 `╰────────────────`
             );
+        }
+
+        // .antidelete status on | off  → restore DELETED statuses to owner DM
+        if (sub === 'status') {
+            if (sub2 === 'on')  { db._status = true;  saveDB(db); return reply('`—͟͟͞͞𖣘 Deleted STATUS restore ENABLED`'); }
+            if (sub2 === 'off') { db._status = false; saveDB(db); return reply('`⟁⃝✘ Deleted STATUS restore DISABLED`'); }
+            return reply('_⚉ Use .antidelete status on or .antidelete status off_');
         }
 
         // .antidelete on

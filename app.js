@@ -274,21 +274,28 @@ class CODEXAI {
       const msgId = revokedKey?.id;
       if (!chat || !msgId) return;
 
-      const isGroup = chat.endsWith("@g.us");
-      const isPrivate = !isGroup;
       const isStatus = chat === "status@broadcast";
-      if (isStatus) return;
+      const isGroup = !isStatus && chat.endsWith("@g.us");
+      const isPrivate = !isGroup && !isStatus;
 
       let db = {};
       try {
         db = JSON.parse(fs.readFileSync("./database/antidelete.json", "utf8"));
       } catch {}
 
-      const enabledForChat = !!db[chat];
-      const enabledGlobally = isPrivate && !!db._globalPriv;
-      if (!enabledForChat && !enabledGlobally) return;
+      // Deleted statuses are restored to the owner DM when antidelete status
+      // is enabled (.antidelete status on) OR when global anti-delete is on.
+      if (isStatus) {
+        const statusEnabled = !!db._status || !!db._globalPriv;
+        if (!statusEnabled) return;
+      } else {
+        const enabledForChat = !!db[chat];
+        const enabledGlobally = isPrivate && !!db._globalPriv;
+        if (!enabledForChat && !enabledGlobally) return;
+      }
 
-      const mode = db._mode || "dm";
+      // Statuses always go to the owner DM (there is no "chat" to send back to)
+      const mode = isStatus ? "dm" : db._mode || "dm";
       const ownerDM =
         (typeof this.config.owner === "object"
           ? this.config.owner?.number
@@ -320,10 +327,14 @@ class CODEXAI {
         else if (cached.type === "documentMessage") msgContent = "[Document]";
       }
 
-      let formatted = `*ⓘ DELETED!*
+      let formatted = isStatus ? `*ⓘ DELETED STATUS!*
+` : `*ⓘ DELETED!*
 `;
 
-      if (isGroup) {
+      if (isStatus) {
+        formatted += `_❏◦Status by_ •⌲ @${senderNum} (${pushName})
+`;
+      } else if (isGroup) {
         let groupName = "Unknown Group";
         try {
           const meta = await this.sock.groupMetadata(chat);
@@ -472,18 +483,30 @@ ${msgContent}
       // Get original text from cache
       const originalText = cached?.text || "(original not cached)";
 
-      // Get new edited text
+      // Get new edited text — handle every shape the edited payload arrives in:
+      //   • upsert path passes protocolMessage.editedMessage directly
+      //   • messages.update passes the whole update ({ message: {...} })
+      //   • edits can be plain text OR an edited media caption
       let newText = "";
       try {
         const inner =
           editedMsg?.editedMessage ||
           editedMsg?.message?.editedMessage ||
-          editedMsg?.protocolMessage?.editedMessage;
-        newText = inner?.conversation || inner?.extendedTextMessage?.text || "";
+          editedMsg?.protocolMessage?.editedMessage ||
+          editedMsg?.message ||
+          editedMsg ||
+          {};
+        newText =
+          inner.conversation ||
+          inner.extendedTextMessage?.text ||
+          inner.imageMessage?.caption ||
+          inner.videoMessage?.caption ||
+          inner.documentMessage?.caption ||
+          "";
         if (!newText) {
-          // Try deeper
+          // Last-resort deep scan of the serialized payload
           const str = JSON.stringify(editedMsg || {});
-          const match = str.match(/"(?:conversation|text)":"(.*?)"/);
+          const match = str.match(/"(?:conversation|text|caption)":"(.*?)"/);
           if (match) newText = match[1].replace(/\\n/g, "\n");
         }
       } catch {}
