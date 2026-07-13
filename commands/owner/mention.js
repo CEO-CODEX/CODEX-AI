@@ -1,7 +1,7 @@
 const fs   = require('fs');
 const path = require('path');
 
-const MENTION_FILE = path.join(__dirname, '../../../database/mention_config.json');
+const MENTION_FILE = path.join(__dirname, '../../database/mention_config.json');
 
 // IMPORTANT: Never reassign this object — always mutate it with Object.assign
 // so that the exported reference in handler stays valid across reloads

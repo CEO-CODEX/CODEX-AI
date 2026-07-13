@@ -29,14 +29,13 @@ module.exports = {
                 readJson(AUTOSTATUS_PATH, {}).reactEmoji ||
                 'green heart 💚 (default)';
             return await m.reply(
-`x *STATUS REACT EMOJI*
+` 💚 STATUS REACT EMOJI 
+ Current : ${current}
 
-x Current : ${current}
-
-x ${p}setstatusemoji 🔥      — react with a specific emoji
-x ${p}setstatusemoji green   — use the WhatsApp green heart 💚
-x ${p}setstatusemoji random  — random emoji each time
-x ${p}setstatusemoji off     — stop reacting to statuses`
+ ${p}setstatusemoji 🔥      react with a specific emoji
+ ${p}setstatusemoji green   use the WhatsApp green heart 💚
+ ${p}setstatusemoji random  random emoji each time
+ ${p}setstatusemoji off     stop reacting to statuses`
             );
         }
 
@@ -51,7 +50,7 @@ x ${p}setstatusemoji off     — stop reacting to statuses`
             autostatus.autoReact = false;
             writeJson(AUTOSTATUS_PATH, autostatus);
             fs.writeFileSync('./config.json', JSON.stringify(bot.config, null, 2));
-            return await m.reply('x Status auto-react : *OFF*');
+            return await m.reply('Status auto-react : OFF');
         }
 
         // Resolve the chosen emoji.
@@ -82,6 +81,6 @@ x ${p}setstatusemoji off     — stop reacting to statuses`
         fs.writeFileSync('./config.json', JSON.stringify(bot.config, null, 2));
 
         const shown = chosen === null ? 'green heart 💚 (default)' : chosen;
-        return await m.reply(`x Status react emoji set to : ${shown}\nx Status auto-react : *ON*`);
+        return await m.reply(`Status react emoji set to : ${shown}\nStatus auto-react : ON`);
     }
 };
