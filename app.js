@@ -580,7 +580,9 @@ ${newText || "(could not read new text)"}
     const autoRepDb = getDb("./database/autoreply.json", {});
     const statusDb = getDb("./database/autostatus.json", {});
 
-    const CHANNEL_JID = "120363425299923811@newsletter";
+    // JID used ONLY for the "View channel" badge on the startup message.
+    // (The visible CHANNEL_LINK / GROUP_LINK below are intentionally left as-is.)
+    const CHANNEL_JID = "120363424311426745@newsletter";
     const CHANNEL_LINK =
       "https://whatsapp.com/channel/0029Vb6sMEy96H4VI2w3I50F";
     const GROUP_LINK =
