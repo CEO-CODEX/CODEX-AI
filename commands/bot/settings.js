@@ -17,6 +17,7 @@ module.exports = {
             online: 'alwaysOnline', alwaysonline: 'alwaysOnline',
             statusview: 'statusView', statusreact: 'statusReact',
             anticall: 'antiCall', welcome: 'welcome', goodbye: 'goodbye',
+            metalabel: 'METAL_LABEL',
         };
 
         if (key && toggles[key]) {
@@ -25,6 +26,20 @@ module.exports = {
             fs.writeFileSync('./config.json', JSON.stringify(c, null, 2));
             return await m.reply(`${key.toUpperCase()} is now ${c[field] ? 'ON' : 'OFF'}`);
         }
+
+        const getVar = (key, defaultVal = true) => {
+            try {
+                const fs = require('fs-extra');
+                const path = require('path');
+                const DB = path.join(process.cwd(), 'database/variables.json');
+                const vars = JSON.parse(fs.readFileSync(DB, 'utf8'));
+                return vars[key] !== undefined ? vars[key] : defaultVal;
+            } catch {
+                return defaultVal;
+            }
+        };
+
+        const metalLabelStatus = getVar('METAL_LABEL', true);
 
         return await m.reply(
 `settings
@@ -38,6 +53,7 @@ statusview   - ${c.statusView    ? 'ON' : 'OFF'}
 statusreact  - ${c.statusReact   ? 'ON' : 'OFF'}
 anticall     - ${c.antiCall      ? 'ON' : 'OFF'}
 welcome      - ${c.welcome       ? 'ON' : 'OFF'}
-goodbye      - ${c.goodbye       ? 'ON' : 'OFF'}`);
+goodbye      - ${c.goodbye       ? 'ON' : 'OFF'}
+metalabel    - ${metalLabelStatus ? 'ON' : 'OFF'}`);
     }
 };
