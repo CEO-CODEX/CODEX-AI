@@ -1,4 +1,32 @@
 const fs = require('fs-extra');
+const path = require('path');
+
+const DB = path.join(process.cwd(), 'database/variables.json');
+
+const getVar = (key, def = null) => {
+  try {
+    const vars = JSON.parse(fs.readFileSync(DB, 'utf8'));
+    return vars[key] !== undefined ? vars[key] : def;
+  } catch {
+    return def;
+  }
+};
+
+const setVar = (key, value) => {
+  try {
+    fs.ensureDirSync(path.dirname(DB));
+    let vars = {};
+    try {
+      vars = JSON.parse(fs.readFileSync(DB, 'utf8'));
+    } catch {}
+    vars[key] = value;
+    fs.writeFileSync(DB, JSON.stringify(vars, null, 2));
+    return true;
+  } catch (err) {
+    console.error('[setVar]', err.message);
+    return false;
+  }
+};
 
 module.exports = {
     name: 'statusview',
@@ -7,57 +35,53 @@ module.exports = {
     ownerOnly: true,
     description: 'Toggle auto status view / react and set reaction emoji',
 
-    async execute(bot, m, args) {
+    async execute(bot, m, { args, reply, prefix }) {
         const sub = args[0]?.toLowerCase();
-        const p   = bot.prefix;
+        const p   = prefix;
 
         if (!sub) {
-            const viewOn  = bot.config.statusView?.enabled  !== false;
-            const reactOn = bot.config.statusReact?.enabled === true;
-            const emoji   = bot.config.statusReact?.emoji   || 'random';
-            return await m.reply(
-`x *STATUS VIEW*
-
-x Auto View  : ${viewOn  ? 'ON' : 'OFF'}
-x Auto React : ${reactOn ? 'ON' : 'OFF'}
-x React Emoji: ${emoji}
-
-x ${p}statusview on          — enable auto view
-x ${p}statusview off         — disable auto view
-x ${p}statusview react on    — enable auto react
-x ${p}statusview react off   — disable auto react
-x ${p}statusview emoji <e>   — set reaction emoji (or "random")`
+            const viewOn  = getVar('STATUS_VIEW', false);
+            const reactOn = getVar('STATUS_REACT', false);
+            const emoji   = getVar('STATUS_EMOJI', 'random');
+            return await reply(
+`╭─❍ *STATUS VIEW & REACT*
+│
+│ Auto View    : *${viewOn  ? 'ON ✓' : 'OFF ✗'}*
+│ Auto React   : *${reactOn ? 'ON ✓' : 'OFF ✗'}*
+│ React Emoji  : *${emoji}*
+│
+│ Commands:
+│ ${p}statusview on           — enable auto view
+│ ${p}statusview off          — disable auto view
+│ ${p}statusview react on     — enable auto react
+│ ${p}statusview react off    — disable auto react
+│ ${p}statusview emoji <e>    — set reaction emoji (or "random")
+╰──────────────────`
             );
         }
 
         // .statusview on / off  → controls autoView
         if (sub === 'on' || sub === 'off') {
-            if (!bot.config.statusView) bot.config.statusView = {};
-            bot.config.statusView.enabled = (sub === 'on');
-            fs.writeFileSync('./config.json', JSON.stringify(bot.config, null, 2));
-            return await m.reply(`x Status view : *${sub.toUpperCase()}*`);
+            setVar('STATUS_VIEW', sub === 'on');
+            return await reply(`\`✓ Status View : *${sub.toUpperCase()}*\``);
         }
 
         // .statusview react on / off
         if (sub === 'react') {
             const v = args[1]?.toLowerCase();
-            if (!v) return await m.reply(`x ${p}statusview react on/off`);
-            if (!bot.config.statusReact) bot.config.statusReact = {};
-            bot.config.statusReact.enabled = (v === 'on');
-            fs.writeFileSync('./config.json', JSON.stringify(bot.config, null, 2));
-            return await m.reply(`x Status react : *${v === 'on' ? 'ON' : 'OFF'}*`);
+            if (!v) return await reply(`_⚉ ${p}statusview react on|off_`);
+            setVar('STATUS_REACT', v === 'on');
+            return await reply(`\`✓ Status React : *${v === 'on' ? 'ON' : 'OFF'}*\``);
         }
 
         // .statusview emoji 🔥  /  .statusview emoji random
         if (sub === 'emoji') {
             const sign = args[1];
-            if (!sign) return await m.reply(`x ${p}statusview emoji <emoji or "random">`);
-            if (!bot.config.statusReact) bot.config.statusReact = {};
-            bot.config.statusReact.emoji = sign === 'random' ? null : sign;
-            fs.writeFileSync('./config.json', JSON.stringify(bot.config, null, 2));
-            return await m.reply(`x Status react emoji : ${sign}`);
+            if (!sign) return await reply(`_⚉ ${p}statusview emoji <emoji or "random">_`);
+            setVar('STATUS_EMOJI', sign);
+            return await reply(`\`✓ Status React Emoji : ${sign}\``);
         }
 
-        await m.reply(`x Unknown subcommand. Use ${p}statusview for help.`);
+        await reply(`_⚉ Unknown. Use ${p}statusview for help._`);
     }
 };

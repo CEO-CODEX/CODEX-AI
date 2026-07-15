@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { downloadContentFromMessage } = require('../../lib/baileys');
 
 const DB = path.join(__dirname, '../../database/antidelete.json');
+const MEDIA_STORE = path.join(__dirname, '../../database/antidelete_media');
 
 if (!fs.existsSync(DB)) fs.writeFileSync(DB, '{}');
 
@@ -22,39 +24,52 @@ function getDisplayName(deleted, senderJid) {
     return senderJid.split('@')[0];
 }
 
+async function downloadMedia(msgObj, mediaType) {
+    try {
+        if (!msgObj[mediaType]) return null;
+        const stream = await downloadContentFromMessage(msgObj[mediaType], mediaType.replace('Message', '').toLowerCase());
+        let buf = Buffer.alloc(0);
+        for await (const chunk of stream) buf = Buffer.concat([buf, chunk]);
+        return buf;
+    } catch (err) {
+        console.log('[Antidelete Media Download]', err.message);
+        return null;
+    }
+}
+
 function getMessageContent(msgObj) {
     if (msgObj.conversation) {
-        return { text: msgObj.conversation, type: 'text' };
+        return { text: msgObj.conversation, type: 'text', hasMedia: false };
     }
     if (msgObj.extendedTextMessage?.text) {
-        return { text: msgObj.extendedTextMessage.text, type: 'text' };
+        return { text: msgObj.extendedTextMessage.text, type: 'text', hasMedia: false };
     }
     if (msgObj.imageMessage) {
         const cap = msgObj.imageMessage.caption || '';
-        return { text: cap ? `[Image] ${cap}` : '[Image] (no caption)', type: 'image' };
+        return { text: cap, type: 'image', hasMedia: true, mediaObj: msgObj.imageMessage, mediaType: 'imageMessage' };
     }
     if (msgObj.videoMessage) {
         const cap = msgObj.videoMessage.caption || '';
-        return { text: cap ? `[Video] ${cap}` : '[Video] (no caption)', type: 'video' };
+        return { text: cap, type: 'video', hasMedia: true, mediaObj: msgObj.videoMessage, mediaType: 'videoMessage' };
     }
     if (msgObj.stickerMessage) {
-        return { text: '[Sticker]', type: 'sticker' };
+        return { text: '[Sticker]', type: 'sticker', hasMedia: true, mediaObj: msgObj.stickerMessage, mediaType: 'stickerMessage' };
     }
     if (msgObj.audioMessage) {
-        return { text: '[Voice message]', type: 'audio' };
+        return { text: '[Voice message]', type: 'audio', hasMedia: true, mediaObj: msgObj.audioMessage, mediaType: 'audioMessage' };
     }
     if (msgObj.documentMessage) {
         const name = msgObj.documentMessage.fileName || 'document';
-        return { text: `[Document] ${name}`, type: 'document' };
+        return { text: name, type: 'document', hasMedia: true, mediaObj: msgObj.documentMessage, mediaType: 'documentMessage' };
     }
     if (msgObj.contactMessage) {
         const name = msgObj.contactMessage.displayName || 'contact';
-        return { text: `[Contact] ${name}`, type: 'contact' };
+        return { text: name, type: 'contact', hasMedia: false };
     }
     if (msgObj.locationMessage) {
-        return { text: '[Location]', type: 'location' };
+        return { text: '[Location]', type: 'location', hasMedia: false };
     }
-    return { text: '[Unsupported message]', type: 'unknown' };
+    return { text: '[Unsupported message]', type: 'unknown', hasMedia: false };
 }
 
 module.exports = {
@@ -173,7 +188,8 @@ module.exports.onDelete = async (sock, update, store) => {
                 const senderJidPart = sender.split('@')[0];
 
                 const displayName = getDisplayName(deleted, sender);
-                const { text }    = getMessageContent(msgObj);
+                const msgContent  = getMessageContent(msgObj);
+                const { text, hasMedia, mediaType, mediaObj } = msgContent;
 
                 let formatted = `*ⓘ DELETED!*\n`;
 
@@ -198,15 +214,39 @@ module.exports.onDelete = async (sock, update, store) => {
                 formatted += `${text}\n\n\n`;
                 formatted += `✐ ${timeStr}`;
 
-                const sendOptions = { text: formatted, mentions: [sender] };
-
                 // Determine destination based on mode
                 const mode = db._mode || 'dm';
                 const dest = mode === 'chat' ? chat : owner;
 
-                await sock.sendMessage(dest, sendOptions).catch(() => {});
+                // Send media if present, otherwise just text
+                if (hasMedia && mediaObj && mediaType) {
+                    try {
+                        const mediaBuf = await downloadMedia(msgObj, mediaType);
+                        if (mediaBuf) {
+                            const typeMap = {
+                                imageMessage: 'image',
+                                videoMessage: 'video',
+                                audioMessage: 'audio',
+                                stickerMessage: 'sticker',
+                                documentMessage: 'document'
+                            };
+                            const sendType = typeMap[mediaType];
+                            if (sendType) {
+                                const sendObj = { [sendType]: mediaBuf, caption: formatted, mentions: [sender] };
+                                await sock.sendMessage(dest, sendObj).catch(() => {});
+                                console.log(`[ANTIDELETE] Forwarded ${sendType} from ${displayName} (${senderJidPart}) → ${mode}`);
+                                return;
+                            }
+                        }
+                    } catch (err) {
+                        console.log('[ANTIDELETE Media]', err.message);
+                    }
+                }
 
-                console.log(`[ANTIDELETE] Forwarded from ${displayName} (${senderJidPart}) in ${isGroup ? 'group' : 'private'} → ${mode}`);
+                // Fallback to text if media download fails or no media
+                const sendOptions = { text: formatted, mentions: [sender] };
+                await sock.sendMessage(dest, sendOptions).catch(() => {});
+                console.log(`[ANTIDELETE] Forwarded text from ${displayName} (${senderJidPart}) in ${isGroup ? 'group' : 'private'} → ${mode}`);
             }
         }
     } catch (e) {
