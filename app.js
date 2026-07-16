@@ -791,12 +791,6 @@ ${GROUP_LINK}
   // Single pipeline: font + character/emoji applied here for ALL commands.
   async sendMessage(jid, content, options = {}) {
     try {
-      // Requested flag: tag every outgoing message with the "secure service
-      // from Meta" label. Applied centrally so ALL bot messages carry it.
-      // NOTE: this is not an official WhatsApp Business/Cloud-API capability,
-      // so unofficial (Baileys) clients may simply ignore it.
-      if (content && typeof content === "object") content.secureMetaServiceLabel = true;
-
       const fontNum = this.config.BOT_FONT || 0;
       // Apply font to text and caption
       if (typeof content.text === "string" && fontNum > 0)
