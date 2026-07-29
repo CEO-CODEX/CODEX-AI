@@ -19,7 +19,7 @@ module.exports = {
 
         if (ms) {
             cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'unmuteuser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            schedule({ type: 'unmuteUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
             return m.reply(`⏳ @${target.split('@')[0]} will be unmuted in ${humanize(ms)}.`, { mentions: [target] });
         }
 
