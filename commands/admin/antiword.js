@@ -23,13 +23,13 @@ module.exports = {
     groupOnly: true,
     adminOnly: true,
 
-    execute: async (sock, m, { text, reply }) => {
+    execute: async (sock, m, { args, reply }) => {
         const db = loadDB();
         const groupId = m.chat;
         if (!db[groupId]) db[groupId] = { enabled: false, words: [], action: 'warn' };
 
-        const sub = (text || '').split(' ')[0]?.toLowerCase();
-        const args = (text || '').split(' ').slice(1).join(' ').trim();
+        const sub  = (args[0] || '').toLowerCase();
+        const rest = args.slice(1).join(' ').trim();
 
         // .antiword  — show status
         if (!sub) {
@@ -71,7 +71,7 @@ module.exports = {
 
         // .antiword action delete|warn|kick
         if (sub === 'action') {
-            const newAction = args.toLowerCase();
+            const newAction = rest.toLowerCase();
             if (!['delete', 'warn', 'kick'].includes(newAction)) {
                 return reply('`✘ Action must be: delete, warn, or kick`');
             }
@@ -82,8 +82,8 @@ module.exports = {
 
         // .antiword add <word>
         if (sub === 'add') {
-            if (!args) return reply('`✘ Provide a word to add`');
-            const word = args.toLowerCase();
+            if (!rest) return reply('`✘ Provide a word to add`');
+            const word = rest.toLowerCase();
             if (db[groupId].words.includes(word)) return reply('`✘ Word already in list`');
             db[groupId].words.push(word);
             saveDB(db);
@@ -92,8 +92,8 @@ module.exports = {
 
         // .antiword remove <word>
         if (sub === 'remove') {
-            if (!args) return reply('`✘ Provide a word to remove`');
-            const word = args.toLowerCase();
+            if (!rest) return reply('`✘ Provide a word to remove`');
+            const word = rest.toLowerCase();
             if (!db[groupId].words.includes(word)) return reply('`✘ Word not in list`');
             db[groupId].words = db[groupId].words.filter(w => w !== word);
             saveDB(db);
