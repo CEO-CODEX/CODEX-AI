@@ -1,76 +1,41 @@
-/**
- * blocksticker — Ban a specific sticker (by content hash) from being sent
- * anywhere in this group, for everyone. Matches SUKUNA_MD's `mutesticker`
- * feature exactly, under a non-conflicting name since `mutesticker` in this
- * bot already means something different (muting a USER's ability to send
- * any sticker — see commands/admin/mutesticker.js).
- *
- * Reply to a sticker with .blocksticker to ban that exact sticker. It will
- * be auto-deleted on sight from then on — enforcement lives in
- * lib/antiSystems.js#checkAll().
- */
-const fs = require('fs-extra');
-const path = require('path');
-
-const DB_PATH = path.join(__dirname, '../../database/blockedstickers.json');
-
-function loadDB() {
-    try {
-        if (fs.existsSync(DB_PATH)) return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-    } catch {}
-    return {};
-}
-
-function saveDB(db) {
-    fs.ensureDirSync(path.dirname(DB_PATH));
-    fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
-}
-
-function stickerHashOf(stickerMsg) {
-    const id = stickerMsg?.fileSha256 || stickerMsg?.fileEncSha256;
-    if (!id) return null;
-    return Buffer.from(id).toString('base64');
-}
+const { getTarget }                        = require('../../lib/getTarget');
+const muteStore                            = require('../../lib/muteStore');
+const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-core');
 
 module.exports = {
-    name: 'blocksticker',
-    aliases: ['mutestickercontent', 'stickerban'],
-    description: 'Ban a specific sticker (by content) from being sent in this group',
-    category: 'admin',
-    adminOnly: true,
-    groupOnly: true,
+    name: 'mutesticker', aliases: ['stickermute'], category: 'admin',
+    description: 'Block a user\'s stickers. .mutesticker @user 1h  OR  .mutesticker @user after 2h',
+    adminOnly: true, groupOnly: true,
 
     async execute(bot, m, args) {
-        const ctx = m.msg?.contextInfo;
-        const quotedSticker = ctx?.quotedMessage?.stickerMessage;
+        const target = getTarget(m);
+        if (!target) return m.reply(`Reply to a message or tag a user.\n${bot.prefix}mutesticker @user [1h]`);
 
-        if (!quotedSticker) {
-            return m.reply(
-                `🚫 *Block Sticker*\n\n` +
-                `Reply to a sticker with ${bot.prefix}blocksticker to ban it.\n\n` +
-                `The sticker will be auto-deleted on sight from then on.`
-            );
+        const key     = muteStore._keyOf(target);
+        const joined  = args.filter(a => !a.startsWith('@')).join(' ');
+        const isAfter = /\bafter\b/i.test(joined);
+        const timeStr = joined.replace(/\bafter\b/i, '').trim();
+        const ms      = timeStr ? parseTime(timeStr) : null;
+
+        if (timeStr && !ms) return m.reply('⚠️ Bad duration. Use: 10m 1h 6h 1d 7d etc.');
+
+        if (isAfter && ms) {
+            cancelAll({ chat: m.chat, target: key });
+            schedule({ type: 'muteStickerUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            return m.reply(`⏳ @${target.split('@')[0]}'s stickers will be blocked in ${humanize(ms)}.`, { mentions: [target] });
         }
 
-        const hash = stickerHashOf(quotedSticker);
-        if (!hash) return m.reply('❌ Could not identify that sticker.');
+        const existing = muteStore.getMute(target);
+        if (existing && !existing.stickersOnly) return m.reply(`@${target.split('@')[0]} is fully muted — use ${bot.prefix}unmuteuser first.`, { mentions: [target] });
+        if (existing?.stickersOnly && !ms) return m.reply(`@${target.split('@')[0]}'s stickers are already blocked.`, { mentions: [target] });
 
-        const db = loadDB();
-        const groupId = m.chat;
-        if (!db[groupId]) db[groupId] = [];
+        muteStore.setMute(target, { stickersOnly: true, mutedBy: m.sender, chat: m.chat, mutedAt: Date.now() });
 
-        if (db[groupId].includes(hash)) {
-            return m.reply('⚠️ This sticker is already blocked!');
+        if (ms) {
+            cancelAll({ chat: m.chat, target: key });
+            schedule({ type: 'unmuteStickerUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            return bot.sendMessage(m.chat, { text: `🚫 @${target.split('@')[0]}'s stickers blocked for ${humanize(ms)}.`, mentions: [target] });
         }
-
-        db[groupId].push(hash);
-        saveDB(db);
-
-        return m.reply(
-            `🚫 *Sticker Blocked!*\n\n` +
-            `This sticker is now banned from this group.\n` +
-            `It will be auto-deleted when sent.\n\n` +
-            `Use ${bot.prefix}unblocksticker to unblock it.`
-        );
-    },
+        await bot.sendMessage(m.chat, { text: `🚫 @${target.split('@')[0]}'s stickers are blocked (text still works).`, mentions: [target] });
+    }
 };
