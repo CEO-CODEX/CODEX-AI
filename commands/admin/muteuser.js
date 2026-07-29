@@ -21,7 +21,7 @@ module.exports = {
 
         if (isAfterMode && ms) {
             cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'muteuser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            schedule({ type: 'muteUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
             return m.reply(`⏳ @${target.split('@')[0]} will be muted in ${humanize(ms)}.`, { mentions: [target] });
         }
 
@@ -32,7 +32,7 @@ module.exports = {
 
         if (ms) {
             cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'unmuteuser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            schedule({ type: 'unmuteUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
             return bot.sendMessage(m.chat, { text: `🔇 @${target.split('@')[0]} muted for ${humanize(ms)} — auto-unmutes when timer ends.`, mentions: [target] });
         }
         await bot.sendMessage(m.chat, { text: `🔇 @${target.split('@')[0]} has been muted.`, mentions: [target] });

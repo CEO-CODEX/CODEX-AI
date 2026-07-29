@@ -1,3 +1,13 @@
+/**
+ * AntiGCStatus — Block/delete group status posts made by members.
+ * Uses the SAME enabled/action(delete|warn|kick) system as the rest of
+ * this bot's anti-systems (.antilink, .antiforwarding, .antiword, etc.),
+ * so warnings accumulate consistently and the command surface matches.
+ *
+ * Enforcement lives in lib/antiSystems.js#checkAll(), which also runs a
+ * reliable multi-method delete first (a group status post needs a special
+ * key shape to actually revoke on WhatsApp's side).
+ */
 const fs = require('fs-extra');
 const path = require('path');
 
@@ -17,38 +27,34 @@ function saveDB(db) {
 
 module.exports = {
     name: 'antigcstatus',
-    alias: ['agcs', 'antistatusmention'],
-    desc: 'Block group status mentions from the group',
-    category: 'Admin',
+    aliases: ['nogcstatus', 'blockgcstatus', 'agcs'],
+    description: 'Prevent members from posting to the group status feed',
+    category: 'admin',
     groupOnly: true,
     adminOnly: true,
 
-    execute: async (sock, m, { text, reply }) => {
+    async execute(bot, m, args) {
         const db = loadDB();
         const groupId = m.chat;
-        if (!db[groupId]) db[groupId] = { enabled: false, action: 'warn', autoDelete: true };
+        if (!db[groupId]) db[groupId] = { enabled: false, action: 'warn' };
 
-        const sub = (text || '').split(' ')[0]?.toLowerCase();
-        const args = (text || '').split(' ').slice(1).join(' ').trim();
+        const sub  = (args[0] || '').toLowerCase();
+        const rest = args.slice(1).join(' ').trim();
 
-        // .antigcstatus  — show status
-        if (!sub) {
+        // .antigcstatus — show status
+        if (!sub || sub === 'status') {
             const status = db[groupId].enabled ? 'ON' : 'OFF';
             const action = db[groupId].action || 'warn';
-            const autoDelete = db[groupId].autoDelete ? 'YES' : 'NO';
-            return reply(
-                `╭─❍ *ANTI-GC-STATUS* 𓉤\n` +
-                `│ Status     : *${status}*\n` +
-                `│ Action     : *${action.toUpperCase()}*\n` +
-                `│ Auto-Delete: *${autoDelete}*\n` +
-                `│ Warnings   : 3\n` +
-                `│\n` +
-                `│ Commands:\n` +
-                `│ .antigcstatus on\n` +
-                `│ .antigcstatus off\n` +
-                `│ .antigcstatus action delete|warn|kick\n` +
-                `│ .antigcstatus autodelete on|off\n` +
-                `╰────────────────`
+            return m.reply(
+                `📊 *Anti-Group-Status Settings*\n\n` +
+                `Status : *${status}*\n` +
+                `Action : *${action.toUpperCase()}*\n` +
+                `Warnings: 3\n\n` +
+                `*Usage:*\n` +
+                `• \`${bot.prefix}antigcstatus on\`\n` +
+                `• \`${bot.prefix}antigcstatus off\`\n` +
+                `• \`${bot.prefix}antigcstatus action delete|warn|kick\`\n` +
+                `• \`${bot.prefix}antigcstatus status\``
             );
         }
 
@@ -56,39 +62,27 @@ module.exports = {
         if (sub === 'on') {
             db[groupId].enabled = true;
             saveDB(db);
-            return reply('`—͟͟͞͞𖣘 Anti-GC-Status ENABLED`');
+            return m.reply('✅ *Anti-Group-Status Enabled*\n\nGroup status posts by members will now be handled per the current action (default: warn).');
         }
 
         // .antigcstatus off
         if (sub === 'off') {
             db[groupId].enabled = false;
             saveDB(db);
-            return reply('`—͟͟͞͞𖣘 Anti-GC-Status DISABLED`');
+            return m.reply('❌ *Anti-Group-Status Disabled*\n\nMembers can now post to group status freely.');
         }
 
         // .antigcstatus action delete|warn|kick
         if (sub === 'action') {
-            const newAction = args.toLowerCase();
+            const newAction = rest.toLowerCase();
             if (!['delete', 'warn', 'kick'].includes(newAction)) {
-                return reply('`✘ Action must be: delete, warn, or kick`');
+                return m.reply('✘ Action must be: delete, warn, or kick');
             }
             db[groupId].action = newAction;
             saveDB(db);
-            return reply(`\`—͟͟͞͞𖣘 Action set to: ${newAction.toUpperCase()}\``);
+            return m.reply(`✅ Action set to: *${newAction.toUpperCase()}*`);
         }
 
-        // .antigcstatus autodelete on|off
-        if (sub === 'autodelete') {
-            const setting = args.toLowerCase();
-            if (!['on', 'off'].includes(setting)) {
-                return reply('`✘ Use: on or off`');
-            }
-            db[groupId].autoDelete = setting === 'on';
-            saveDB(db);
-            const state = setting === 'on' ? 'ENABLED' : 'DISABLED';
-            return reply(`\`—͟͟͞͞𖣘 Auto-delete ${state}\``);
-        }
-
-        return reply('`✘ Invalid sub-command`');
-    }
+        return m.reply('✘ Invalid sub-command. Use: on, off, action delete|warn|kick, status');
+    },
 };

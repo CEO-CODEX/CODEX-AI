@@ -19,7 +19,7 @@ module.exports = {
 
         if (ms) {
             cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'unmutesticker', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            schedule({ type: 'unmuteStickerUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
             return m.reply(`⏳ @${target.split('@')[0]}'s stickers unblocked in ${humanize(ms)}.`, { mentions: [target] });
         }
 

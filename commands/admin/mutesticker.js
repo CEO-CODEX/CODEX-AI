@@ -21,7 +21,7 @@ module.exports = {
 
         if (isAfter && ms) {
             cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'mutesticker', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            schedule({ type: 'muteStickerUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
             return m.reply(`⏳ @${target.split('@')[0]}'s stickers will be blocked in ${humanize(ms)}.`, { mentions: [target] });
         }
 
@@ -33,7 +33,7 @@ module.exports = {
 
         if (ms) {
             cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'unmutesticker', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            schedule({ type: 'unmuteStickerUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
             return bot.sendMessage(m.chat, { text: `🚫 @${target.split('@')[0]}'s stickers blocked for ${humanize(ms)}.`, mentions: [target] });
         }
         await bot.sendMessage(m.chat, { text: `🚫 @${target.split('@')[0]}'s stickers are blocked (text still works).`, mentions: [target] });

@@ -23,13 +23,13 @@ module.exports = {
     groupOnly: true,
     adminOnly: true,
 
-    execute: async (sock, m, { text, reply }) => {
+    execute: async (sock, m, { args, reply }) => {
         const db = loadDB();
         const groupId = m.chat;
         if (!db[groupId]) db[groupId] = { enabled: false, action: 'kick' };
 
-        const sub = (text || '').split(' ')[0]?.toLowerCase();
-        const args = (text || '').split(' ').slice(1).join(' ').trim();
+        const sub  = (args[0] || '').toLowerCase();
+        const rest = args.slice(1).join(' ').trim();
 
         // .antibot  — show status
         if (!sub) {
@@ -65,7 +65,7 @@ module.exports = {
 
         // .antibot action delete|warn|kick
         if (sub === 'action') {
-            const newAction = args.toLowerCase();
+            const newAction = rest.toLowerCase();
             if (!['delete', 'warn', 'kick'].includes(newAction)) {
                 return reply('`✘ Action must be: delete, warn, or kick`');
             }
