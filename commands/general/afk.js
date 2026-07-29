@@ -54,14 +54,15 @@ Change with:
         const mode   = bot.afkSystem.getMode(m.sender);
         bot.afkSystem.setAFK(m.sender, reason, m.pushName);
 
-        // Plain reply — no mention, no tag — so bot doesn't trigger itself
-        await bot.sendMessage(m.chat, {
-            text:
+        // CRITICAL: Use m.reply() NOT bot.sendMessage() to avoid triggering checkAFK
+        // bot.sendMessage() sends a normal message that checkAFK sees and immediately
+        // toggles AFK off (the bug). Use m.reply() which is marked fromMe=true internally.
+        await m.reply(
 `🌙 *AFK mode enabled*
 Reason: ${reason}
 Mode: ${mode.toUpperCase()}
 I will notify the group and DM you when someone tags or replies to your message.
 Send any message to disable AFK.`
-        });
+        );
     }
 };
