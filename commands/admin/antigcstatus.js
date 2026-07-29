@@ -23,13 +23,13 @@ module.exports = {
     groupOnly: true,
     adminOnly: true,
 
-    execute: async (sock, m, { text, reply }) => {
+    execute: async (sock, m, { args, reply }) => {
         const db = loadDB();
         const groupId = m.chat;
         if (!db[groupId]) db[groupId] = { enabled: false, action: 'warn', autoDelete: true };
 
-        const sub = (text || '').split(' ')[0]?.toLowerCase();
-        const args = (text || '').split(' ').slice(1).join(' ').trim();
+        const sub  = (args[0] || '').toLowerCase();
+        const rest = args.slice(1).join(' ').trim();
 
         // .antigcstatus  — show status
         if (!sub) {
@@ -68,7 +68,7 @@ module.exports = {
 
         // .antigcstatus action delete|warn|kick
         if (sub === 'action') {
-            const newAction = args.toLowerCase();
+            const newAction = rest.toLowerCase();
             if (!['delete', 'warn', 'kick'].includes(newAction)) {
                 return reply('`✘ Action must be: delete, warn, or kick`');
             }
@@ -79,7 +79,7 @@ module.exports = {
 
         // .antigcstatus autodelete on|off
         if (sub === 'autodelete') {
-            const setting = args.toLowerCase();
+            const setting = rest.toLowerCase();
             if (!['on', 'off'].includes(setting)) {
                 return reply('`✘ Use: on or off`');
             }
