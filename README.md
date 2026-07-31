@@ -2,13 +2,17 @@
 
 <img src="https://cdn.kord.live/serve/UrtTy3IkVnmE.jpg" alt="CODEX AI Banner" width="100%">
 
+<img src="./assets/rolling-circle.svg" width="80" alt="loading spinner">
+
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
 
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=28&pause=1000&color=00FFF0&center=true&vCenter=true&width=910&height=70&repeat=true&lines=CODEX+AI;A+MULTIFUNCTIONAL+WHATSAPP+BOT+BUILT+WITH+BAILEYS.;AI+HYPER+SPEED+POWERED.;FULL+STACK+ACTIVE+AND+INTACT+GROUP+MANAGERS.;ALWAYS+ACTIVE+AND+ONLINE.;DON%27T+FORGET+TO+STAR+AND+FORK+MY+REPO.;BUILT+AND+FOUNDED+BY+CODEX." alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=28&pause=1000&color=1F51FF&center=true&vCenter=true&width=910&height=70&repeat=true&lines=CODEX+AI;A+MULTIFUNCTIONAL+WHATSAPP+BOT+BUILT+WITH+BAILEYS.;AI+HYPER+SPEED+POWERED.;FULL+STACK+ACTIVE+AND+INTACT+GROUP+MANAGERS.;ALWAYS+ACTIVE+AND+ONLINE.;DON%27T+FORGET+TO+STAR+AND+FORK+MY+REPO.;BUILT+AND+FOUNDED+BY+CODEX." alt="Typing SVG" />
 </a>
 
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
+
+<img src="https://raw.githubusercontent.com/CEO-CODEX/CODEX-AI/main/.github/assets/codex-orb.svg" width="160" height="160" alt="CODEX AI orb">
 
 # 𝐂𝚯𝐃𝚵𝚾 𝚫𝚰
 
@@ -47,7 +51,7 @@
 
 ##  What is CODEX AI?
 
-**CODEX AI** is a full-stack, multifunctional WhatsApp bot built on Node.js and a hardened Baileys fork (`@crysnovax/baileys`). It runs on your own WhatsApp number and adds AI, group management, an entire RPG-style economy, and a GTA-inspired roleplay system on top of your chats — all through a fast, plugin-driven command engine and many more.
+**CODEX AI** is a full-stack, multifunctional WhatsApp bot built on Node.js and a hardened Baileys fork (`@crysnovax/baileys`). It runs on your own WhatsApp number and adds AI, group management, an entire RPG-style economy, and a GTA-inspired roleplay system on top of your chats — all. with fast and reliable AntiSystems, plugin-driven command engine and many more.
 
 > Founded and built by **CODEX** 
 
@@ -55,7 +59,7 @@
 
 ## ⚙️ Requirements
 
-- **Node.js** v23 or higher
+- **Node.js** v18 or higher
 - **npm**
 - **FFmpeg** (bundled via `ffmpeg-static`, no manual install needed)
 - A WhatsApp account (self-bot — runs on your own number)
@@ -122,6 +126,34 @@ Set `sessionId` and any other values directly in `config.json` before pushing, s
 4. Open the console and run `npm install` once the files are in place.
 5. Edit `config.json` (via the panel's file manager) to set your `sessionId` and owner details.
 6. Start the server.
+
+### 📱 Deploy on Termux
+
+```bash
+# Update Termux packages
+pkg update -y && pkg upgrade -y
+
+# Install prerequisites
+pkg install -y nodejs-lts git
+
+# Clone the repo
+git clone https://github.com/CEO-CODEX/CODEX-AI.git codex-ai
+cd codex-ai
+
+# Install dependencies
+npm install
+
+# Configure the bot
+nano config.json   # set botName, prefix, owner.number, sessionId
+
+# Start the bot
+node index.js
+```
+
+**Keeping it alive on your phone:**
+- Run `termux-wake-lock` before starting the bot so Android doesn't kill Termux in the background.
+- Disable battery optimization for Termux in your phone's Settings → Apps.
+- To keep it running after you close the Termux window, start it inside `tmux`: `pkg install tmux`, then `tmux new -s codex`, run `node index.js` inside it, and detach with `Ctrl+B` then `D`. Reattach anytime with `tmux attach -t codex`.
 
 ---
 
