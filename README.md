@@ -5,7 +5,7 @@
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
 
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=28&pause=1000&color=00FFF0&center=true&vCenter=true&width=910&height=70&repeat=true&lines=CODEX+AI%2C+A+MULTIFUNCTIONAL+WHATSAPP+BOT+BUILT+WITH+BAILEYS.;AI+HYPER+SPEED+POWERED.;FULL+STACK+ACTIVE+AND+INTACT+GROUP+MANAGERS.;ALWAYS+ACTIVE+AND+ONLINE.;DON%27T+FORGET+TO+STAR+AND+FORK+MY+REPO.;BUILT+AND+FOUNDED+BY+CODEX." alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=28&pause=1000&color=00FFF0&center=true&vCenter=true&width=910&height=70&repeat=true&lines=CODEX+AI;A+MULTIFUNCTIONAL+WHATSAPP+BOT+BUILT+WITH+BAILEYS.;AI+HYPER+SPEED+POWERED.;FULL+STACK+ACTIVE+AND+INTACT+GROUP+MANAGERS.;ALWAYS+ACTIVE+AND+ONLINE.;DON%27T+FORGET+TO+STAR+AND+FORK+MY+REPO.;BUILT+AND+FOUNDED+BY+CODEX." alt="Typing SVG" />
 </a>
 
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
@@ -16,11 +16,10 @@
 
 <br>
 
-<!-- Replace ORG/REPO below with your actual GitHub path so the badges resolve -->
-<img src="https://img.shields.io/github/stars/ORG/REPO?style=for-the-badge&color=FFD700&logo=github" alt="Stars"/>
-<img src="https://img.shields.io/github/forks/ORG/REPO?style=for-the-badge&color=00BFFF&logo=github" alt="Forks"/>
-<img src="https://img.shields.io/github/issues/ORG/REPO?style=for-the-badge&color=FF6B6B&logo=github" alt="Issues"/>
-<img src="https://img.shields.io/github/license/ORG/REPO?style=for-the-badge&color=2ECC71" alt="License"/>
+<img src="https://img.shields.io/github/stars/CEO-CODEX/CODEX-AI?style=for-the-badge&color=FFD700&logo=github" alt="Stars"/>
+<img src="https://img.shields.io/github/forks/CEO-CODEX/CODEX-AI?style=for-the-badge&color=00BFFF&logo=github" alt="Forks"/>
+<img src="https://img.shields.io/github/issues/CEO-CODEX/CODEX-AI?style=for-the-badge&color=FF6B6B&logo=github" alt="Issues"/>
+<img src="https://img.shields.io/github/license/CEO-CODEX/CODEX-AI?style=for-the-badge&color=2ECC71" alt="License"/>
 <img src="https://img.shields.io/badge/version-3.0.0-00FFF0?style=for-the-badge" alt="Version"/>
 <img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=for-the-badge&logo=node.js" alt="Node"/>
 <img src="https://img.shields.io/badge/library-%40crysnovax%2Fbaileys-25D366?style=for-the-badge&logo=whatsapp" alt="Baileys"/>
@@ -86,7 +85,7 @@
 sudo apt update && sudo apt install -y nodejs npm git
 
 # Clone your fork
-git clone https://github.com/ORG/REPO.git codex-ai
+git clone https://github.com/CEO-CODEX/CODEX-AI.git codex-ai
 cd codex-ai
 
 # Install dependencies
