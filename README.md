@@ -52,40 +52,6 @@
 
 > Founded and built by **CODEX** 🇳🇬
 
-## 📖 Table of Contents
-
-- [What is CODEX AI?](#-what-is-codex-ai)
-- [Why CODEX AI](#-why-codex-ai-stands-apart)
-- [Requirements](#️-requirements)
-- [Deployment](#-deployment)
-  - [Render](#-deploy-on-render)
-  - [VPS](#️-deploy-on-a-vps)
-  - [Heroku](#-deploy-on-heroku)
-  - [Panel (Pterodactyl)](#-deploy-on-a-panel-pterodactyl)
-- [Getting a Session ID](#-getting-a-session-id)
-- [Configuration Reference](#-configuration-reference)
-- [Project Structure](#️-project-structure)
-- [Community](#-community)
-
----
-
-## 🚀 Why CODEX AI Stands Apart
-
-<div align="center">
-
-| ✦ | Feature | Description |
-|---|---------|-------------|
-| ⚡ | **Dynamic Command Engine** | 130+ commands across 9 categories, all hot-loaded |
-| 🧠 | **AI Suite** | Smart AI chat assistant plus AI image generation |
-| 🎮 | **Full RPG Economy** | Mining, fishing, hunting, bank, shop, pets, gambling — a real in-chat economy |
-| 🔫 | **GTA-Style Roleplay** | Gangs, territory wars, missions, weapons & wanted levels — unique to CODEX AI |
-| 🛡️ | **Battle-Tested Group Management** | Anti-link, anti-spam, anti-tag, anti-delete, anti-edit, warn system & more |
-| 👥 | **Owner & Sudo Controls** | Layered permissions, live debugging tools, hot package management |
-| 🌐 | **Always-On Session Handling** | Automatic session restore & reconnect, built for 24/7 uptime |
-| 🔒 | **Self-Hosted, You're In Control** | Runs on your number, your server — your data never leaves your instance |
-
-</div>
-
 ---
 
 ## ⚙️ Requirements
@@ -170,73 +136,9 @@ Set `sessionId` and any other values directly in `config.json` before pushing, s
 
 ---
 
-## ✦ Configuration Reference
-
-All settings live in `config.json`:
-
-| Key | Default | Description |
-|-----|---------|-------------|
-| `botName` | `CODEX-AI V3.0` | Display name for your bot |
-| `prefix` | `.` | Command prefix |
-| `owner.number` | — | Your WhatsApp number (with `@s.whatsapp.net`) |
-| `mode` | `public` | `public` or `private` command access |
-| `sessionId` | — | Your paired session ID (see above) |
-| `mods` / `sudo` | `[]` | Arrays of numbers with elevated permissions |
-| `autoTyping` / `autoRecording` / `autoRead` / `alwaysOnline` | `false`/`true` | Presence behavior toggles |
-| `antiLink` / `antiSpam` / `antiTag` / `antiGame` / `antiGroupMention` | — | Group protection toggles, each with `action` & `maxWarns` |
-| `antiDelete` / `antiEdit` | — | Message recovery toggles, with `forwardTo` target |
-| `STICKER_PACKNAME` / `STICKER_AUTHOR` | `CODEX AI` / `CODEX` | Sticker metadata |
-
----
-
-## 🗂️ Project Structure
-
-```
-CODEX-AI/
-├── index.js               ← Entry point (loads Baileys, then boots app.js)
-├── app.js                 ← Core bot logic & connection lifecycle
-├── config.json             ← Bot configuration (owner, prefix, toggles, sessionId)
-├── commands/
-│   ├── admin/              ← Group protection & moderation
-│   ├── ai/                 ← AI chat & image generation
-│   ├── bot/                ← Bot behavior & controls
-│   ├── downloader/          ← Media downloading
-│   ├── economy/             ← Full RPG economy system
-│   ├── general/             ← Everyday utility commands
-│   ├── gta/                 ← GTA-style roleplay system
-│   ├── owner/               ← Owner-only controls
-│   └── search/               ← Lookup commands
-├── lib/
-│   └── connection.js         ← Session restore, pairing & reconnect logic
-└── database/                 ← Runtime data (JSON)
-```
-
----
-
-## 🌐 Community
-
-<div align="center">
-
-| Platform | Link |
-|---|---|
-| 📢 Main WhatsApp Channel | [Join](https://whatsapp.com/channel/0029Vb78BHmL2AU7fsANSH2y) |
-| 📢 Backup WhatsApp Channel | [Join](https://whatsapp.com/channel/0029Vb6sMEy96H4VI2w3I50F) |
-| 💬 WhatsApp Support Group | [Join](https://chat.whatsapp.com/K7R4qGt8Z7E2PjWr4OvQeG) |
-| ✈️ Telegram Channel | [Join](https://t.me/CODEX_AIV3) |
-| ✈️ Telegram Group | [Join](https://t.me/CODEXV3) |
-| 👨‍💻 Developer | [Contact](https://t.me/DEV_CODEXV3) |
-| ☎️ WhatsApp Number | +234 701 913 5989 |
-| 🔑 Pairing Site | [Get Session ID](https://codexai-paring-site.onrender.com/) |
-| 🌍 Official Website | [Visit](https://codex-ai-site.vercel.app) |
-
-</div>
-
----
-
 <div align="center">
   <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=00ff66&height=90&section=footer" style="margin-top:-20px;" />
   <br>
   <sub>⭐ If CODEX AI is useful to you, star and fork the repo — it helps more than you'd think.</sub>
 </div>
-
