@@ -2,19 +2,25 @@
 
 <img src="https://cdn.kord.live/serve/UrtTy3IkVnmE.jpg" alt="CODEX AI Banner" width="100%">
 
-<img src="./assets/rolling-circle.svg" width="80" alt="loading spinner">
-
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
 
 <a href="https://git.io/typing-svg">
-  <img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=28&pause=1000&color=1F51FF&center=true&vCenter=true&width=910&height=70&repeat=true&lines=CODEX+AI;A+MULTIFUNCTIONAL+WHATSAPP+BOT+BUILT+WITH+BAILEYS.;AI+HYPER+SPEED+POWERED.;FULL+STACK+ACTIVE+AND+INTACT+GROUP+MANAGERS.;ALWAYS+ACTIVE+AND+ONLINE.;DON%27T+FORGET+TO+STAR+AND+FORK+MY+REPO.;BUILT+AND+FOUNDED+BY+CODEX." alt="Typing SVG" />
+  <img src="https://readme-typing-svg.demolab.com?font=Ribeye&size=28&pause=1000&color=00FFF0&center=true&vCenter=true&width=910&height=70&repeat=true&lines=CODEX+AI;A+MULTIFUNCTIONAL+WHATSAPP+BOT+BUILT+WITH+BAILEYS.;AI+HYPER+SPEED+POWERED.;FULL+STACK+ACTIVE+AND+INTACT+GROUP+MANAGERS.;ALWAYS+ACTIVE+AND+ONLINE.;DON%27T+FORGET+TO+STAR+AND+FORK+MY+REPO.;BUILT+AND+FOUNDED+BY+CODEX." alt="Typing SVG" />
 </a>
 
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
 
-<img src="https://cdn.jsdelivr.net/gh/CEO-CODEX/CODEX-AI@main/.github/assets/codex-orb.svg" width="160" height="160" alt="CODEX AI orb">
+</div>
+
+<img src="https://readme-typing-svg.demolab.com?font=Courier+New&size=13&duration=3000&pause=100000000&color=6C7A89&center=false&vCenter=true&width=400&height=20&repeat=false&lines=P+R+E+M+I+U+M+++W+H+A+T+S+A+P+P+++B+O+T" alt="Premium WhatsApp Bot">
+
+<img src="./assets/rolling-circle.svg" width="90" alt="CODEX AI orb">
 
 # ⚉ C O D E X — A I
+
+---
+
+<div align="center">
 
 <em>Your WhatsApp. Supercharged.</em>
 
