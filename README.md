@@ -10,7 +10,7 @@
 
 <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
 
-# ⚉ C O D E X — A I
+# 𝐂𝚯𝐃𝚵𝚾 𝚫𝚰
 
 <em>Your WhatsApp. Supercharged.</em>
 
@@ -45,17 +45,17 @@
 
 ---
 
-## ⚉ What is CODEX AI?
+##  What is CODEX AI?
 
-**CODEX AI** is a full-stack, multifunctional WhatsApp bot built on Node.js and a hardened Baileys fork (`@crysnovax/baileys`). It runs on your own WhatsApp number and adds AI, group management, an entire RPG-style economy, and a GTA-inspired roleplay system on top of your chats — all through a fast, plugin-driven command engine.
+**CODEX AI** is a full-stack, multifunctional WhatsApp bot built on Node.js and a hardened Baileys fork (`@crysnovax/baileys`). It runs on your own WhatsApp number and adds AI, group management, an entire RPG-style economy, and a GTA-inspired roleplay system on top of your chats — all through a fast, plugin-driven command engine and many more.
 
-> Founded and built by **CODEX** 🇳🇬
+> Founded and built by **CODEX** 
 
 ---
 
 ## ⚙️ Requirements
 
-- **Node.js** v18 or higher
+- **Node.js** v23 or higher
 - **npm**
 - **FFmpeg** (bundled via `ffmpeg-static`, no manual install needed)
 - A WhatsApp account (self-bot — runs on your own number)
