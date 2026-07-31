@@ -16,13 +16,13 @@
 
 <img src="./assets/rolling-circle.svg" width="90" alt="CODEX AI orb">
 
-# ⚉ C O D E X — A I
+# 𝐂𝚯𝐃𝚵𝚾 𝚫𝚰
 
 ---
 
 <div align="center">
 
-<em>Your WhatsApp. Supercharged.</em>
+<em>YOUR WHATSAPP HYPER CHARGED.</em>
 
 <br>
 
@@ -40,7 +40,7 @@
 
 <div align="center">
 
-### ✦ Quick Links
+### ✦ LINKS
 
 [![WhatsApp Channel](https://img.shields.io/badge/Main%20Channel-Follow-25D366?style=for-the-badge&logo=whatsapp)](https://whatsapp.com/channel/0029Vb78BHmL2AU7fsANSH2y)
 [![Backup Channel](https://img.shields.io/badge/Backup%20Channel-Follow-25D366?style=for-the-badge&logo=whatsapp)](https://whatsapp.com/channel/0029Vb6sMEy96H4VI2w3I50F)
@@ -55,11 +55,11 @@
 
 ---
 
-## ⚉ What is CODEX AI?
+## What is CODEX AI?
 
-**CODEX AI** is a full-stack, multifunctional WhatsApp bot built on Node.js and a hardened Baileys fork (`@crysnovax/baileys`). It runs on your own WhatsApp number and adds AI, group management, an entire RPG-style economy, and a GTA-inspired roleplay system on top of your chats — all through a fast, plugin-driven command engine.
+**CODEX AI** is a full-stack, multifunctional WhatsApp bot built on Node.js and a hardened Baileys fork (`@crysnovax/baileys`). It runs on your own WhatsApp number and adds AI, group management, an entire RPG-style economy, and a GTA-inspired roleplay system on top of your chats — all through a fast, reliable and intact group managers, plugin-driven command engine and many more.
 
-> Founded and built by **CODEX** 🇳🇬
+> Founded and built by **CODEX** 
 
 ---
 
@@ -177,5 +177,5 @@ node index.js
   <img src="https://i.imgur.com/dBaSKWF.gif" height="18" width="100%">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=00ff66&height=90&section=footer" style="margin-top:-20px;" />
   <br>
-  <sub>⭐ If CODEX AI is useful to you, star and fork the repo — it helps more than you'd think.</sub>
+  <sub>If CODEX AI is useful to you, star and fork the repo — your support is all I need. Thank you for visiting my repo.</sub>
 </div>
