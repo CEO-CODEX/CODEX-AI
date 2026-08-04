@@ -1,31 +1,57 @@
-const { getTarget }                        = require('../../lib/getTarget');
-const muteStore                            = require('../../lib/muteStore');
-const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-core');
+const fs   = require('fs-extra');
+const path = require('path');
+const { parseTime, humanize, schedule, cancel } = require('../../lib/mute-core');
+
+const DB_PATH = path.join(process.cwd(), 'database/blockedstickers.json');
+const readDB  = () => { try { return JSON.parse(fs.readFileSync(DB_PATH, 'utf8')); } catch { return {}; } };
+const saveDB  = (d) => { fs.ensureDirSync(path.dirname(DB_PATH)); fs.writeFileSync(DB_PATH, JSON.stringify(d, null, 2)); };
 
 module.exports = {
-    name: 'unmutesticker', aliases: ['unstickermute'], category: 'admin',
-    description: 'Unblock a user\'s stickers. .unmutesticker @user  OR  after 1h',
-    adminOnly: true, groupOnly: true,
+    name: 'unmutesticker',
+    aliases: ['unstickerban', 'unbansticker'],
+    category: 'admin',
+    description: 'Unban a previously blocked sticker — reply to it with .unblocksticker [after 1h].',
+    adminOnly: true,
+    groupOnly: true,
 
     async execute(bot, m, args) {
-        const target = getTarget(m);
-        if (!target) return m.reply(`Reply to a message or tag a user.\n${bot.prefix}unmutesticker @user [after 1h]`);
-
-        const key    = muteStore._keyOf(target);
-        const joined = args.filter(a => !a.startsWith('@')).join(' ').replace(/\bafter\b/i, '').trim();
-        const ms     = joined ? parseTime(joined) : null;
-
-        if (joined && !ms) return m.reply('⚠️ Bad duration. Use: 10m 1h 6h 1d 7d etc.');
-
-        if (ms) {
-            cancelAll({ chat: m.chat, target: key });
-            schedule({ type: 'unmuteStickerUser', chat: m.chat, target: key, expiresAt: Date.now() + ms, mutedBy: m.sender });
-            return m.reply(`⏳ @${target.split('@')[0]}'s stickers unblocked in ${humanize(ms)}.`, { mentions: [target] });
+        const ctx = m.contextInfo || m.msg?.contextInfo || {};
+        const quotedSticker = ctx.quotedMessage?.stickerMessage;
+        if (!quotedSticker) {
+            return m.reply(`Reply to a previously-blocked sticker with ${bot.prefix}unblocksticker [after 1h] to unban it.`);
         }
 
-        if (!muteStore.getMute(target)?.stickersOnly) return m.reply(`@${target.split('@')[0]}'s stickers aren't blocked.`, { mentions: [target] });
-        muteStore.clearMute(target);
-        cancelAll({ chat: m.chat, target: key });
-        await bot.sendMessage(m.chat, { text: `✅ @${target.split('@')[0]}'s stickers are unblocked.`, mentions: [target] });
+        const id = quotedSticker.fileSha256 || quotedSticker.fileEncSha256;
+        if (!id) return m.reply("❌ Couldn't read that sticker's hash. Please try replying to it again.");
+        const hash = Buffer.from(id).toString('base64');
+
+        const joined     = args.join(' ');
+        const isAfterMode = /\bafter\b/i.test(joined);
+        const timeStr     = joined.replace(/\bafter\b/i, '').trim();
+        const ms          = timeStr ? parseTime(timeStr) : null;
+
+        if (timeStr && !ms) return m.reply('⚠️ Bad duration. Use: 10m 1h 6h 1d 7d etc.');
+
+        // Delayed unblock: keep it banned now, schedule the unban for later.
+        if (isAfterMode && ms) {
+            cancel({ type: 'unblockSticker', chat: m.chat, target: hash });
+            schedule({ type: 'unblockSticker', chat: m.chat, target: hash, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            return m.reply(`⏳ This sticker will be unblocked in ${humanize(ms)}.`);
+        }
+
+        const db   = readDB();
+        const list = db[m.chat] || [];
+        const before = list.length;
+        db[m.chat] = list.filter(h => h !== hash);
+        saveDB(db);
+
+        if (db[m.chat].length === before) return m.reply("That sticker isn't on the blocked list.");
+
+        // Unblocking manually — clear any pending scheduled block/unblock for
+        // this exact sticker so a stale timer can't undo this later.
+        cancel({ type: 'unblockSticker', chat: m.chat, target: hash });
+        cancel({ type: 'blockSticker', chat: m.chat, target: hash });
+
+        return m.reply('✅ Sticker unbanned — it can be sent again.');
     }
 };
