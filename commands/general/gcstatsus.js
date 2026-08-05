@@ -1,20 +1,24 @@
 /**
- * gcstatus — Post text, link, image, video or audio to the group's
- * WhatsApp Status feed (native groupStatusMessageV2), matching the
- * SUKUNA_MD reference implementation, adapted to CODEX-AI's own
- * conventions (m.reply / bot.sock / ffmpeg-static).
+ * gcstatus — Post text, link, image, video, audio or document to the
+ * group's WhatsApp Status feed (native groupStatusMessageV2).
  *
  * ✅ No admin required — works as a regular group member
  * ✅ Uses the official groupStatusMessageV2 API (Baileys), with a manual
  *    relay fallback if the high-level `groupStatus:true` shortcut fails
+ * ✅ Broadcast to every group the bot is in, or target one specific group
+ * ✅ Tracks every status it posts so they can all be pulled down at once
  *
  * Usage:
- *   .gcstatus Hello world!            → text group status
- *   .gcstatus https://example.com     → link group status (with preview)
- *   Reply to a message + .gcstatus    → posts that message to group status
- *   Reply to a photo  + .gcstatus     → image group status
- *   Reply to a video  + .gcstatus     → video group status
- *   Reply to an audio + .gcstatus     → voice-note group status
+ *   .gcstatus Hello world!                  → text group status
+ *   .gcstatus https://example.com           → link group status (with preview)
+ *   .gcstatus Hello | 12036...@g.us         → post to one specific group
+ *   .gcstatus Hello everyone | all          → broadcast to every group
+ *   .gcstatus clear                         → delete every status this bot has posted (this group)
+ *   Reply to a message + .gcstatus          → posts that message to group status
+ *   Reply to a photo    + .gcstatus         → image group status
+ *   Reply to a video    + .gcstatus         → video group status
+ *   Reply to an audio   + .gcstatus         → voice-note group status
+ *   Reply to a document + .gcstatus         → document group status
  *
  *   All media types accept an optional caption:
  *   Reply to photo + .gcstatus My caption
@@ -22,10 +26,15 @@
 
 const crypto = require('crypto');
 const axios  = require('axios');
+const fs     = require('fs-extra');
+const path   = require('path');
 const { spawn } = require('child_process');
+// Loaded through lib/baileys.js's CJS↔ESM bridge — this IS @crysnovax/baileys
+// (the package the whole project already depends on); requiring the package
+// directly here would throw ERR_REQUIRE_ESM, same reason every other file
+// that touches Baileys internals goes through this shim instead.
 const {
     downloadContentFromMessage,
-    getContentType,
     generateWAMessageContent,
     generateWAMessageFromContent,
 } = require('../../lib/baileys');
@@ -34,6 +43,26 @@ let ffmpegPath = null;
 try { ffmpegPath = require('ffmpeg-static'); } catch { ffmpegPath = null; }
 
 const TEXT_BG_COLOR = '#9C27B0';
+
+// ── Status ID store — lets .gcstatus clear find what to delete later ──────
+const ID_DB   = path.join(process.cwd(), 'database/gstatus-ids.json');
+const loadIds = () => { try { return JSON.parse(fs.readFileSync(ID_DB, 'utf8')); } catch { return {}; } };
+const saveId  = (jid, msgId) => {
+    if (!msgId) return;
+    fs.ensureDirSync(path.dirname(ID_DB));
+    const db = loadIds();
+    if (!db[jid]) db[jid] = [];
+    db[jid].push(msgId);
+    fs.writeFileSync(ID_DB, JSON.stringify(db, null, 2));
+};
+const clearIds = (jid) => {
+    const db  = loadIds();
+    const ids = db[jid] || [];
+    delete db[jid];
+    fs.ensureDirSync(path.dirname(ID_DB));
+    fs.writeFileSync(ID_DB, JSON.stringify(db, null, 2));
+    return ids;
+};
 
 // ── helpers ──────────────────────────────────────────────────────────────
 
@@ -110,12 +139,13 @@ async function getGroupParticipantJids(sock, groupJid) {
 }
 
 /** Posts `content` to groupJid's status feed. Tries the high-level shortcut
- *  first, falls back to a manual groupStatusMessageV2 relay if unsupported. */
+ *  first, falls back to a manual groupStatusMessageV2 relay if unsupported.
+ *  Returns the sent message (so callers can track its id for .gcstatus clear). */
 async function postGroupStatus(sock, groupJid, content) {
     try {
         const { backgroundColor, previewTitle, previewDescription, previewImage, ...rest } = content;
         const isTextPost = typeof rest.text === 'string' && rest.text.length > 0;
-        const hasMedia   = !!(rest.image || rest.video || rest.audio);
+        const hasMedia   = !!(rest.image || rest.video || rest.audio || rest.document);
         const payload = { ...rest, groupStatus: true };
         if (isTextPost && !hasMedia) {
             payload.richPreview = true;
@@ -157,6 +187,20 @@ async function postGroupStatus(sock, groupJid, content) {
     return msg;
 }
 
+/** Same manual relay path as postGroupStatus's fallback, used directly for
+ *  broadcasts since we need the raw message object to reuse across many
+ *  groups without re-uploading media each time. */
+async function relayTextStatus(sock, groupJid, text, preview) {
+    const payload = { text };
+    if (preview) {
+        payload.richPreview = true;
+        if (preview.title)       payload.previewTitle       = preview.title;
+        if (preview.description) payload.previewDescription = preview.description;
+        if (preview.imageBuffer) payload.previewImage       = preview.imageBuffer;
+    }
+    return postGroupStatus(sock, groupJid, payload);
+}
+
 /** Resolve the quoted message the same way CODEX's own sticker.js does,
  *  including unwrapping view-once wrappers. */
 function getQuoted(m) {
@@ -169,13 +213,35 @@ function getQuoted(m) {
     return quoted;
 }
 
+/** Deletes every tracked status for one group. Uses sock.deleteGroupStatus
+ *  if this Baileys build has it, otherwise falls back to a normal message
+ *  delete — both are tried per-id so one missing API doesn't sink the rest. */
+async function deleteTrackedStatuses(sock, groupJid) {
+    const ids = clearIds(groupJid);
+    if (!ids.length) return { deleted: 0, failed: 0, hadAny: false };
+
+    let deleted = 0, failed = 0;
+    for (const msgId of ids) {
+        try {
+            if (typeof sock.deleteGroupStatus === 'function') {
+                await sock.deleteGroupStatus(groupJid, { remoteJid: groupJid, fromMe: true, id: msgId });
+            } else {
+                await sock.sendMessage(groupJid, { delete: { remoteJid: groupJid, fromMe: true, id: msgId } });
+            }
+            deleted++;
+        } catch { failed++; }
+        await new Promise(r => setTimeout(r, 300));
+    }
+    return { deleted, failed, hadAny: true };
+}
+
 // ── command ──────────────────────────────────────────────────────────────
 
 module.exports = {
     name: 'gcstatus',
     aliases: ['groupstatus', 'gstatus', 'poststatus'],
     category: 'general',
-    description: "Post text, link, image, video or audio to the group's status feed",
+    description: "Post text, link, image, video, audio or document to the group's status feed. Supports broadcasting to all groups and clearing tracked statuses.",
     groupOnly: true,
 
     async execute(bot, m, args) {
@@ -184,6 +250,72 @@ module.exports = {
         const caption = args.join(' ').trim();
         const quoted  = getQuoted(m);
 
+        // ── CLEAR — delete every status this bot has posted to this group ──
+        if (caption.toLowerCase() === 'clear') {
+            const { deleted, failed, hadAny } = await deleteTrackedStatuses(sock, from);
+            if (!hadAny) return m.reply('No tracked statuses to delete for this group.');
+            return m.reply(`🧹 Cleared ${deleted} status(es)${failed ? `, ${failed} failed` : ''}.`);
+        }
+
+        // ── BROADCAST / TARGET — "<text> | all" or "<text> | <groupJid>" ───
+        // Works off typed text or a quoted message's own text, matching how
+        // the rest of this command already treats those two sources.
+        if (caption.includes('|')) {
+            const [left, right] = caption.split('|').map(v => v.trim());
+            const quotedText = quoted?.conversation || quoted?.extendedTextMessage?.text || '';
+            const messageText = left || quotedText;
+
+            if (right && right.toLowerCase() === 'all') {
+                if (!messageText) return m.reply('❌ Please provide a message to broadcast.');
+
+                let groupIds;
+                try {
+                    const groups = await sock.groupFetchAllParticipating();
+                    groupIds = Object.keys(groups);
+                } catch (err) {
+                    return m.reply(`❌ Couldn't list groups: ${err.message}`);
+                }
+                if (!groupIds.length) return m.reply('❌ Bot is not in any groups.');
+
+                await m.reply(`⏳ Broadcasting to ${groupIds.length} groups...`);
+
+                const isUrl   = /https?:\/\//i.test(messageText);
+                const preview = isUrl ? await fetchLinkPreview(messageText) : null;
+
+                let success = 0, failed = 0;
+                for (const groupId of groupIds) {
+                    try {
+                        const res = await relayTextStatus(sock, groupId, messageText, preview);
+                        saveId(groupId, res?.key?.id);
+                        success++;
+                    } catch { failed++; }
+                    await new Promise(r => setTimeout(r, 500));
+                }
+                return m.reply(`✅ Broadcast done.\nSuccess: ${success}\nFailed: ${failed}`);
+            }
+
+            if (right && right.endsWith('@g.us')) {
+                if (!messageText) return m.reply('❌ Please provide a message to post.');
+                try {
+                    await sock.groupMetadata(right);
+                } catch {
+                    return m.reply('❌ Bot is not in that group.');
+                }
+                try {
+                    const isUrl   = /https?:\/\//i.test(messageText);
+                    const preview = isUrl ? await fetchLinkPreview(messageText) : null;
+                    const res     = await relayTextStatus(sock, right, messageText, preview);
+                    saveId(right, res?.key?.id);
+                    return m.reply(`✅ Posted to that group's status!\n${isUrl ? '🔗 Type: Link' : '💬 Type: Text'}`);
+                } catch (err) {
+                    return m.reply(`❌ Failed to post: ${err.message}`);
+                }
+            }
+            // Falls through to normal handling below if the right side
+            // wasn't "all" or a valid group JID (e.g. text just contained
+            // a literal "|" character).
+        }
+
         // ── IMAGE (or sticker treated as image) ──────────────────────────
         const imgMsg = quoted?.imageMessage || quoted?.stickerMessage;
         if (imgMsg) {
@@ -191,7 +323,8 @@ module.exports = {
             try {
                 const type = quoted.imageMessage ? 'image' : 'sticker';
                 const buf  = await downloadMedia(imgMsg, type);
-                await postGroupStatus(sock, from, { image: buf, caption: caption || '' });
+                const res  = await postGroupStatus(sock, from, { image: buf, caption: caption || '' });
+                saveId(from, res?.key?.id);
                 return m.reply(`✅ Posted to group status!\n📸 Type: Image${caption ? `\n💬 Caption: ${caption}` : ''}`);
             } catch (err) {
                 return m.reply(`❌ Failed to post image: ${err.message}`);
@@ -203,7 +336,8 @@ module.exports = {
             await m.reply('⏳ Posting video to group status…');
             try {
                 const buf = await downloadMedia(quoted.videoMessage, 'video');
-                await postGroupStatus(sock, from, { video: buf, caption: caption || '' });
+                const res = await postGroupStatus(sock, from, { video: buf, caption: caption || '' });
+                saveId(from, res?.key?.id);
                 return m.reply(`✅ Posted to group status!\n🎥 Type: Video${caption ? `\n💬 Caption: ${caption}` : ''}`);
             } catch (err) {
                 return m.reply(`❌ Failed to post video: ${err.message}`);
@@ -216,10 +350,30 @@ module.exports = {
             try {
                 const raw = await downloadMedia(quoted.audioMessage, 'audio');
                 const buf = await encodeOpus(raw);
-                await postGroupStatus(sock, from, { audio: buf, mimetype: 'audio/ogg; codecs=opus', ptt: true });
+                const res = await postGroupStatus(sock, from, { audio: buf, mimetype: 'audio/ogg; codecs=opus', ptt: true });
+                saveId(from, res?.key?.id);
                 return m.reply('✅ Posted to group status!\n🎵 Type: Audio');
             } catch (err) {
                 return m.reply(`❌ Failed to post audio: ${err.message}`);
+            }
+        }
+
+        // ── DOCUMENT ─────────────────────────────────────────────────────
+        if (quoted?.documentMessage) {
+            await m.reply('⏳ Posting document to group status…');
+            try {
+                const doc = quoted.documentMessage;
+                const buf = await downloadMedia(doc, 'document');
+                const res = await postGroupStatus(sock, from, {
+                    document: buf,
+                    mimetype: doc.mimetype || 'application/octet-stream',
+                    fileName: doc.fileName || 'document',
+                    caption: caption || '',
+                });
+                saveId(from, res?.key?.id);
+                return m.reply(`✅ Posted to group status!\n📄 Type: Document${caption ? `\n💬 Caption: ${caption}` : ''}`);
+            } catch (err) {
+                return m.reply(`❌ Failed to post document: ${err.message}`);
             }
         }
 
@@ -229,10 +383,11 @@ module.exports = {
             await m.reply('⏳ Posting quoted message to group status…');
             try {
                 const isUrl = /https?:\/\//i.test(quotedText);
-                await postGroupStatus(sock, from, {
+                const res = await postGroupStatus(sock, from, {
                     text: quotedText,
                     backgroundColor: isUrl ? undefined : TEXT_BG_COLOR,
                 });
+                saveId(from, res?.key?.id);
                 return m.reply(
                     `✅ Posted to group status!\n${isUrl ? '🔗 Type: Link' : '💬 Type: Text'}\n` +
                     `📝 "${quotedText.slice(0, 60)}${quotedText.length > 60 ? '…' : ''}"`
@@ -250,9 +405,13 @@ module.exports = {
 Usage:
 ${bot.prefix}gcstatus Hello world!            — text status
 ${bot.prefix}gcstatus https://link.com        — link/preview status
-Reply to 📷 photo + ${bot.prefix}gcstatus [caption]
-Reply to 🎥 video + ${bot.prefix}gcstatus [caption]
-Reply to 🎵 audio + ${bot.prefix}gcstatus
+${bot.prefix}gcstatus Hello | 12036...@g.us   — post to one specific group
+${bot.prefix}gcstatus Hello everyone | all    — broadcast to every group
+${bot.prefix}gcstatus clear                   — delete every status posted here
+Reply to 📷 photo    + ${bot.prefix}gcstatus [caption]
+Reply to 🎥 video    + ${bot.prefix}gcstatus [caption]
+Reply to 🎵 audio    + ${bot.prefix}gcstatus
+Reply to 📄 document + ${bot.prefix}gcstatus [caption]
 Reply to 💬 any message + ${bot.prefix}gcstatus
 
 No admin role needed.`
@@ -262,9 +421,10 @@ No admin role needed.`
         await m.reply('⏳ Posting to group status…');
         try {
             const isUrl = /https?:\/\//i.test(caption);
+            let res;
             if (isUrl) {
                 const preview = await fetchLinkPreview(caption);
-                await postGroupStatus(sock, from, {
+                res = await postGroupStatus(sock, from, {
                     text: caption,
                     richPreview: true,
                     ...(preview.title       ? { previewTitle: preview.title }             : {}),
@@ -272,8 +432,9 @@ No admin role needed.`
                     ...(preview.imageBuffer ? { previewImage: preview.imageBuffer }        : {}),
                 });
             } else {
-                await postGroupStatus(sock, from, { text: caption, backgroundColor: TEXT_BG_COLOR });
+                res = await postGroupStatus(sock, from, { text: caption, backgroundColor: TEXT_BG_COLOR });
             }
+            saveId(from, res?.key?.id);
             return m.reply(
                 `✅ Posted to group status!\n${isUrl ? '🔗 Type: Link' : '💬 Type: Text'}\n` +
                 `📝 "${caption.slice(0, 60)}${caption.length > 60 ? '…' : ''}"`
@@ -283,4 +444,4 @@ No admin role needed.`
         }
     },
 };
-      
+        
