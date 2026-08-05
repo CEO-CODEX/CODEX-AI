@@ -10,7 +10,7 @@ module.exports = {
     name: 'unmutesticker',
     aliases: ['unstickerban', 'unbansticker'],
     category: 'admin',
-    description: 'Unban a previously blocked sticker — reply to it with .unblocksticker [after 1h].',
+    description: 'Unban a previously blocked sticker — reply to it with .unblocksticker [1h] [after 2h].',
     adminOnly: true,
     groupOnly: true,
 
@@ -18,7 +18,7 @@ module.exports = {
         const ctx = m.contextInfo || m.msg?.contextInfo || {};
         const quotedSticker = ctx.quotedMessage?.stickerMessage;
         if (!quotedSticker) {
-            return m.reply(`Reply to a previously-blocked sticker with ${bot.prefix}unblocksticker [after 1h] to unban it.`);
+            return m.reply(`Reply to a previously-blocked sticker with ${bot.prefix}unblocksticker [1h] [after 2h] to unban it.`);
         }
 
         const id = quotedSticker.fileSha256 || quotedSticker.fileEncSha256;
@@ -47,10 +47,18 @@ module.exports = {
 
         if (db[m.chat].length === before) return m.reply("That sticker isn't on the blocked list.");
 
-        // Unblocking manually — clear any pending scheduled block/unblock for
-        // this exact sticker so a stale timer can't undo this later.
+        // Unblocking now — clear any pending scheduled block/unblock for
+        // this exact sticker so a stale timer can't undo this unexpectedly.
         cancel({ type: 'unblockSticker', chat: m.chat, target: hash });
         cancel({ type: 'blockSticker', chat: m.chat, target: hash });
+
+        // Timed unblock: unban it now, auto re-block ("blockSticker" job)
+        // when the timer ends — mirrors how .blocksticker 1h / .muteuser 1h
+        // work in the opposite direction.
+        if (ms) {
+            schedule({ type: 'blockSticker', chat: m.chat, target: hash, expiresAt: Date.now() + ms, mutedBy: m.sender });
+            return bot.sendMessage(m.chat, { text: `✅ Sticker unbanned for ${humanize(ms)} — it will be auto re-blocked when the timer ends.` });
+        }
 
         return m.reply('✅ Sticker unbanned — it can be sent again.');
     }
