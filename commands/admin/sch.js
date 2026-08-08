@@ -51,7 +51,12 @@ module.exports = {
             '-mute':        'sch-muteGroup',
             '-unmute':      'sch-unmuteGroup',
             '-muteuser':    'sch-muteUser',
+            'muteuser':     'sch-muteUser',
+            'user':         'sch-muteUser',
             '-unmuteuser':  'sch-unmuteUser',
+            'unmuteuser':   'sch-unmuteUser',
+            '-dnd':         'sch-dnd',
+            'dnd':          'sch-dnd',
         };
         const type = typeMap[a0];
         if (!type) {
@@ -61,8 +66,9 @@ module.exports = {
 *Usage:*
 ${P}sch -mute 1am to 6am daily
 ${P}sch -unmute 1am to 6am daily
-${P}sch -muteuser @user 1am to 6am daily
-${P}sch -unmuteuser @user 1am to 6am daily
+${P}sch -muteuser @user 1am to 6am daily   (or: ${P}sch user @user 1am to 6am daily)
+${P}sch -unmuteuser @user 1am to 6am daily (or: ${P}sch unmuteuser @user 1am to 6am daily)
+${P}sch -dnd 12am to 6pm daily             (or: ${P}sch dnd 12am to 6pm daily)
 ${P}sch list
 ${P}sch clear
 
@@ -101,9 +107,10 @@ _Times: 1am, 6pm, 6:30pm, 23:00 (Nigeria time)_`
             'sch-unmuteGroup': `Group will be *unmuted* at ${frStr} and *muted* at ${toStr} every day (Nigeria time).`,
             'sch-muteUser':    `${who} will be *muted* at ${frStr} and *unmuted* at ${toStr} every day (Nigeria time).`,
             'sch-unmuteUser':  `${who} will be *unmuted* at ${frStr} and *muted* at ${toStr} every day (Nigeria time).`,
+            'sch-dnd':         `DND will turn *ON* at ${frStr} and *OFF* at ${toStr} every day (Nigeria time).`,
         }[type];
 
         return m.reply(`✅ *Schedule created!*\n\n📅 ${desc}\n\nUse ${P}sch list to view or ${P}sch clear to remove.`);
     }
 };
-          
+
