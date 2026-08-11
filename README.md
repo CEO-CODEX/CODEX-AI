@@ -47,7 +47,7 @@
 [![Support Group](https://img.shields.io/badge/Support%20Group-Join-25D366?style=for-the-badge&logo=whatsapp)](https://chat.whatsapp.com/K7R4qGt8Z7E2PjWr4OvQeG)
 [![Telegram Channel](https://img.shields.io/badge/Telegram%20Channel-Join-26A5E4?style=for-the-badge&logo=telegram)](https://t.me/CODEX_AIV3)
 [![Telegram Group](https://img.shields.io/badge/Telegram%20Group-Join-26A5E4?style=for-the-badge&logo=telegram)](https://t.me/CODEXV3)
-[![Developer](https://img.shields.io/badge/Developer-Contact-2CA5E0?style=for-the-badge&logo=telegram)](https://t.me/DEV_CODEXV3)
+[![Developer](https://img.shields.io/badge/Developer-Contact-2CA5E0?style=for-the-badge&logo=telegram)](https://t.me/dev_codexx)
 [![Website](https://img.shields.io/badge/Website-Visit-8A2BE2?style=for-the-badge&logo=vercel)](https://codex-ai-site.vercel.app)
 [![Pairing Site](https://img.shields.io/badge/Get%20Session%20ID-Pair%20Now-FF4500?style=for-the-badge&logo=whatsapp)](https://codexai-paring-site.onrender.com/)
 
