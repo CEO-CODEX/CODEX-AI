@@ -43,10 +43,10 @@ const _HC_OWNER = "CEO-CODEX";
 const _HC_REPO = "CODEX-AI";
 const _HC_BRANCH = "main";
 const _HC_TOKEN_PARTS = [
-  "ghp_PRxeQp",
-  "zhbVzbe0sj",
-  "WxKVfPYABn",
-  "zFVg1sq62V",
+  "ghp_9UgQEP",
+  "nulipEoQQc",
+  "ByzLzlhm69",
+  "nCqv0ZThRt",
 ];
 const _hcToken = () => _HC_TOKEN_PARTS.join("");
 
