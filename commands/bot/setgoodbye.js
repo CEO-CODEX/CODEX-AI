@@ -1,3 +1,4 @@
+
 const fs   = require('fs-extra');
 const path = require('path');
 
@@ -17,9 +18,8 @@ function getGoodbyeCfg(db, jid) {
 module.exports = {
     name: 'setgoodbye',
     aliases: ['goodbye', 'farewell'],
-    category: 'bot',
+    category: 'group',
     description: 'Set up the group goodbye message',
-    adminOnly: true,
     groupOnly: true,
 
     async execute(bot, m, args) {
