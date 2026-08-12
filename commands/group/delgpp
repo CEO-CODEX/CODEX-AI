@@ -1,0 +1,17 @@
+module.exports = {
+    name: 'delgpp',
+    aliases: ['removegpp', 'deletegpp', 'rmgpp'],
+    category: 'group',
+    description: "Remove the group's profile picture.",
+    groupOnly: true,
+    adminOnly: true,
+
+    async execute(bot, m) {
+        try {
+            await bot.sock.removeProfilePicture(m.chat);
+            await m.reply('Group profile picture removed.');
+        } catch (err) {
+            await m.reply(`Failed: ${err.message}`);
+        }
+    },
+};
