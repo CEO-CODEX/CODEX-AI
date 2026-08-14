@@ -16,7 +16,7 @@
     "author": "CODEX-AI",
     "license": "MIT",
     "dependencies": {
-        "@crysnovax/baileys": "2.7.3",
+        "@crysnovax/baileys": "2.7.5",
         "@hapi/boom": "^10.0.1",
         "@napi-rs/canvas": "^0.1.53",
         "axios": "^1.6.5",
