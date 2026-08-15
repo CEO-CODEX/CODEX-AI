@@ -3,7 +3,7 @@ const path  = require('path');
 const axios = require('axios');
 const os    = require('os');
 
-const DEFAULT_THUMB = 'https://media.codex-ai.workers.dev/bafb2d80-d0da-4c2c-b6be-9cbdd7edd0b7.jpg';
+const DEFAULT_THUMB = 'https://cdn.crysnovax.link/files/1786787052829-79de1d1d-ceea-4c16-8447-280eace31399.jpeg';
 const CACHED_IMG    = path.join(__dirname, '../../assets/menu.png');
 
 module.exports = {
