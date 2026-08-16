@@ -562,7 +562,7 @@ ${newText || "(could not read new text)"}
     const CHANNEL_LINK =
       "https://whatsapp.com/channel/0029Vb6sMEy96H4VI2w3I50F";
     const GROUP_LINK =
-      "https://chat.whatsapp.com/Gmhs6wJq7R63vEcitVBrj6?s=cl&p=a&ilr=0&amv=0";
+      "https://chat.whatsapp.com/BGoUHjIS9W7Cug2cRPLvFe";
     const CODEX_IMG =
       "https://cdn.crysnovax.link/files/1782641945104-66399a32-3e86-4e1f-9a13-32c3b4031dd4.jpeg";
     const botName = c.settings?.title || c.botName || "CODEX AI";
