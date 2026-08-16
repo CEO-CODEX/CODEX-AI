@@ -779,12 +779,7 @@ ${GROUP_LINK}
       if (typeof content.caption === "string")
         content.caption = applyPrefix(content.caption, this.config);
 
-      if (this.config.autoTyping)
-        await this.sock.sendPresenceUpdate("composing", jid).catch(() => {});
-      if (this.config.autoRecording)
-        await this.sock.sendPresenceUpdate("recording", jid).catch(() => {});
       const sent = await this.sock.sendMessage(jid, content, options);
-      await this.sock.sendPresenceUpdate("paused", jid).catch(() => {});
       if (this.config.autoRead && sent?.key)
         await this.sock.readMessages([sent.key]).catch(() => {});
       return sent;

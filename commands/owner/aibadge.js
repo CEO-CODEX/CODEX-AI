@@ -9,7 +9,7 @@ module.exports = {
     name:      'aibadge',
     alias:     ['aiicon', 'setai'],
     category: 'owner',
-    desc:      'Toggle the 🤖 AI badge on the bot\'s private-chat messages (crysnovax/baileys, DMs only)',
+    desc:      'Toggle the 🤖 AI badge on the bot\'s private-chat messages (CODEX AI, DMs only)',
     ownerOnly: true,
 
     execute: async (bot, m, args) => {

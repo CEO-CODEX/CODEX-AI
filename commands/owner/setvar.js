@@ -52,12 +52,6 @@ module.exports = {
                 BOT_CHARACTER:'BOT_CHARACTER',
                 AI_BADGE:     'AI_BADGE',
             };
-            // Apply AUTO_TYPING / AUTO_RECORDING immediately to variables
-            if (key === 'AUTO_TYPING' || key === 'AUTO_RECORDING') {
-                const _boolVal = value === 'true' || value === '1' || value === 'on';
-                vars[key] = _boolVal;
-                saveVars(vars);
-            }
             if (keyMap[key]) {
                 const parts = keyMap[key].split('.');
                 let obj = cfg;

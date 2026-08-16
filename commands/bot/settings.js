@@ -11,8 +11,6 @@ module.exports = {
         const c   = bot.config;
 
         const toggles = {
-            typing: 'autoTyping', autotyping: 'autoTyping',
-            recording: 'autoRecording',
             read: 'autoRead', autoread: 'autoRead',
             online: 'alwaysOnline', alwaysonline: 'alwaysOnline',
             anticall: 'antiCall', welcome: 'welcome', goodbye: 'goodbye',
@@ -29,8 +27,6 @@ module.exports = {
 `settings
 Usage: ${bot.prefix}settings <name>
 
-typing       - ${c.autoTyping    ? 'ON' : 'OFF'}
-recording    - ${c.autoRecording ? 'ON' : 'OFF'}
 read         - ${c.autoRead      ? 'ON' : 'OFF'}
 online       - ${c.alwaysOnline  ? 'ON' : 'OFF'}
 anticall     - ${c.antiCall      ? 'ON' : 'OFF'}

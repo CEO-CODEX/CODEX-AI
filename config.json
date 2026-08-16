@@ -8,8 +8,6 @@
   "mods": [],
   "sudo": [],
   "mode": "public",
-  "autoTyping": true,
-  "autoRecording": false,
   "autoRead": false,
   "alwaysOnline": true,
   "antiCall": false,
