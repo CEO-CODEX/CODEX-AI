@@ -217,11 +217,11 @@ class CODEXAI {
 
   async start() {
     this._startLocalHeartbeat();
-    console.log(chalk.green('\n  ✦ CODEX AI V3.0 — Starting up...'));
-    console.log(chalk.green('  ✦ Loading commands...\n'));
+    console.log(chalk.yellow('Starting codex ai...'));
+    console.log(chalk.blue('Loading environment variables..'));
     const { loaded, failed } = await this.reloader.loadCommands();
-    console.log(chalk.green(`  ✦ Commands loaded: ${loaded}`));
-    if (failed > 0) console.log(chalk.red(`  ✦ Failed: ${failed} commands`));
+    if (failed > 0) console.log(chalk.red(`${failed} commands failed to load`));
+    console.log(chalk.green(`${loaded} commands loaded`));
     console.log('');
     await startConnection(this);
   }
