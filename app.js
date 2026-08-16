@@ -34,7 +34,6 @@ const AntiSystems = require("./lib/antiSystems");
 const AFKSystem = require("./lib/afkSystem");
 const Permission = require("./lib/permission");
 const Reloader = require("./lib/reloader");
-const akickStore = require("./lib/akickStore");
 const {
   startConnection,
   readMsgCache,
@@ -62,11 +61,9 @@ const {
   "./database/msgcache.json",
   "./database/muteusers.json",
   "./database/scheduledJobs.json",
-  "./database/statusmention.json",
   "./database/welcome.json",
   "./database/goodbye.json",
   "./database/autoreply.json",
-  "./database/autosavestatus.json",
   "./database/autoreact.json",
   "./database/autovv.json",
   "./database/vv-reactions.json",
@@ -83,11 +80,6 @@ const {
     const defaults = {
       "./database/antiedit.json": JSON.stringify(
         { chats: {}, _globalPriv: false, _mode: "dm" },
-        null,
-        2,
-      ),
-      "./database/autosavestatus.json": JSON.stringify(
-        { enabled: false, mode: "dm", target: null },
         null,
         2,
       ),
@@ -208,13 +200,6 @@ class CODEXAI {
     this.messageHandler = new MessageHandler(this);
     this.antiSystems = new AntiSystems(this);
     this.afkSystem = new AFKSystem(this);
-    // Guards the promote/demote events enforcement against reacting to its
-    // own corrective actions (e.g. auto-demoting someone fires ANOTHER
-    // group-participants.update event for that same demote — without this,
-    // the bot would treat its own correction as a fresh violation and loop).
-    // Keyed by `${groupId}_${userId}_${action}` → timestamp; entries expire
-    // on their own via the TTL check in _isSelfAction, no cleanup needed.
-    this._recentSelfActions = new Map();
     this.permission = new Permission(this);
     this.reloader = new Reloader(this);
     this.totalCmds = 0;
@@ -223,16 +208,20 @@ class CODEXAI {
     this._heartbeatInterval = null;
   }
 
+  _startLocalHeartbeat() {
+    if (this._heartbeatInterval) clearInterval(this._heartbeatInterval);
+    // Local no-op timer prevents idle hosting runtimes from treating the process as inactive.
+    this._heartbeatInterval = setInterval(() => {}, 30000);
+  }
+
   async start() {
-    console.log(chalk.yellow('Starting codex ai...'));
-    console.log(chalk.blue('Loading environment variables..'));
-
+    this._startLocalHeartbeat();
+    console.log(chalk.green('\n  ✦ CODEX AI V3.0 — Starting up...'));
+    console.log(chalk.green('  ✦ Loading commands...\n'));
     const { loaded, failed } = await this.reloader.loadCommands();
-    // Keep startup output compact for Pterodactyl: show totals only.
-    if (failed > 0) console.log(chalk.red(`${failed} failed to load`));
-    console.log(chalk.green(`${loaded} loaded`));
+    console.log(chalk.green(`  ✦ Commands loaded: ${loaded}`));
+    if (failed > 0) console.log(chalk.red(`  ✦ Failed: ${failed} commands`));
     console.log('');
-
     await startConnection(this);
   }
 
@@ -285,28 +274,21 @@ class CODEXAI {
       const msgId = revokedKey?.id;
       if (!chat || !msgId) return;
 
+      const isGroup = chat.endsWith("@g.us");
+      const isPrivate = !isGroup;
       const isStatus = chat === "status@broadcast";
-      const isGroup = !isStatus && chat.endsWith("@g.us");
-      const isPrivate = !isGroup && !isStatus;
+      if (isStatus) return;
 
       let db = {};
       try {
         db = JSON.parse(fs.readFileSync("./database/antidelete.json", "utf8"));
       } catch {}
 
-      // Deleted statuses are restored to the owner DM when antidelete status
-      // is enabled (.antidelete status on) OR when global anti-delete is on.
-      if (isStatus) {
-        const statusEnabled = !!db._status || !!db._globalPriv;
-        if (!statusEnabled) return;
-      } else {
-        const enabledForChat = !!db[chat];
-        const enabledGlobally = isPrivate && !!db._globalPriv;
-        if (!enabledForChat && !enabledGlobally) return;
-      }
+      const enabledForChat = !!db[chat];
+      const enabledGlobally = isPrivate && !!db._globalPriv;
+      if (!enabledForChat && !enabledGlobally) return;
 
-      // Statuses always go to the owner DM (there is no "chat" to send back to)
-      const mode = isStatus ? "dm" : db._mode || "dm";
+      const mode = db._mode || "dm";
       const ownerDM =
         (typeof this.config.owner === "object"
           ? this.config.owner?.number
@@ -338,14 +320,10 @@ class CODEXAI {
         else if (cached.type === "documentMessage") msgContent = "[Document]";
       }
 
-      let formatted = isStatus ? `*ⓘ DELETED STATUS!*
-` : `*ⓘ DELETED!*
+      let formatted = `*ⓘ DELETED!*
 `;
 
-      if (isStatus) {
-        formatted += `_❏◦Status by_ •⌲ @${senderNum} (${pushName})
-`;
-      } else if (isGroup) {
+      if (isGroup) {
         let groupName = "Unknown Group";
         try {
           const meta = await this.sock.groupMetadata(chat);
@@ -494,30 +472,18 @@ ${msgContent}
       // Get original text from cache
       const originalText = cached?.text || "(original not cached)";
 
-      // Get new edited text — handle every shape the edited payload arrives in:
-      //   • upsert path passes protocolMessage.editedMessage directly
-      //   • messages.update passes the whole update ({ message: {...} })
-      //   • edits can be plain text OR an edited media caption
+      // Get new edited text
       let newText = "";
       try {
         const inner =
           editedMsg?.editedMessage ||
           editedMsg?.message?.editedMessage ||
-          editedMsg?.protocolMessage?.editedMessage ||
-          editedMsg?.message ||
-          editedMsg ||
-          {};
-        newText =
-          inner.conversation ||
-          inner.extendedTextMessage?.text ||
-          inner.imageMessage?.caption ||
-          inner.videoMessage?.caption ||
-          inner.documentMessage?.caption ||
-          "";
+          editedMsg?.protocolMessage?.editedMessage;
+        newText = inner?.conversation || inner?.extendedTextMessage?.text || "";
         if (!newText) {
-          // Last-resort deep scan of the serialized payload
+          // Try deeper
           const str = JSON.stringify(editedMsg || {});
-          const match = str.match(/"(?:conversation|text|caption)":"(.*?)"/);
+          const match = str.match(/"(?:conversation|text)":"(.*?)"/);
           if (match) newText = match[1].replace(/\\n/g, "\n");
         }
       } catch {}
@@ -591,13 +557,11 @@ ${newText || "(could not read new text)"}
     const autoRepDb = getDb("./database/autoreply.json", {});
     const statusDb = getDb("./database/autostatus.json", {});
 
-    // JID used ONLY for the "View channel" badge on the startup message.
-    // (The visible CHANNEL_LINK / GROUP_LINK below are intentionally left as-is.)
-    const CHANNEL_JID = "120363424311426745@newsletter";
+    const CHANNEL_JID = "120363425299923811@newsletter";
     const CHANNEL_LINK =
       "https://whatsapp.com/channel/0029Vb6sMEy96H4VI2w3I50F";
     const GROUP_LINK =
-      "https://chat.whatsapp.com/K7R4qGt8Z7E2PjWr4OvQeG";
+      "https://chat.whatsapp.com/Gmhs6wJq7R63vEcitVBrj6?s=cl&p=a&ilr=0&amv=0";
     const CODEX_IMG =
       "https://cdn.crysnovax.link/files/1782641945104-66399a32-3e86-4e1f-9a13-32c3b4031dd4.jpeg";
     const botName = c.settings?.title || c.botName || "CODEX AI";
@@ -694,98 +658,14 @@ ${GROUP_LINK}
     }
   }
 
-  // Records that the bot itself is about to perform this exact
-  // participant+action, so the event it triggers gets ignored instead of
-  // being treated as a fresh promote/demote to react to.
-  _markSelfAction(groupId, userId, action) {
-    this._recentSelfActions.set(`${groupId}_${userId}_${action}`, Date.now());
-  }
-
-  // TTL-based check — 15s is generous enough for the update event to land,
-  // short enough that a genuine repeat action later isn't permanently blind.
-  _isSelfAction(groupId, userId, action) {
-    const key = `${groupId}_${userId}_${action}`;
-    const ts  = this._recentSelfActions.get(key);
-    if (!ts) return false;
-    this._recentSelfActions.delete(key);
-    return (Date.now() - ts) < 15000;
-  }
-
-  // Normalizes a jid the same way the rest of this file does (strip device
-  // suffix, keep only digits, re-append @s.whatsapp.net) so comparisons
-  // between differently-formatted jids of the same person still match.
-  _normJid(jid) {
-    if (!jid) return '';
-    const digits = String(jid).replace(/:[0-9]+@/, '@').split('@')[0].replace(/[^0-9]/g, '');
-    return digits ? digits + '@s.whatsapp.net' : '';
-  }
-
-  // The bot itself, or the group's actual creator (WhatsApp's permanent
-  // "superadmin" role — different from a regular admin, and different from
-  // the bot's configured owner). The events anti-systems must never try to
-  // demote either of these: the creator can't be demoted at the protocol
-  // level anyway, and if the BOT is the one being acted on, it may have
-  // already lost the admin rights needed to even attempt a correction.
-  async _isProtectedFromEvents(groupId, jid) {
-    const clean = this._normJid(jid);
-    if (!clean) return false;
-
-    const botJid = this._normJid(this.sock.user?.id);
-    if (clean === botJid) return true;
-
-    try {
-      const meta = await this.sock.groupMetadata(groupId);
-      const owner = this._normJid(meta?.owner || meta?.subjectOwner);
-      if (owner && owner === clean) return true;
-      const superadmin = (meta?.participants || []).find(p => p.admin === 'superadmin');
-      if (superadmin && this._normJid(superadmin.id) === clean) return true;
-    } catch {}
-    return false;
-  }
-
   // ── Group join/leave ──────────────────────────────────────────────────────
-  async handleGroupUpdate({ id, participants, action, author }) {
-    // ── GC BOT ON/OFF — same per-group kill switch as messageHandler.js ──
-    // Welcome/goodbye/promote/demote announcements and the auto-kick list
-    // enforcement all live in THIS function, which runs off the
-    // group-participants.update socket event — a completely separate code
-    // path from incoming chat messages, so the message-handler gate never
-    // covered it. When a group is off, nothing here runs either: no
-    // welcome, no goodbye, no promote/demote events, no auto-kick.
-    try {
-      let botToggle = {};
-      try { botToggle = JSON.parse(fs.readFileSync('./database/botToggle.json', 'utf8')); } catch {}
-      if (botToggle[id]?.enabled === false) return;
-    } catch {}
-
+  async handleGroupUpdate({ id, participants, action }) {
     // Read from groupEvents.json (CRYSNOVA pattern: one file, all group event config)
     let eventsDb = {};
     try { eventsDb = JSON.parse(fs.readFileSync('./database/groupEvents.json', 'utf8')); } catch {}
     const cfg = eventsDb[id] || {};
 
     if (action === 'add') {
-      // Auto-kick list check runs FIRST and unconditionally — before the
-      // welcome-message enabled check below, so it still works even if
-      // welcome messages are turned off for this group.
-      const stillPresent = [];
-      for (const rawUser of participants) {
-        const user = typeof rawUser === 'string' ? rawUser : (rawUser?.id || rawUser?.jid || '');
-        if (!user) continue;
-        if (akickStore.isListed(id, user)) {
-          try {
-            await this.sock.groupParticipantsUpdate(id, [user], 'remove');
-            await this.sendMessage(id, {
-              text: `🚫 @${user.split('@')[0]} is on the auto-kick list and was removed automatically.`,
-              mentions: [user]
-            }).catch(() => {});
-          } catch (e) { console.error('[AutoKick]', e.message); }
-          continue; // don't welcome someone we just kicked back out
-        }
-        stillPresent.push(rawUser);
-      }
-      if (!stillPresent.length) return;
-      participants = stillPresent;
-
       const enabled = cfg.welcomeEnabled ?? (this.config.welcome !== false);
       if (!enabled) return;
 
@@ -879,126 +759,8 @@ ${GROUP_LINK}
           await this.sendMessage(id, { image: { url: imgSrc }, caption: msg, mentions: [user] });
         } catch (e) { console.error('[Goodbye]', e.message); }
       }
-
-    } else if (action === 'promote' || action === 'demote') {
-      const actorJid = author || null;
-      const verifiedNote = '🛡️ Group creator and bot are verified. They still remained admin.';
-
-      for (const rawUser of participants) {
-        const user = typeof rawUser === 'string' ? rawUser : (rawUser?.id || rawUser?.jid || '');
-        if (!user) continue;
-
-        // Skip if this exact participant+action was just performed BY THE
-        // BOT itself as a correction — otherwise the event that correction
-        // triggers gets treated as a fresh violation and loops forever.
-        if (this._isSelfAction(id, user, action)) continue;
-
-        const actorTag  = actorJid ? `@${actorJid.split('@')[0]}` : 'an admin';
-        const userTag   = `@${user.split('@')[0]}`;
-        const mentions  = actorJid ? [user, actorJid] : [user];
-
-        // The bot owner always bypasses the anti-* reactions (same exemption
-        // every other anti-system in this codebase gives the owner).
-        // actorProtected covers two real cases: (1) the group's actual
-        // creator did the promoting/demoting — the events anti-systems
-        // should never scold or punish the creator; (2) the BOT itself is
-        // the actor, which happens whenever an admin uses the bot's own
-        // .promote/.demote commands — WhatsApp reports the bot as the actor
-        // since it's the one making the API call, not the admin who typed
-        // the command. Without this, every legitimate use of those commands
-        // would get instantly reverted by these anti-systems.
-        const actorIsOwner    = actorJid ? this.permission.isOwner(actorJid) : false;
-        const actorProtected  = actorJid ? await this._isProtectedFromEvents(id, actorJid) : false;
-        const actorExempt     = actorIsOwner || actorProtected;
-        // userProtected only matters when the corrective action would be
-        // punitive against `user` (demoting them back down) — i.e. the
-        // promote-triggered branches. It's irrelevant on the demote side,
-        // where the correction is restorative (promoting them back), never
-        // punitive.
-        const userProtected   = await this._isProtectedFromEvents(id, user);
-
-        if (action === 'promote') {
-          if (actorExempt) {
-            if (cfg.promoteEnabled) {
-              await this.sendMessage(id, { text: `${userTag} was promoted by ${actorTag}`, mentions }).catch(() => {});
-            }
-          } else if (cfg.antiInvaidPromotionEnabled) {
-            // Harshest: demote both the promoter and the newly promoted
-            // user — UNLESS the newly promoted user is the bot/creator, in
-            // which case that half is skipped and noted instead.
-            const demotedLine = userProtected
-              ? (actorJid ? `Now ${actorTag} has been auto demoted.\n${verifiedNote}` : verifiedNote)
-              : `Now ${userTag}${actorJid ? ` and ${actorTag}` : ''} has been auto demoted.`;
-            await this.sendMessage(id, {
-              text: `${userTag} was promoted by ${actorTag}\n${actorTag} you shouldn't promote ${userTag}\n${demotedLine}`,
-              mentions
-            }).catch(() => {});
-            try {
-              if (!userProtected) {
-                this._markSelfAction(id, user, 'demote');
-                await this.sock.groupParticipantsUpdate(id, [user], 'demote');
-              }
-              if (actorJid) {
-                this._markSelfAction(id, actorJid, 'demote');
-                await this.sock.groupParticipantsUpdate(id, [actorJid], 'demote');
-              }
-            } catch (e) { console.error('[AntiInvaidPromotion]', e.message); }
-          } else if (cfg.antipromoteEnabled) {
-            // Softer: only revert the promotion itself — skipped entirely
-            // if the promoted user is the bot/creator.
-            const resultLine = userProtected ? verifiedNote : `${userTag} auto demoted.`;
-            await this.sendMessage(id, {
-              text: `${userTag} was promoted by ${actorTag}\n${actorTag} you shouldn't promote ${userTag}\n${resultLine}`,
-              mentions
-            }).catch(() => {});
-            if (!userProtected) {
-              try {
-                this._markSelfAction(id, user, 'demote');
-                await this.sock.groupParticipantsUpdate(id, [user], 'demote');
-              } catch (e) { console.error('[AntiPromote]', e.message); }
-            }
-          } else if (cfg.promoteEnabled) {
-            await this.sendMessage(id, { text: `${userTag} was promoted by ${actorTag}`, mentions }).catch(() => {});
-          }
-        } else {
-          // action === 'demote'
-          if (actorExempt) {
-            if (cfg.demoteEnabled) {
-              await this.sendMessage(id, { text: `${userTag} was demoted by ${actorTag}`, mentions }).catch(() => {});
-            }
-          } else if (cfg.antiInvaidDemotionEnabled) {
-            // Restoring `user` is never punitive, so it always happens
-            // regardless of protection — only the actor gets punished here,
-            // and actorExempt above already covers a protected actor.
-            await this.sendMessage(id, {
-              text: `${userTag} was demoted by ${actorTag}\n${actorTag} you shouldn't demote ${userTag}\nNow ${userTag} has been auto promoted${actorJid ? ` and ${actorTag} has been auto demoted` : ''}.`,
-              mentions
-            }).catch(() => {});
-            try {
-              this._markSelfAction(id, user, 'promote');
-              await this.sock.groupParticipantsUpdate(id, [user], 'promote');
-              if (actorJid) {
-                this._markSelfAction(id, actorJid, 'demote');
-                await this.sock.groupParticipantsUpdate(id, [actorJid], 'demote');
-              }
-            } catch (e) { console.error('[AntiInvaidDemotion]', e.message); }
-          } else if (cfg.antidemoteEnabled) {
-            await this.sendMessage(id, {
-              text: `${userTag} was demoted by ${actorTag}\n${actorTag} you shouldn't demote ${userTag}\n${userTag} auto promoted.`,
-              mentions
-            }).catch(() => {});
-            try {
-              this._markSelfAction(id, user, 'promote');
-              await this.sock.groupParticipantsUpdate(id, [user], 'promote');
-            } catch (e) { console.error('[AntiDemote]', e.message); }
-          } else if (cfg.demoteEnabled) {
-            await this.sendMessage(id, { text: `${userTag} was demoted by ${actorTag}`, mentions }).catch(() => {});
-          }
-        }
-      }
     }
   }
-
 
   // ── Send message ──────────────────────────────────────────────────────────
   // Single pipeline: font + character/emoji applied here for ALL commands.
