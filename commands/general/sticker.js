@@ -1,7 +1,5 @@
 const { downloadContentFromMessage, getContentType } = require('../../lib/baileys');
-
-let sharp = null;
-try { sharp = require('sharp'); } catch {}
+const { imageToWebp, videoToWebp, addExif } = require('../../library/exif');
 
 module.exports = {
     name: 'sticker',
@@ -63,17 +61,11 @@ ${bot.prefix}setvar STICKER_AUTHOR=your name`
             let stickerBuf;
 
             if (mediaType === 'stickerMessage') {
-                // Re-pack existing sticker with our metadata
-                stickerBuf = injectStickerExif(buffer, packname, author);
-            } else if (mediaType === 'imageMessage' && sharp) {
-                const webp = await sharp(buffer)
-                    .resize(512, 512, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-                    .webp({ quality: 90 })
-                    .toBuffer();
-                stickerBuf = injectStickerExif(webp, packname, author);
-            } else {
-                // No sharp / video: send raw, WhatsApp handles basic formats
-                stickerBuf = buffer;
+                stickerBuf = await addExif(buffer, packname, author, ['']);
+            } else if (mediaType === 'imageMessage') {
+                stickerBuf = await addExif(await imageToWebp(buffer), packname, author, ['']);
+            } else if (mediaType === 'videoMessage') {
+                stickerBuf = await addExif(await videoToWebp(buffer), packname, author, ['']);
             }
 
             await bot.sock.sendMessage(m.chat, { sticker: stickerBuf });
