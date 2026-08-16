@@ -1,0 +1,2 @@
+const axios = require('axios');
+module.exports = { name:'brat', alias:[], category:'Media', desc:'Create a Brat-style image with text', usage:'.brat <text>', execute:async(sock,m,{reply,args})=>{const text=args.join(' ').trim();if(!text)return reply('Usage: .brat <text>');try{const res=await axios.get('https://api.zenzxz.my.id/maker/bratvid',{params:{text},responseType:'arraybuffer',timeout:30000});await sock.sendMessage(m.chat,{image:Buffer.from(res.data)},{quoted:m});}catch(e){return reply(`Failed: ${e.message}`)}}};

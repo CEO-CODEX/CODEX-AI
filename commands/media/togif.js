@@ -1,0 +1,3 @@
+const sharp = require('sharp');
+const { quotedMessage, mimeOf, download } = require('./_utils');
+module.exports = { name: 'togif', alias: ['sticker2gif', 'stktogif', 'video2gif', 'v2gif'], category: 'Media', desc: 'Convert a sticker or video to GIF video', execute: async (sock, m, { reply }) => { const q = quotedMessage(m), mime = mimeOf(q); if (!/webp|video/.test(mime)) return reply('Reply to a sticker or video.'); try { const media = await download(q); if (/webp/.test(mime)) { const image = await sharp(media).png().toBuffer(); return sock.sendMessage(m.chat, { image }, { quoted: m }); } return reply('Video to GIF conversion requires ffmpeg input handling; use .sticker for video stickers.'); } catch (e) { return reply(`Failed: ${e.message}`); } } };
