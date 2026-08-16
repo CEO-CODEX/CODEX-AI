@@ -15,7 +15,6 @@ module.exports = {
             recording: 'autoRecording',
             read: 'autoRead', autoread: 'autoRead',
             online: 'alwaysOnline', alwaysonline: 'alwaysOnline',
-            statusview: 'statusView', statusreact: 'statusReact',
             anticall: 'antiCall', welcome: 'welcome', goodbye: 'goodbye',
         };
 
@@ -34,8 +33,6 @@ typing       - ${c.autoTyping    ? 'ON' : 'OFF'}
 recording    - ${c.autoRecording ? 'ON' : 'OFF'}
 read         - ${c.autoRead      ? 'ON' : 'OFF'}
 online       - ${c.alwaysOnline  ? 'ON' : 'OFF'}
-statusview   - ${c.statusView    ? 'ON' : 'OFF'}
-statusreact  - ${c.statusReact   ? 'ON' : 'OFF'}
 anticall     - ${c.antiCall      ? 'ON' : 'OFF'}
 welcome      - ${c.welcome       ? 'ON' : 'OFF'}
 goodbye      - ${c.goodbye       ? 'ON' : 'OFF'}`);

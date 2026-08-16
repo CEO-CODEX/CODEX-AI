@@ -61,11 +61,9 @@ const {
   "./database/msgcache.json",
   "./database/muteusers.json",
   "./database/scheduledJobs.json",
-  "./database/statusmention.json",
   "./database/welcome.json",
   "./database/goodbye.json",
   "./database/autoreply.json",
-  "./database/autosavestatus.json",
   "./database/autoreact.json",
   "./database/autovv.json",
   "./database/vv-reactions.json",
@@ -82,11 +80,6 @@ const {
     const defaults = {
       "./database/antiedit.json": JSON.stringify(
         { chats: {}, _globalPriv: false, _mode: "dm" },
-        null,
-        2,
-      ),
-      "./database/autosavestatus.json": JSON.stringify(
-        { enabled: false, mode: "dm", target: null },
         null,
         2,
       ),
@@ -215,7 +208,14 @@ class CODEXAI {
     this._heartbeatInterval = null;
   }
 
+  _startLocalHeartbeat() {
+    if (this._heartbeatInterval) clearInterval(this._heartbeatInterval);
+    // Local no-op timer prevents idle hosting runtimes from treating the process as inactive.
+    this._heartbeatInterval = setInterval(() => {}, 30000);
+  }
+
   async start() {
+    this._startLocalHeartbeat();
     console.log(chalk.green('\n  ✦ CODEX AI V3.0 — Starting up...'));
     console.log(chalk.green('  ✦ Loading commands...\n'));
     const { loaded, failed } = await this.reloader.loadCommands();

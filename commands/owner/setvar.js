@@ -51,18 +51,7 @@ module.exports = {
                 BOT_FONT:     'BOT_FONT',
                 BOT_CHARACTER:'BOT_CHARACTER',
                 AI_BADGE:     'AI_BADGE',
-                STATUS_EMOJI: 'STATUS_EMOJI'
             };
-            // Apply STATUS_EMOJI to autostatus db immediately
-            if (key === 'STATUS_EMOJI') {
-                try {
-                    const _fs2  = require('fs-extra');
-                    const _path = './database/autostatus.json';
-                    const _db   = _fs2.existsSync(_path) ? JSON.parse(_fs2.readFileSync(_path,'utf8')) : {};
-                    _db.reactEmoji = value;
-                    _fs2.writeFileSync(_path, JSON.stringify(_db, null, 2));
-                } catch {}
-            }
             // Apply AUTO_TYPING / AUTO_RECORDING immediately to variables
             if (key === 'AUTO_TYPING' || key === 'AUTO_RECORDING') {
                 const _boolVal = value === 'true' || value === '1' || value === 'on';
