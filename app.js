@@ -206,6 +206,7 @@ class CODEXAI {
     this.successCmds = 0;
     this.failedCmds = 0;
     this._heartbeatInterval = null;
+    this._connectionHeartbeat = null;
   }
 
   _startLocalHeartbeat() {
