@@ -1,4 +1,4 @@
 const { addExif } = require('../../library/exif');
-const { quotedMessage, mimeOf, download } = require('./_utils');
+const { quotedMessage, mimeOf, download } = require('../../library/media');
 const packs = new Map();
 module.exports = { name:'stickerpack', alias:['sp','pack'], category:'Media', desc:'Build a sticker pack from replied stickers', usage:'.sp add | .sp reset', execute:async(client,m,{reply,args})=>{ const action=(args[0]||'').toLowerCase(), q=quotedMessage(m); if(action==='reset'){packs.delete(m.chat);return reply('Sticker pack reset.');} if(action!=='add') return reply('Use .sp add on a sticker, then send the pack manually from your saved stickers.'); if(!/webp/.test(mimeOf(q))) return reply('Reply to a sticker.'); try { const list=packs.get(m.chat)||[]; list.push(await addExif(await download(q),'CODEX AI','CODEX',[''])); packs.set(m.chat,list); return reply(`Sticker added. Pack contains ${list.length} sticker(s).`); } catch(e){ return reply(`Failed: ${e.message}`); } } };

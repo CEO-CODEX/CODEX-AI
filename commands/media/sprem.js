@@ -1,3 +1,3 @@
 const { imageToWebp, videoToWebp, addExif } = require('../../library/exif');
-const { quotedMessage, mimeOf, download } = require('./_utils');
+const { quotedMessage, mimeOf, download } = require('../../library/media');
 module.exports = { name:'sprem', alias:['stickerprem','spremium'], category:'Media', desc:'Create a premium CODEX sticker', execute:async(sock,m,{reply})=>{const q=quotedMessage(m),mime=mimeOf(q);if(!/image|video|webp/.test(mime))return reply('Reply to an image, video, or sticker.');try{const media=await download(q);const webp=/webp/.test(mime)?media:/video/.test(mime)?await videoToWebp(media):await imageToWebp(media);const sticker=await addExif(webp,'CODEX AI','CODEX',['']);await sock.sendMessage(m.chat,{sticker,premium:1},{quoted:m});}catch(e){return reply(`Failed: ${e.message}`)}}};
