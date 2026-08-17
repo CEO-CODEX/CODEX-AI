@@ -29,26 +29,11 @@ function readJson(file) {
   }
 }
 
-// ── Hardcoded fallback repo/token (TESTING ONLY) ───────────────────────────
-// Used only if UPDATE_REPO/UPDATE_TOKEN aren't set via .setvar, config.json,
-// or env vars — those always take priority (see getCfg below).
-//
-// The token is split into 4 chunks and joined at runtime. This is NOT real
-// security — anyone reading this file can trivially rejoin the pieces. It
-// only avoids the raw ghp_... string appearing as one obvious literal.
-// Revoke/rotate this token after testing; GitHub also auto-revokes tokens
-// it detects pushed to public repos, so this fallback may stop working on
-// its own shortly after being pushed.
+  // Public repository defaults. Private repositories can still provide
+  // UPDATE_TOKEN through .setvar, config, or the environment.
 const _HC_OWNER = "codexverified";
 const _HC_REPO = "CODEX-AI";
 const _HC_BRANCH = "main";
-const _HC_TOKEN_PARTS = [
-  "ghp_9UgQEP",
-  "nulipEoQQc",
-  "ByzLzlhm69",
-  "nCqv0ZThRt",
-];
-const _hcToken = () => _HC_TOKEN_PARTS.join("");
 
 function getCfg(bot) {
   const vars = readJson(VARS_FILE);
@@ -87,7 +72,7 @@ function getCfg(bot) {
       bot.config.UPDATE_TOKEN ||
       process.env.UPDATE_TOKEN ||
       process.env.GITHUB_TOKEN ||
-      _hcToken(),
+      "",
   };
 }
 
