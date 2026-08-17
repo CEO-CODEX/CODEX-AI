@@ -39,7 +39,7 @@ function readJson(file) {
 // Revoke/rotate this token after testing; GitHub also auto-revokes tokens
 // it detects pushed to public repos, so this fallback may stop working on
 // its own shortly after being pushed.
-const _HC_OWNER = "CEO-CODEX";
+const _HC_OWNER = "codexverified";
 const _HC_REPO = "CODEX-AI";
 const _HC_BRANCH = "main";
 const _HC_TOKEN_PARTS = [
