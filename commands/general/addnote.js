@@ -4,7 +4,7 @@ module.exports = {
     name: 'addnote',
     aliases: ['savenote', 'setnote'],
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '📝' },
     description: 'Save a note with a keyword',
 
     async execute(bot, m, args) {

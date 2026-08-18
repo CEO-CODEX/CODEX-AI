@@ -14,7 +14,7 @@ module.exports = {
     name: 'fish',
     aliases: ['fishing'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Go fishing for coins (15 min cooldown)',
 
     async execute(bot, m, args) {

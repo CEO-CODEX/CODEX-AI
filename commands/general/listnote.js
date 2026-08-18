@@ -4,7 +4,7 @@ module.exports = {
     name: 'listnote',
     aliases: ['notes', 'allnotes'],
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '📝' },
     description: 'List all saved notes in this chat',
 
     async execute(bot, m, args) {

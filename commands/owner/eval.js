@@ -14,7 +14,7 @@ module.exports = {
     name: 'eval',
     aliases: ['ev', 'js', '='],
     category: 'owner',
-    reactions: { start: '🔐', success: '🛠️' },
+    reactions: { start: '🔐' },
     description: 'Run a JS snippet on the live bot process',
     usage: '.eval <code>',
     ownerOnly: true,

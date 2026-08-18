@@ -9,7 +9,7 @@ module.exports = {
     name: 'spotify',
     aliases: ['sp', 'spdl'],
     category: 'downloader',
-    reactions: { start: '⬇️', success: '📥' },
+    reactions: { start: '📥' },
     description: 'Download a Spotify track as MP3.',
     usage: '.spotify <track link>',
 

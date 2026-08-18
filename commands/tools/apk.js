@@ -4,7 +4,7 @@ module.exports = {
     name: 'apk',
     aliases: ['apkdl'],
     category: 'tools',
-    reactions: { start: '🧰', success: '📦' },
+    reactions: { start: '⚙️' },
     description: 'Search and download an Android APK by app name.',
     usage: '.apk <app name>',
 

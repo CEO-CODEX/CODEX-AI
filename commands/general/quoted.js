@@ -19,7 +19,7 @@ module.exports = {
     name: 'quoted',
     aliases: ['q', 'getquoted', 'quote'],
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '⚙️' },
     description: 'Forward quoted messages. Mode: setvar QUOTED_MODE=1/2/3',
 
     async execute(bot, m, args) {

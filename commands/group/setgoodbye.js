@@ -19,7 +19,7 @@ module.exports = {
     name: 'setgoodbye',
     aliases: ['goodbye', 'farewell'],
     category: 'group',
-    reactions: { start: '👥', success: '📋' },
+    reactions: { start: '📝' },
     description: 'Set up the group goodbye message',
     groupOnly: true,
 

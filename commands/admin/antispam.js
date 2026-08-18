@@ -4,7 +4,7 @@ module.exports = {
     name: 'antispam',
     aliases: ['antisp'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     description: 'Configure anti-spam protection',
     adminOnly: true,
     groupOnly: true,

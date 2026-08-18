@@ -10,7 +10,7 @@ module.exports = {
     name: 'unmutesticker',
     aliases: ['unstickerban', 'unbansticker'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🖼️' },
     description: 'Unban a previously blocked sticker — reply to it with .unblocksticker [1h] [after 2h].',
     adminOnly: true,
     groupOnly: true,

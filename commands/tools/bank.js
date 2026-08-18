@@ -4,7 +4,7 @@ module.exports = {
     name: 'bank',
     aliases: ['aza', 'account'],
     category: 'tools',
-    reactions: { start: '🧰', success: '📦' },
+    reactions: { start: '🛡️' },
     description: 'View the bank/account details set by the owner.',
 
     async execute(bot, m) {

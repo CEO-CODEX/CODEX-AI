@@ -3,7 +3,7 @@ module.exports = {
     name: 'doc',
     aliases: ['document', 'todoc', 'senddoc'],
     category: 'documents',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '📄' },
     description: 'Convert replied media to a document with a custom name.',
 
     async execute(bot, m, args) {

@@ -23,7 +23,7 @@ module.exports = {
     alias: ['w', 'temp'],
     desc: 'Get comprehensive weather, condition states, and astronomical seasons for a city',
     category: 'Search',
-    reactions: { start: '🔍', success: '📚' },
+    reactions: { start: '🔎' },
 
     execute: async (sock, m, { text, args, reply }) => {
         try {

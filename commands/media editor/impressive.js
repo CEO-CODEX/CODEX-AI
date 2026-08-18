@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'impressive',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a 3D colorful paint text effect',
     usage: '.impressive <text>',
 

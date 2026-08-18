@@ -5,7 +5,7 @@ module.exports = {
     name: 'akick',
     aliases: ['autokick'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     description: 'Auto-kick list: anyone on it is instantly removed again the moment they try to rejoin.\n' +
                  '.akick add @user — .akick remove @user — .akick clear — .akick list',
     adminOnly: true,

@@ -7,7 +7,7 @@ module.exports = {
     name: 'dnd',
     aliases: ['donotdisturb', 'disturb'],
     category: 'owner',
-    reactions: { start: '🔐', success: '🛠️' },
+    reactions: { start: '⚙️' },
     ownerOnly: true,
     description: 'Toggle Do Not Disturb mode — bot deletes tags/replies and warns the tagger',
 

@@ -3,7 +3,7 @@ const muteStore                            = require('../../lib/muteStore');
 const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-core');
 
 module.exports = {
-    name: 'unmuteuser', aliases: ['unmute'], category: 'admin',
+    name: 'unmuteuser', aliases: ['unmute'], category: 'admin', reactions: { start: '🛡️' },
     description: 'Unmute a user. .unmuteuser @user  OR  .unmuteuser @user after 1h (delayed)',
     adminOnly: true, groupOnly: true,
 

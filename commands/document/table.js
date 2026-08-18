@@ -3,7 +3,7 @@ module.exports = {
     name: 'table',
     aliases: ['tbl', 'grid'],
     category: 'documents',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '⚙️' },
     description: 'Generate a native table in chat.',
 
     async execute(bot, m, args) {

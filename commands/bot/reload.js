@@ -2,7 +2,7 @@ module.exports = {
     name: 'reload',
     aliases: ['repack', 'refresh'],
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '🔧' },
     description: 'Reload all commands without restarting the bot',
 
     async execute(bot, m, args) {

@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'fire',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a flame/fire text effect',
     usage: '.fire <text>',
 

@@ -307,7 +307,7 @@ module.exports = {
   name: "update",
   aliases: ["upd", "upgrade"],
   category: "owner",
-    reactions: { start: '🔐', success: '🛠️' },
+    reactions: { start: '🔐' },
   description: "Update local files from GitHub API",
   ownerOnly: true,
 

@@ -5,7 +5,7 @@ module.exports = {
     name: 'collage',
     aliases: ['combine', 'merge'],
     category: 'media',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '⚙️' },
     description: 'Queue images and merge them into a customizable collage.',
 
     async execute(bot, m, args) {

@@ -19,7 +19,7 @@ module.exports = {
     name: 'petstore',
     aliases: ['pet', 'pets', 'mypet'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Buy, name, and care for your pet',
 
     async execute(bot, m, args) {

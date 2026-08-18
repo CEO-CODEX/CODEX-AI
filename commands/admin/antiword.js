@@ -20,7 +20,7 @@ module.exports = {
     alias: ['bw', 'bannedwords'],
     desc: 'Manage banned words in the group',
     category: 'Admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     groupOnly: true,
     adminOnly: true,
 

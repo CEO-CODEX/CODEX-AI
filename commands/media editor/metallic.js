@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'metallic',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a decorative 3D metal text effect',
     usage: '.metallic <text>',
 

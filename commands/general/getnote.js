@@ -4,7 +4,7 @@ module.exports = {
     name: 'getnote',
     aliases: ['note', '#'],
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '📝' },
     description: 'Retrieve a saved note by name',
 
     async execute(bot, m, args) {

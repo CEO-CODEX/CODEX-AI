@@ -4,7 +4,7 @@ module.exports = {
     name: 'delcmd',
     aliases: [],
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '📝' },
     description: 'Reply a sticker with .delcmd to remove its linked command',
 
     async execute(bot, m, args) {

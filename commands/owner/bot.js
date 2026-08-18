@@ -8,7 +8,7 @@ module.exports = {
     name: 'bot',
     aliases: ['botswitch', 'gcbot'],
     category: 'owner',
-    reactions: { start: '🔐', success: '🛠️' },
+    reactions: { start: '⚙️' },
     description: 'Turn the bot completely on/off for this group. When off, nothing works here — no commands, no moderation, nothing — except .bot on.',
     ownerOnly: true,
     groupOnly: true,

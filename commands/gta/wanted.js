@@ -6,7 +6,7 @@ module.exports = {
     name: 'wanted',
     aliases: ['stars', 'police', 'wantedlevel'],
     category: 'gta',
-    reactions: { start: '🎮', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'View or clear your wanted level',
 
     async execute(bot, m, args) {

@@ -9,7 +9,7 @@ module.exports = {
     name: 'yturld',
     aliases: ['ytaudio'],
     category: 'downloader',
-    reactions: { start: '⬇️', success: '📥' },
+    reactions: { start: '📥' },
     description: 'Download YouTube audio as MP3.',
     usage: '.yturld <url>',
 

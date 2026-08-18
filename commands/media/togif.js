@@ -4,7 +4,7 @@ module.exports = {
   name: 'togif',
   alias: ['sticker2gif', 'stktogif', 'video2gif', 'v2gif'],
   category: 'Media',
-    reactions: { start: '🖼️', success: '📦' },
+    reactions: { start: '🎞️' },
   desc: 'Convert a sticker or video to GIF playback',
   execute: async (sock, m, { reply }) => {
     const quoted = quotedMessage(m);

@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'neont',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a colorful neon light text effect',
     usage: '.neont <text>',
 

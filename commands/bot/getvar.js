@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 module.exports = {
     name: 'getvar',
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '📝' },
     description: 'Get a variable value from the database',
 
     async execute(bot, m, args) {

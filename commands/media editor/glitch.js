@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'glitch',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a digital glitch text effect',
     usage: '.glitch <text>',
 

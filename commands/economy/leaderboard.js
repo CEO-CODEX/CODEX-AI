@@ -4,7 +4,7 @@ module.exports = {
     name: 'leaderboard',
     aliases: ['richlist', 'lb', 'top'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Top 10 richest users',
 
     async execute(bot, m, args) {

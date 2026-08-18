@@ -5,7 +5,7 @@ module.exports = {
     alias: ['up'],
     desc: 'Check how long the bot has been running',
     category: 'Bot',
-    reactions: { start: '', success: '' },
+    reactions: { start: '📊' },
 
     execute: async (sock, m, { reply }) => {
         const up  = process.uptime();

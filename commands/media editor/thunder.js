@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'thunder',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a thunder/lightning text effect',
     usage: '.thunder <text>',
 

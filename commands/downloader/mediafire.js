@@ -9,7 +9,7 @@ module.exports = {
     name: 'mediafire',
     aliases: ['mf', 'mfdown'],
     category: 'downloader',
-    reactions: { start: '⬇️', success: '📥' },
+    reactions: { start: '📥' },
     description: 'Download a file from a MediaFire link.',
     usage: '.mediafire <link>',
 

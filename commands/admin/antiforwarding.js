@@ -20,7 +20,7 @@ module.exports = {
     alias: ['af', 'antiforward'],
     desc: 'Block forwarded messages',
     category: 'Admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     groupOnly: true,
     adminOnly: true,
 

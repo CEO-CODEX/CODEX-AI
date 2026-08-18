@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'devil',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a neon devil wings text effect',
     usage: '.devil <text>',
 

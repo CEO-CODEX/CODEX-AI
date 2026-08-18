@@ -6,7 +6,7 @@ module.exports = {
     name: 'pin',
     aliases: ['msgpin', 'gmpin'],
     category: 'group',
-    reactions: { start: '👥', success: '📋' },
+    reactions: { start: '⚙️' },
     description: 'Pin a replied message for a set duration.',
     usage: '.pin 24hr | 7d | 30d (reply to a message)',
     groupOnly: true,

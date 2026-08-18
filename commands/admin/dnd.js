@@ -7,7 +7,7 @@ module.exports = {
     name: 'dnd',
     aliases: ['donotdisturb'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '⚙️' },
     description: 'Do Not Disturb — deletes/kicks/warns anyone (except owner/mods) who tags the owner or the bot in this group. Now part of the anti-systems family: uses delete/kick/warn like antilink, and supports timers (.dnd 5h) and schedules (.sch -dnd 12am to 6pm daily).',
     adminOnly: true,
     groupOnly: true,

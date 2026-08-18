@@ -4,7 +4,7 @@ module.exports = {
     name: 'shop',
     aliases: ['store'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'View the item shop',
 
     async execute(bot, m, args) {

@@ -11,7 +11,7 @@ function cleanJid(jid) {
 module.exports = {
     name: 'rob',
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Rob another user — risk of backfire. Usage: .rob @user',
 
     async execute(bot, m, args) {

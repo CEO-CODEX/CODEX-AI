@@ -2,7 +2,7 @@ module.exports = {
     name: 'hidetag',
     aliases: ['htag', 'silenttag'],
     category: 'group',
-    reactions: { start: '👥', success: '📋' },
+    reactions: { start: '👥' },
     description: 'Tag everyone without listing names.',
     usage: '.hidetag <message>',
     groupOnly: true,

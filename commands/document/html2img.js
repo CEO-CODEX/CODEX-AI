@@ -5,7 +5,7 @@ module.exports = {
     name: 'html2img',
     aliases: ['h2i', 'htmltoimg'],
     category: 'converter',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '📸' },
     description: 'Convert HTML code to an image.',
 
     async execute(bot, m, args) {

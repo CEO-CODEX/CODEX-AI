@@ -4,7 +4,7 @@ module.exports = {
     name: 'antilink',
     aliases: ['antil'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     description: 'Configure anti-link protection',
     adminOnly: true,
     groupOnly: true,

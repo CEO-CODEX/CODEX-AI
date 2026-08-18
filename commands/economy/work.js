@@ -18,7 +18,7 @@ const JOBS = [
 module.exports = {
     name: 'work',
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Work for coins (30 min cooldown)',
 
     async execute(bot, m, args) {

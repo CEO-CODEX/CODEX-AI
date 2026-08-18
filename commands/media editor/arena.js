@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'arena',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create an Arena of Valor style text effect',
     usage: '.arena <text>',
 

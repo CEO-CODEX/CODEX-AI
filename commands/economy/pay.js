@@ -5,7 +5,7 @@ module.exports = {
     name: 'pay',
     aliases: ['transfer', 'send'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '💰' },
     description: 'Send coins to another user. Usage: .pay @user <amount>',
 
     async execute(bot, m, args) {

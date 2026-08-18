@@ -5,7 +5,7 @@ module.exports = {
     alias: ['check', 'status'],
     desc: 'Bot statistics with full dynamic tracking bars',
     category: 'Bot',
-    reactions: { start: '🔐', success: '🛠️' },
+    reactions: { start: '📊' },
 
     async execute(bot, m, args) {
         try {

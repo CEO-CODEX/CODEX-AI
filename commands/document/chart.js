@@ -6,7 +6,7 @@ module.exports = {
     name: 'chart',
     aliases: ['graph', 'plot', 'bargraph'],
     category: 'documents',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '⚙️' },
     description: 'Generate an ASCII bar chart and export as a .txt file.',
 
     async execute(bot, m, args) {

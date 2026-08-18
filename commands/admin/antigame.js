@@ -4,7 +4,7 @@ module.exports = {
     name: 'antigame',
     aliases: ['antiga'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     description: 'Configure anti-game message protection',
     adminOnly: true,
     groupOnly: true,

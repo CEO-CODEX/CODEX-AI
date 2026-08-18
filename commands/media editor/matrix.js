@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'matrix',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a matrix text effect on an image',
     usage: '.matrix <text>',
 

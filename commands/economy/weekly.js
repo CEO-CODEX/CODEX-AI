@@ -5,7 +5,7 @@ const COOLDOWN = 7 * 24 * 60 * 60 * 1000; // 7 days
 module.exports = {
     name: 'weekly',
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Claim your weekly reward',
 
     async execute(bot, m, args) {

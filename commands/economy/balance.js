@@ -4,7 +4,7 @@ module.exports = {
     name: 'balance',
     aliases: ['bal', 'wallet'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '💰' },
     description: 'Check your coin balance',
 
     async execute(bot, m, args) {

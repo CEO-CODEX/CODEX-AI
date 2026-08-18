@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'hacker',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create an anonymous hacker cyan neon text effect',
     usage: '.hacker <text>',
 

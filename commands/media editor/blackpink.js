@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'blackpink',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a Blackpink style logo text effect',
     usage: '.blackpink <text>',
 

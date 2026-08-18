@@ -61,7 +61,7 @@ module.exports = {
     name: 'antidelete',
     alias: ['deletedetect'],
     category: 'tools',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     desc: 'Forward deleted message text/caption to owner DM with names',
 
     execute: async (sock, m, { args, reply }) => {

@@ -4,7 +4,7 @@ module.exports = {
     name: 'anticall',
     aliases: ['callblock'],
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '🛡️' },
     description: 'Configure anti-call mode',
 
     async execute(bot, m, args) {

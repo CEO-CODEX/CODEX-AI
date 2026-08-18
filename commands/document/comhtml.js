@@ -6,7 +6,7 @@ module.exports = {
     name: 'comhtml',
     aliases: ['compresshtml', 'minifyhtml'],
     category: 'tools',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '⚙️' },
     description: 'Create an HTML file from raw code (reply to an .html document or text message).',
 
     async execute(bot, m, args) {

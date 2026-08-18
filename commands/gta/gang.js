@@ -7,7 +7,7 @@ module.exports = {
     name: 'gang',
     aliases: ['faction', 'crew'],
     category: 'gta',
-    reactions: { start: '🎮', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Join, manage or view gang info',
 
     async execute(bot, m, args) {

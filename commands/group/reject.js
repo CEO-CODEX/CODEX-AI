@@ -2,7 +2,7 @@ module.exports = {
     name: 'reject',
     aliases: ['rejectall', 'denyall'],
     category: 'group',
-    reactions: { start: '👥', success: '📋' },
+    reactions: { start: '⚙️' },
     description: 'Reject all pending group join requests.',
     groupOnly: true,
     adminOnly: true,

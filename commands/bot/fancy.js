@@ -4,7 +4,7 @@ module.exports = {
     name: 'fancy',
     aliases: ['fancytext', 'ft'],
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '🎨' },
     description: 'Generate fancy text in a chosen font style',
 
     async execute(bot, m, args) {

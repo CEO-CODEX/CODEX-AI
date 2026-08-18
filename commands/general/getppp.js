@@ -3,7 +3,7 @@ module.exports = {
     name: 'getppp',
     aliases: ['ppdm', 'profilepicdm'],
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '📸' },
     description: 'Get a user profile picture and send it to owner DM',
 
     async execute(bot, m, args) {

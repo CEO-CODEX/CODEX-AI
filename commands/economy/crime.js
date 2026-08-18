@@ -13,7 +13,7 @@ const CRIMES = [
 module.exports = {
     name: 'crime',
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Commit a crime — high reward, risk of fine (1h cooldown)',
 
     async execute(bot, m, args) {

@@ -4,7 +4,7 @@ module.exports = {
     name: 'delvar',
     aliases: ['removevar', 'unsetvar'],
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '🔐' },
     description: 'Delete a stored variable. Usage: .delvar KEY',
 
     async execute(bot, m, args) {

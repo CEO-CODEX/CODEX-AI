@@ -4,7 +4,7 @@ module.exports = {
     name: 'settings',
     aliases: ['setting'],
     category: 'bot',
-    reactions: { start: '⚙️', success: '✅' },
+    reactions: { start: '📝' },
     description: 'Toggle bot settings on/off',
 
     async execute(bot, m, args) {

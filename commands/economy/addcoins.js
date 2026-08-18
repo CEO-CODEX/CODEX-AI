@@ -17,7 +17,7 @@ module.exports = {
     name: 'addcoins',
     aliases: ['givecoins'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '💰' },
     description: '[OWNER] Add coins to a user. Usage: .addcoins @user <amount>',
 
     async execute(bot, m, args) {

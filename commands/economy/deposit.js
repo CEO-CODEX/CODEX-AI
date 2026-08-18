@@ -4,7 +4,7 @@ module.exports = {
     name: 'deposit',
     aliases: ['dep'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '⚙️' },
     description: 'Deposit coins into your bank. Usage: .deposit <amount|all>',
 
     async execute(bot, m, args) {

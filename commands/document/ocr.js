@@ -6,7 +6,7 @@ module.exports = {
     name: 'scan',
     aliases: ['ocr', 'read'],
     category: 'documents',
-    reactions: { start: '📄', success: '✅' },
+    reactions: { start: '⚙️' },
     description: 'Extract text from an image (OCR).',
 
     async execute(bot, m, args) {

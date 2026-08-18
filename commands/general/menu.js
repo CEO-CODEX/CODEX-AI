@@ -10,7 +10,7 @@ module.exports = {
     name: 'menu',
     aliases: ['help', 'cmds', 'list'],
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '⚙️' },
     description: 'Show all commands with CODEX UI',
 
     async execute(bot, m, args) {

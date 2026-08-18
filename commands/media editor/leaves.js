@@ -3,7 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'leaves',
     category: 'textmaker',
-    reactions: { start: '🖌️', success: '🖼️' },
+    reactions: { start: '⚙️' },
     description: 'Create a green leaves/nature text effect',
     usage: '.leaves <text>',
 

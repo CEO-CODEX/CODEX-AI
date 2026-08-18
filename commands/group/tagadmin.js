@@ -2,7 +2,7 @@ module.exports = {
     name: 'tagadmin',
     aliases: ['admins'],
     category: 'group',
-    reactions: { start: '👥', success: '📋' },
+    reactions: { start: '🛡️' },
     description: 'Tag all group admins.',
     usage: '.tagadmin <message>',
     groupOnly: true,

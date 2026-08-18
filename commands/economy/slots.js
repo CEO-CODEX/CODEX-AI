@@ -22,7 +22,7 @@ module.exports = {
     name: 'slots',
     aliases: ['slot'],
     category: 'economy',
-    reactions: { start: '💰', success: '🏆' },
+    reactions: { start: '🎮' },
     description: 'Play the slot machine. Usage: .slots <amount>',
 
     async execute(bot, m, args) {

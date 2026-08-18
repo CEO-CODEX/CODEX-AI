@@ -3,7 +3,7 @@ const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-cor
 module.exports = {
     name: 'unmute', aliases: ['unlock', 'unlockgroup', 'groupopen'],
     category: 'admin', adminOnly: true, groupOnly: true,
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     description: 'Unmute the group. .unmute / .unmute after 10m',
 
     async execute(bot, m, args) {

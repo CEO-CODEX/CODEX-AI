@@ -4,7 +4,7 @@ module.exports = {
     name: 'kickr',
     aliases: ['kickreply', 'mkick'],
     category: 'admin',
-    reactions: { start: '👀', success: '📝' },
+    reactions: { start: '🛡️' },
     description: 'Reply to a message that mentions people, and this removes every one of them from the group — except that message\'s own sender.',
     adminOnly: true,
     groupOnly: true,

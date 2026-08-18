@@ -10,7 +10,7 @@ module.exports = {
     name: 'tiktok',
     aliases: ['tt', 'tiktokdl', 'ttdl'],
     category: 'downloader',
-    reactions: { start: '⬇️', success: '📥' },
+    reactions: { start: '📥' },
     description: 'Download TikTok video without watermark',
 
     async execute(bot, m, args) {

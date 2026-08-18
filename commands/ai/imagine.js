@@ -16,7 +16,7 @@ module.exports = {
     description: 'Generate an AI image from text',
     usage: '.imagine <description>',
     category: 'ai',
-    reactions: { start: '🧠', success: '📄' },
+    reactions: { start: '🧠' },
 
     async execute(bot, m, args) {
         const prompt = args.join(' ').trim();

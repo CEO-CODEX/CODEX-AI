@@ -3,7 +3,7 @@ module.exports = {
     alias: ['speed', 'latency', 'test'],
     desc: 'Check bot response speed',
     category: 'Bot',
-    reactions: { start: '', success: '' },
+    reactions: { start: '📊' },
 
     execute: async (sock, m, { reply }) => {
         const start = Date.now();

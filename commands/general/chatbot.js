@@ -37,7 +37,7 @@ module.exports = {
     description: 'CODEX AI chatbot — see .chatbot status for the full menu (works in DMs too for global settings)',
     usage: '.chatbot status',
     category: 'general',
-    reactions: { start: '🔎', success: '📌' },
+    reactions: { start: '🧠' },
 
     async execute(bot, m, args) {
         const isGroup = m.isGroup;
