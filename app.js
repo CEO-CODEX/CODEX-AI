@@ -1,7 +1,6 @@
 const chalk = require("chalk");
 const fs = require("fs-extra");
 const { getContentType, downloadContentFromMessage } = require("./lib/baileys");
-const { applyPrefix } = require("./lib/characterEngine");
 const { applyFont } = require("./lib/fontEngine");
 
 // Nigerian time helper (Africa/Lagos = UTC+1)
@@ -65,8 +64,6 @@ const {
   "./database/goodbye.json",
   "./database/autoreply.json",
   "./database/autoreact.json",
-  "./database/autovv.json",
-  "./database/vv-reactions.json",
   "./database/mention_config.json",
   "./database/antiedit.json",
   "./database/chatbotgroup.json",
@@ -774,11 +771,6 @@ ${GROUP_LINK}
       if (typeof content.caption === "string" && fontNum > 0)
         content.caption = applyFont(content.caption, fontNum);
       // Apply language translation to text (async — uses GPT API if key is set)
-      // Apply character/emoji prefix to text and caption
-      if (typeof content.text === "string")
-        content.text = applyPrefix(content.text, this.config);
-      if (typeof content.caption === "string")
-        content.caption = applyPrefix(content.caption, this.config);
 
       const sent = await this.sock.sendMessage(jid, content, options);
       if (this.config.autoRead && sent?.key)

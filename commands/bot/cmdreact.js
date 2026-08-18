@@ -13,21 +13,10 @@ module.exports = {
         if (!bot.config.cmdReact) bot.config.cmdReact = { enabled: false, emoji: null, doneEmoji: null };
         const cr = bot.config.cmdReact;
 
-        if (!sub) return await m.reply(
-`cmdreact settings
-Status: ${cr.enabled ? 'ON' : 'OFF'}
-React emoji: ${cr.emoji || 'system default (per command)'}
-Done emoji: ${cr.doneEmoji || 'system default (✅)'}
+        if (!sub) return await m.reply(`cmdreact ${cr.enabled ? 'on' : 'off'}`);
 
-Usage:
-${bot.prefix}cmdreact on
-${bot.prefix}cmdreact off
-${bot.prefix}cmdreact emoji <emoji>       - set react emoji for all cmds
-${bot.prefix}cmdreact done <emoji>        - set emoji after cmd finishes
-${bot.prefix}cmdreact emoji default       - use each cmd's own emoji`);
-
-        if (sub === 'on')  { cr.enabled = true;  save(); return await m.reply('Command react is ON. Bot will react to commands.'); }
-        if (sub === 'off') { cr.enabled = false; save(); return await m.reply('Command react is OFF.'); }
+        if (sub === 'on')  { cr.enabled = true;  save(); return await m.reply('cmd reaction on'); }
+        if (sub === 'off') { cr.enabled = false; save(); return await m.reply('cmd reaction off'); }
 
         if (sub === 'emoji') {
             const val = args[1];

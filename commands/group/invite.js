@@ -1,4 +1,4 @@
-const { prepareWAMessageMedia, generateMessageIDV2 } = require('@codexverified/baileys');
+const { prepareWAMessageMedia, generateMessageIDV2 } = require('@crysnovax/baileys');
 
 module.exports = {
     name: 'invite',

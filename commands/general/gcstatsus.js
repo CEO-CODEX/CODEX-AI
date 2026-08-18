@@ -29,7 +29,7 @@ const axios  = require('axios');
 const fs     = require('fs-extra');
 const path   = require('path');
 const { spawn } = require('child_process');
-// Loaded through lib/baileys.js's CJS↔ESM bridge — this IS @codexverified/baileys
+// Loaded through lib/baileys.js's CJS↔ESM bridge — this IS @crysnovax/baileys
 // (the package the whole project already depends on); requiring the package
 // directly here would throw ERR_REQUIRE_ESM, same reason every other file
 // that touches Baileys internals goes through this shim instead.
