@@ -4,6 +4,7 @@ module.exports = {
   name: 'toimg',
   alias: ['stickertoimg', 'toimage'],
   category: 'Media',
+    reactions: { start: '🖼️', success: '📦' },
   desc: 'Convert a sticker to an image or video',
   execute: async (client, m, { reply }) => {
     const quoted = quotedMessage(m);

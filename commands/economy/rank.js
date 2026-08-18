@@ -4,6 +4,7 @@ module.exports = {
     name: 'rank',
     aliases: ['level', 'xp'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Check your current level and XP',
 
     async execute(bot, m, args) {

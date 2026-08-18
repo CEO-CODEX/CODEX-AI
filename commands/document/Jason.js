@@ -6,6 +6,7 @@ module.exports = {
     name: 'json',
     aliases: ['jsong', 'jsonformat', 'jsonfile'],
     category: 'documents',
+    reactions: { start: '📄', success: '✅' },
     description: 'Create or format a JSON file from key:value pairs or raw JSON.',
 
     async execute(bot, m, args) {

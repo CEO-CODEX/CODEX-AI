@@ -21,6 +21,7 @@ module.exports = {
     name: 'autoreact',
     aliases: ['randomreact'],
     category: 'bot',
+    reactions: { start: '⚙️', success: '✅' },
     description: 'Auto-react to every message with a random emoji from a custom pool',
 
     async execute(bot, m, args) {

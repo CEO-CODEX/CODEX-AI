@@ -4,6 +4,7 @@ module.exports = {
     name: 'vvp',
     aliases: ['viewoncedm', 'revealdm'],
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
     description: 'Decrypt a view-once message and send it to owner DM',
 
     async execute(bot, m, args) {

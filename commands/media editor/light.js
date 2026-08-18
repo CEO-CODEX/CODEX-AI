@@ -3,6 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'light',
     category: 'textmaker',
+    reactions: { start: '🖌️', success: '🖼️' },
     description: 'Create a futuristic light/neon text effect',
     usage: '.light <text>',
 

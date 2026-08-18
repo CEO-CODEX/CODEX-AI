@@ -16,6 +16,7 @@ const { loadDB, saveDB, getUser, fmt, CURRENCY } = require('../../lib/economyEng
 module.exports = {
     name: 'setcoins',
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: '[OWNER] Set exact wallet balance. Usage: .setcoins @user <amount>',
 
     async execute(bot, m, args) {

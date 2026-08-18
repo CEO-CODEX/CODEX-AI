@@ -4,6 +4,7 @@ module.exports = {
     name: 'kick',
     aliases: ['remove', 'k'],
     category: 'admin',
+    reactions: { start: '👀', success: '📝' },
     description: 'Kick a user. Tag them or reply to their message.',
     adminOnly: true,
     groupOnly: true,

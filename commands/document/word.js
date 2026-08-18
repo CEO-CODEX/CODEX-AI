@@ -5,6 +5,7 @@ module.exports = {
     name: 'word',
     aliases: ['docx', 'toword', 'text2docx'],
     category: 'documents',
+    reactions: { start: '📄', success: '✅' },
     description: 'Convert text to a .docx document.',
 
     async execute(bot, m, args) {

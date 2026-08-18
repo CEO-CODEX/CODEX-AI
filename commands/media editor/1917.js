@@ -3,6 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: '1917',
     category: 'textmaker',
+    reactions: { start: '🖌️', success: '🖼️' },
     description: 'Create a 1917 style text effect on an image',
     usage: '.1917 <text>',
 

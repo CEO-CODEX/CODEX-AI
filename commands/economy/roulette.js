@@ -11,6 +11,7 @@ module.exports = {
     name: 'roulette',
     aliases: ['rl'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Bet on red/black or a number. Usage: .roulette <red|black|0-36> <amount>',
 
     async execute(bot, m, args) {

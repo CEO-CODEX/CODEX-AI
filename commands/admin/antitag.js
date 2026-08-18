@@ -4,6 +4,7 @@ module.exports = {
     name: 'antitag',
     aliases: ['antit'],
     category: 'admin',
+    reactions: { start: '👀', success: '📝' },
     description: 'Configure anti-tag (mass mention) protection',
     adminOnly: true,
     groupOnly: true,

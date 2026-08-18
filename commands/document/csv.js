@@ -6,6 +6,7 @@ module.exports = {
     name: 'csv',
     aliases: ['spreadsheet', 'csvgen'],
     category: 'documents',
+    reactions: { start: '📄', success: '✅' },
     description: 'Generate a CSV file from text data.',
 
     async execute(bot, m, args) {

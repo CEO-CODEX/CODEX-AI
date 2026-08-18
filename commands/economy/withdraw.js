@@ -4,6 +4,7 @@ module.exports = {
     name: 'withdraw',
     aliases: ['with', 'wd'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Withdraw coins from your bank. Usage: .withdraw <amount|all>',
 
     async execute(bot, m, args) {

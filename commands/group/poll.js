@@ -2,6 +2,7 @@ module.exports = {
     name: 'poll',
     aliases: ['createpoll', 'vote'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Create a native WhatsApp poll.',
     usage: '.poll Question | Option1 | Option2 (prefix with "multi" for multi-select)',
     groupOnly: true,

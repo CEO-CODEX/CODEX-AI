@@ -17,6 +17,7 @@ module.exports = {
     description: 'Reply to a photo to get a public URL for it',
     usage: '.url (reply to an image)',
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
 
     async execute(bot, m, args) {
         const ctx       = m.msg?.contextInfo || m.message?.extendedTextMessage?.contextInfo;

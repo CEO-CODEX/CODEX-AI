@@ -6,6 +6,7 @@ module.exports = {
     name: 'excel',
     aliases: ['xls', 'xlsx', 'spreadsheet'],
     category: 'documents',
+    reactions: { start: '📄', success: '✅' },
     description: 'Generate a simple Excel file from text input.',
 
     async execute(bot, m, args) {

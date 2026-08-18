@@ -35,6 +35,7 @@ module.exports = {
     name: 'aiapi',
     alias: ['chatbotapi', 'setai', 'aikey'],
     category: 'owner',
+    reactions: { start: '🔐', success: '🛠️' },
     description: 'Set or check the CODEX AI key (Groq or OpenAI) used by .codex / .chatbot / .chatbotdm',
     ownerOnly: true,
 

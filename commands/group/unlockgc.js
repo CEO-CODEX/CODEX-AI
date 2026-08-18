@@ -2,6 +2,7 @@ module.exports = {
     name: 'unlockgc',
     aliases: ['unlockgroup', 'gcunlock'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Allow all members to edit group info again.',
     groupOnly: true,
     adminOnly: true,

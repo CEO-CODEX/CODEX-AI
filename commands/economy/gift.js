@@ -4,6 +4,7 @@ const { loadDB, saveDB, getUser, hasItem, removeItem, addItem, SHOP_ITEMS } = re
 module.exports = {
     name: 'gift',
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Gift an item to someone. Usage: .gift @user <item_id>',
 
     async execute(bot, m, args) {

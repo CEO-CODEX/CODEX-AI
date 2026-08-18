@@ -4,6 +4,7 @@ module.exports = {
     name: 'react',
     aliases: ['autoreact', 'mentionreact'],
     category: 'bot',
+    reactions: { start: '⚙️', success: '✅' },
     description: 'Configure auto-react and mention-react',
 
     async execute(bot, m, args) {

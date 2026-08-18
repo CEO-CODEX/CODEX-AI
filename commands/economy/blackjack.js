@@ -37,6 +37,7 @@ module.exports = {
     name: 'blackjack',
     aliases: ['bj'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Play Blackjack vs the bot. Usage: .blackjack <amount> | .bj hit | .bj stand',
 
     async execute(bot, m, args) {

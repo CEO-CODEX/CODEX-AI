@@ -4,6 +4,7 @@ const fs = require('fs-extra');
 module.exports = {
     name: 'mod',
     category: 'bot',
+    reactions: { start: '⚙️', success: '✅' },
     ownerOnly: true,
     description: 'Add or remove mod users (mods can use ALL commands, including owner commands)',
 

@@ -17,6 +17,7 @@ module.exports = {
     name: 'getfile',
     aliases: ['file', 'fetchfile'],
     category: 'tools',
+    reactions: { start: '📄', success: '✅' },
     description: 'Fetch a file from the server or list a directory.',
 
     async execute(bot, m, args) {

@@ -3,6 +3,7 @@ const { loadDB, saveDB, getUser, addItem, SHOP_ITEMS, fmt, CURRENCY } = require(
 module.exports = {
     name: 'buy',
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Buy an item from the shop. Usage: .buy <item_id>',
 
     async execute(bot, m, args) {

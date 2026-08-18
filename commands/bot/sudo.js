@@ -20,6 +20,7 @@ function writeSudo(db) {
 module.exports = {
     name: 'sudo',
     category: 'bot',
+    reactions: { start: '⚙️', success: '✅' },
     ownerOnly: true,
     description: 'Add or remove sudo users (sudo can use all commands EXCEPT owner-only ones)',
 

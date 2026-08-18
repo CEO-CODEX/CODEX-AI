@@ -4,6 +4,7 @@ module.exports = {
     name: 'demote',
     aliases: ['unadmin', 'removeadmin'],
     category: 'admin',
+    reactions: { start: '👀', success: '📝' },
     description: 'Demote an admin to member. Tag them or reply to their message.',
     adminOnly: true,
     groupOnly: true,

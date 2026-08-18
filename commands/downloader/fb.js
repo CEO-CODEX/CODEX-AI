@@ -34,6 +34,7 @@ module.exports = {
     name: 'fb',
     aliases: ['facebook', 'fbdown'],
     category: 'downloader',
+    reactions: { start: '⬇️', success: '📥' },
     description: 'Download a Facebook video.',
     usage: '.fb <Facebook URL> (or reply to a message containing one)',
 

@@ -41,6 +41,7 @@ module.exports = {
     name: 'events',
     aliases: ['event'],
     category: 'admin',
+    reactions: { start: '👀', success: '📝' },
     description:
         'Group events configuration — welcome/goodbye, promote/demote announcements, ' +
         'and anti-promote/anti-demote/anti-invaid-promotion/anti-invaid-demotion.',

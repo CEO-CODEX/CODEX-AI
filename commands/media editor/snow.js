@@ -3,6 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'snow',
     category: 'textmaker',
+    reactions: { start: '🖌️', success: '🖼️' },
     description: 'Create a snow 3D winter text effect',
     usage: '.snow <text>',
 

@@ -32,6 +32,7 @@ module.exports = {
     alias: ['bindcmd', 'stickercmd'],
     desc: 'Bind a command to a sticker',
     category: 'owner',
+    reactions: { start: '🔐', success: '🛠️' },
     ownerOnly: true,
     usage: '.setcmd <command> (reply to sticker)',
 

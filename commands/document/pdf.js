@@ -5,6 +5,7 @@ module.exports = {
     name: 'pdf',
     aliases: ['topdf', 'imgtopdf'],
     category: 'tools',
+    reactions: { start: '📄', success: '✅' },
     description: 'Build a multi-page PDF (add images one by one).',
 
     async execute(bot, m, args) {

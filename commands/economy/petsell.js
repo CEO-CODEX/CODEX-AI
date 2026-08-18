@@ -6,6 +6,7 @@ module.exports = {
     name: 'petsell',
     aliases: ['sellpet'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Sell your pet back for coins',
 
     async execute(bot, m) {

@@ -3,6 +3,7 @@ module.exports = {
     name: 'getpp',
     aliases: ['pp', 'profilepic'],
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
     description: 'Get a user profile picture and send it in this chat',
 
     async execute(bot, m, args) {

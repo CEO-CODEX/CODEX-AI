@@ -2,6 +2,7 @@ module.exports = {
     name: 'lockgc',
     aliases: ['lockgroup', 'gclock', 'fulllock'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Only admins can edit group info / add members.',
     groupOnly: true,
     adminOnly: true,

@@ -6,6 +6,7 @@ module.exports = {
     name: 'dice',
     aliases: ['roll'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Roll dice vs the bot. Higher roll wins. Usage: .dice <amount>',
 
     async execute(bot, m, args) {

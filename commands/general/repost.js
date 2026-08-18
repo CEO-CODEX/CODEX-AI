@@ -6,6 +6,7 @@ module.exports = {
     description: 'Repost a replied message to another chat/group/number',
     usage: '.repost <number|group-invite-link|wa.me link>',
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
 
     async execute(bot, m, args) {
         const ctx       = m.msg?.contextInfo || m.message?.extendedTextMessage?.contextInfo;

@@ -4,6 +4,7 @@ module.exports = {
     name: 'vv',
     aliases: ['viewonce', 'reveal'],
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
     description: 'Decrypt a view-once message and send it in this chat',
 
     async execute(bot, m, args) {

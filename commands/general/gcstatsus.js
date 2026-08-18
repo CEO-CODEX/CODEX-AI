@@ -241,6 +241,7 @@ module.exports = {
     name: 'gcstatus',
     aliases: ['groupstatus', 'gstatus', 'poststatus'],
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
     description: "Post text, link, image, video, audio or document to the group's status feed. Supports broadcasting to all groups and clearing tracked statuses.",
     groupOnly: true,
 

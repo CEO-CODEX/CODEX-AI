@@ -5,6 +5,7 @@ module.exports = {
     name: 'weapons',
     aliases: ['gun', 'guns', 'armory', 'weapon'],
     category: 'gta',
+    reactions: { start: '🎮', success: '🏆' },
     description: 'Buy weapons and armor from Ammu-Nation',
 
     async execute(bot, m, args) {

@@ -16,6 +16,7 @@ const { loadDB, saveDB, getUser } = require('../../lib/economyEngine');
 module.exports = {
     name: 'setlevel',
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: '[OWNER] Set a user\'s level. Usage: .setlevel @user <level>',
 
     async execute(bot, m, args) {

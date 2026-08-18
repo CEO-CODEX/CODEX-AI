@@ -19,6 +19,7 @@ module.exports = {
     description: 'CODEX AI auto-reply for private DMs',
     usage: '.chatbotdm on|off|voice on|off|clear',
     category: 'owner',
+    reactions: { start: '🔐', success: '🛠️' },
     ownerOnly: true,
 
     async execute(bot, m, args) {

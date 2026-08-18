@@ -12,6 +12,7 @@ module.exports = {
     name: 'mutesticker',
     aliases: ['stickerban', 'bansticker'],
     category: 'admin',
+    reactions: { start: '👀', success: '📝' },
     description: 'Ban a specific sticker (not a user) — reply to it with .blocksticker [1h] [after 2h]. ' +
                  'It gets auto-deleted every time anyone sends it again.\n' +
                  '.blocksticker list — .blocksticker clear',

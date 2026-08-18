@@ -282,6 +282,7 @@ module.exports = {
     name: 'profile',
     aliases: ['eco', 'idcard', 'card', 'id'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'View your CODEX identity card',
 
     async execute(bot, m, args) {

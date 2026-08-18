@@ -5,6 +5,7 @@ const execPromise = util.promisify(exec);
 module.exports = {
     name: 'npm',
     category: 'bot',
+    reactions: { start: '⚙️', success: '✅' },
     description: 'Manage npm packages',
 
     async execute(bot, m, args) {

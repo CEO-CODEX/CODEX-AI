@@ -4,6 +4,7 @@ module.exports = {
     name: 'gppp',
     aliases: ['groupppp', 'groupppic'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: "Send this group's profile picture to your DM.",
     groupOnly: true,
 

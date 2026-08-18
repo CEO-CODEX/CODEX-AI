@@ -2,6 +2,7 @@ module.exports = {
     name: 'join',
     aliases: ['joingc'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Join a group via invite link.',
     usage: '.join <link>',
     ownerOnly: true,

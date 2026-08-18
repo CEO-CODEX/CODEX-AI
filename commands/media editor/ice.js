@@ -3,6 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'ice',
     category: 'textmaker',
+    reactions: { start: '🖌️', success: '🖼️' },
     description: 'Create an ice/frozen text effect',
     usage: '.ice <text>',
 

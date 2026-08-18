@@ -4,6 +4,7 @@ module.exports = {
     name: 'mode',
     aliases: ['botmode'],
     category: 'owner',
+    reactions: { start: '🔐', success: '🛠️' },
     ownerOnly: true,
     description: 'Switch bot between public and private mode',
 

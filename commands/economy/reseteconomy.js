@@ -16,6 +16,7 @@ module.exports = {
     name: 'reseteconomy',
     aliases: ['ecoreset'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: '[OWNER] Wipe ALL economy data. Irreversible!',
 
     async execute(bot, m, args) {

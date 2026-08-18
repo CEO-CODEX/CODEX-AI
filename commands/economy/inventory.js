@@ -4,6 +4,7 @@ module.exports = {
     name: 'inventory',
     aliases: ['inv', 'items', 'bag'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'View your inventory',
 
     async execute(bot, m, args) {

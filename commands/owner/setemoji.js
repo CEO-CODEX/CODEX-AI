@@ -9,6 +9,7 @@ module.exports = {
     name: 'setemoji',
     aliases: ['emojimap', 'bindemoji'],
     category: 'owner',
+    reactions: { start: '🔐', success: '🛠️' },
     ownerOnly: true,
     description: 'Bind an emoji to a command. Send that emoji to trigger the command.',
 

@@ -4,6 +4,7 @@ module.exports = {
     name: 'promote',
     aliases: ['admin', 'makeadmin'],
     category: 'admin',
+    reactions: { start: '👀', success: '📝' },
     description: 'Promote a user to admin. Tag them or reply to their message.',
     adminOnly: true,
     groupOnly: true,

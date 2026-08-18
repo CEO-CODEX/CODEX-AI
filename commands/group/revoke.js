@@ -2,6 +2,7 @@ module.exports = {
     name: 'revoke',
     aliases: ['resetlink', 'newlink', 'revokelink'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Revoke and renew the group invite link.',
     groupOnly: true,
     adminOnly: true,

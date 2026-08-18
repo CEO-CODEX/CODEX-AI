@@ -4,6 +4,7 @@ module.exports = {
     name: 'levelup',
     aliases: ['lvlup', 'nextlevel'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Check XP requirements for next level',
 
     async execute(bot, m, args) {

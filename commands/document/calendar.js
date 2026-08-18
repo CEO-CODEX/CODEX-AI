@@ -6,6 +6,7 @@ module.exports = {
     name: 'ics',
     aliases: ['calendar', 'event', 'makeics'],
     category: 'documents',
+    reactions: { start: '📄', success: '✅' },
     description: 'Generate a calendar event (.ics) file.',
 
     async execute(bot, m, args) {

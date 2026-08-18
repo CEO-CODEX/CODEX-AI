@@ -19,6 +19,7 @@ module.exports = {
     name: 'setprofile',
     aliases: ['editprofile', 'myprofile'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Set your profile name, known as, occupation and experience',
 
     async execute(bot, m, args) {

@@ -4,6 +4,7 @@ module.exports = {
     name: 'invite',
     alias: ['grouplink', 'glink'],
     category: 'Group',
+    reactions: { start: '👥', success: '📋' },
     groupOnly: true,
     adminOnly: true,
 

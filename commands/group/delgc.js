@@ -3,6 +3,7 @@ module.exports = {
     name: 'delgc',
     aliases: ['deletegc', 'dgc', 'kickall'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Kick every member and leave the group. Irreversible.',
     usage: '.delgc, then .delgc confirm within 30s',
     groupOnly: true,

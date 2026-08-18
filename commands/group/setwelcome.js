@@ -18,6 +18,7 @@ module.exports = {
     name: 'setwelcome',
     aliases: ['welcome'],
     category: 'bot',
+    reactions: { start: '👥', success: '📋' },
     description: 'Set up the group welcome message',
     groupOnly: true,
 

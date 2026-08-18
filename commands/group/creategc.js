@@ -2,6 +2,7 @@ module.exports = {
     name: 'creategc',
     aliases: ['creategroup', 'newgc', 'newgroup'],
     category: 'group',
+    reactions: { start: '👥', success: '📋' },
     description: 'Create a new WhatsApp group.',
     usage: '.creategc <name>',
     ownerOnly: true,

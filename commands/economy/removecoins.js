@@ -17,6 +17,7 @@ module.exports = {
     name: 'removecoins',
     aliases: ['takecoins'],
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: '[OWNER] Remove coins from a user. Usage: .removecoins @user <amount>',
 
     async execute(bot, m, args) {

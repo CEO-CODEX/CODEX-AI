@@ -3,6 +3,7 @@ module.exports = {
     alias: ['cdx!', 'codexai!', 'cdxai'],
     description: 'Direct CODEX AI signature message',
     category: 'Bot',
+    reactions: { start: '⚙️', success: '✅' },
 
     async execute(bot, m, args) {
         try {

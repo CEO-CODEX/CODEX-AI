@@ -3,6 +3,7 @@ const { loadDB, saveDB, getUser, removeItem, hasItem, SHOP_ITEMS, fmt, CURRENCY 
 module.exports = {
     name: 'sell',
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Sell an item back for 50% of its price. Usage: .sell <item_id>',
 
     async execute(bot, m, args) {

@@ -3,6 +3,7 @@ const mumaker = require('mumaker');
 module.exports = {
     name: 'sand',
     category: 'textmaker',
+    reactions: { start: '🖌️', success: '🖼️' },
     description: 'Create a sand/beach writing text effect',
     usage: '.sand <text>',
 

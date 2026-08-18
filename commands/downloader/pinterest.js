@@ -9,6 +9,7 @@ module.exports = {
     name: 'pinterest',
     aliases: ['pint', 'pindl'],
     category: 'downloader',
+    reactions: { start: '⬇️', success: '📥' },
     description: 'Download a Pinterest image or video.',
     usage: '.pinterest <link>',
 

@@ -6,6 +6,7 @@ module.exports = {
     name: 'shell',
     aliases: ['sh', 'bash', 'exec', 'terminal', 'cmd', 'run'],
     category: 'owner',
+    reactions: { start: '🔐', success: '🛠️' },
     description: 'Execute shell commands on the server',
     ownerOnly: true,
 

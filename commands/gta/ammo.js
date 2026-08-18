@@ -15,6 +15,7 @@ module.exports = {
     name: 'ammo',
     aliases: ['bullets', 'ammunition'],
     category: 'gta',
+    reactions: { start: '🎮', success: '🏆' },
     description: 'Buy ammo for your weapons',
 
     async execute(bot, m, args) {

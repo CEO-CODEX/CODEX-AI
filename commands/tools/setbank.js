@@ -4,6 +4,7 @@ module.exports = {
     name: 'setbank',
     aliases: ['setaza', 'sendaza'],
     category: 'tools',
+    reactions: { start: '🧰', success: '📦' },
     description: 'Set the bank/account details shown by .bank. Owner only.',
     usage: '.setbank <Bank> <AccNumber> <AccName> [Phone] [Note]',
     ownerOnly: true,

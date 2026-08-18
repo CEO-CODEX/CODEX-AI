@@ -5,6 +5,7 @@ module.exports = {
   name: 'sprem',
   aliases: ['stickerprem', 'spremium'],
   category: 'general',
+    reactions: { start: '🔎', success: '📌' },
   description: 'Convert a replied image, video, or sticker into a premium sticker',
 
   async execute(bot, m) {

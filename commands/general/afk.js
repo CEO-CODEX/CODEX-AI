@@ -1,6 +1,7 @@
 module.exports = {
     name: 'afk',
     category: 'general',
+    reactions: { start: '🔎', success: '📌' },
     description: 'Set/disable AFK. Usage: .afk <reason> | .afk off | .afk config',
 
     async execute(bot, m, args) {

@@ -5,6 +5,7 @@ const COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours
 module.exports = {
     name: 'daily',
     category: 'economy',
+    reactions: { start: '💰', success: '🏆' },
     description: 'Claim your daily reward',
 
     async execute(bot, m, args) {

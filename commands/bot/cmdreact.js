@@ -4,6 +4,7 @@ module.exports = {
     name: 'cmdreact',
     aliases: ['commandreact'],
     category: 'bot',
+    reactions: { start: '⚙️', success: '✅' },
     description: 'Toggle command reactions',
 
     async execute(bot, m, args) {
