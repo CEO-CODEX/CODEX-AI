@@ -1,4 +1,5 @@
-const { quotedMessage, mimeOf, download, tempDir, ffmpeg, cleanup, fs, path } = require('../../library/media');
+
+const { quotedMessage, mimeOf, download, tempDir, ffmpeg, cleanup, normalizeInput, fs, path } = require('../../library/media');
 
 module.exports = {
   name: 'togif',
@@ -11,10 +12,12 @@ module.exports = {
     const mime = mimeOf(quoted);
     if (!/webp|video/.test(mime)) return reply('Reply to a sticker or video.');
     const dir = tempDir();
-    const input = path.join(dir, `togif-${Date.now()}.input`);
-    const output = path.join(dir, `togif-${Date.now()}.mp4`);
+    let input, output;
     try {
-      fs.writeFileSync(input, await download(quoted));
+      const { buffer, ext } = await normalizeInput(await download(quoted), mime);
+      input = path.join(dir, `togif-${Date.now()}.${ext || 'input'}`);
+      output = path.join(dir, `togif-${Date.now()}.mp4`);
+      fs.writeFileSync(input, buffer);
       await ffmpeg(input, output, ['-vf', 'fps=15,scale=512:-2:flags=lanczos,format=yuv420p', '-c:v', 'libx264', '-movflags', '+faststart', '-an']);
       await sock.sendMessage(m.chat, { video: fs.readFileSync(output), mimetype: 'video/mp4', gifPlayback: true }, { quoted: m });
     } catch (error) {
