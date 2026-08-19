@@ -1,3 +1,0 @@
-const { imageToWebp, videoToWebp, addExif } = require('../../library/exif');
-const { quotedMessage, mimeOf, download } = require('../../library/media');
-module.exports = { name:'sticker', alias:['s','stick'], category:'Media', desc:'Create a sticker from image or video', execute:async (sock,m,{reply})=>{ const q=quotedMessage(m), mime=mimeOf(q); if(!/image|video/.test(mime)) return reply('Reply to an image or video.'); try { const media=await download(q); const webp=/video/.test(mime)?await videoToWebp(media):await imageToWebp(media); const sticker=await addExif(webp,'CODEX AI','CODEX',['']); await sock.sendMessage(m.chat,{sticker},{quoted:m}); } catch(e){ return reply(`Failed: ${e.message}`); } } };
