@@ -59,7 +59,7 @@ function getMessageContent(msgObj) {
 
 module.exports = {
     name: 'antidelete',
-    alias: ['deletedetect'],
+    aliases: ['deletedetect'],
     category: 'tools',
     reactions: { start: '🛡️' },
     desc: 'Forward deleted message text/caption to owner DM with names',

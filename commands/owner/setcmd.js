@@ -29,7 +29,7 @@ loadStickerCmds();
 
 module.exports = {
     name: 'setcmd',
-    alias: ['bindcmd', 'stickercmd'],
+    aliases: ['bindcmd', 'stickercmd'],
     desc: 'Bind a command to a sticker',
     category: 'owner',
     reactions: { start: '📝' },
@@ -40,7 +40,11 @@ module.exports = {
         const reply  = (t) => m.reply(t);
         const prefix = bot.prefix;
 
-        const quotedMsg   = m.msg?.contextInfo?.quotedMessage || m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+        const quotedMsg = m.contextInfo?.quotedMessage ||
+            m.msg?.contextInfo?.quotedMessage ||
+            m.message?.extendedTextMessage?.contextInfo?.quotedMessage ||
+            m.message?.imageMessage?.contextInfo?.quotedMessage ||
+            m.message?.videoMessage?.contextInfo?.quotedMessage;
         const stickerData = quotedMsg?.stickerMessage;
 
         if (!stickerData) {

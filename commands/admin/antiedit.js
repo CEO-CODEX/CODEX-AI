@@ -81,7 +81,7 @@ function cacheOriginal(key, msgObj) {
 
 module.exports = {
     name: 'antiedit',
-    alias: ['editledetect', 'editedetect'],
+    aliases: ['editledetect', 'editedetect'],
     category: 'tools',
     reactions: { start: '🛡️' },
     desc: 'Detect message edits and send old + new content',

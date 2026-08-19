@@ -227,6 +227,13 @@ class CODEXAI {
   // ── Message cache ─────────────────────────────────────────────────────────
   _cacheMessage(msg) {
     try {
+      const messageStore = require('./lib/messageStore');
+      messageStore.saveMessage(msg);
+      const typeForStore = getContentType(msg.message || {});
+      const innerForStore = msg.message?.[typeForStore];
+      if (innerForStore && ['imageMessage', 'videoMessage', 'audioMessage', 'stickerMessage', 'documentMessage'].includes(typeForStore)) {
+        messageStore.saveMedia(msg.key, { type: typeForStore, message: _serializeForCache(innerForStore) });
+      }
       const cache = readMsgCache();
       const type = getContentType(msg.message);
       const inner = msg.message[type];
@@ -319,8 +326,7 @@ class CODEXAI {
         else if (cached.type === "documentMessage") msgContent = "[Document]";
       }
 
-      let formatted = `*ⓘ DELETED!*
-`;
+      let formatted = `╭─❍ *ANTI-DELETE ALERT*\n`;
 
       if (isGroup) {
         let groupName = "Unknown Group";
@@ -487,8 +493,7 @@ ${msgContent}
         }
       } catch {}
 
-      let formatted = `*✎ EDITED MESSAGE*
-`;
+      let formatted = `╭─❍ *ANTI-EDIT ALERT*\n`;
 
       if (isGroup) {
         let groupName = "Unknown Group";

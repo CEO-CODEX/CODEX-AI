@@ -15,7 +15,7 @@ module.exports = {
 
     execute: async (bot, m, args) => {
         const db  = load();
-        const sub = args[0];
+        const sub  = String(args[0] || '').trim();
 
         // .setemoji list
         if (!sub || sub === 'list') {
