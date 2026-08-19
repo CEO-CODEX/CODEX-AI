@@ -51,6 +51,7 @@ module.exports = {
                 BOT_FONT:     'BOT_FONT',
                 BOT_CHARACTER:'BOT_CHARACTER',
                 AI_BADGE:     'AI_BADGE',
+            STATUS_EMOJI:  'STATUS_EMOJI',
             };
             if (keyMap[key]) {
                 const parts = keyMap[key].split('.');

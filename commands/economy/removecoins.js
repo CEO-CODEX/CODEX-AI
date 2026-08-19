@@ -15,7 +15,7 @@ const { loadDB, saveDB, getUser, fmt, CURRENCY } = require('../../lib/economyEng
 
 module.exports = {
     name: 'removecoins',
-    aliases: ['takecoins'],
+    aliases: [],
     category: 'economy',
     reactions: { start: '💰' },
     description: '[OWNER] Remove coins from a user. Usage: .removecoins @user <amount>',

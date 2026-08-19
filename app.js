@@ -664,7 +664,11 @@ ${GROUP_LINK}
 
   // ── Group join/leave ──────────────────────────────────────────────────────
   async handleGroupUpdate({ id, participants, action }) {
-    // Read from groupEvents.json (CRYSNOVA pattern: one file, all group event config)
+  try {
+    const toggles = JSON.parse(fs.readFileSync('./database/botToggle.json', 'utf8'));
+    if (toggles[id]?.enabled === false) return;
+  } catch {}
+  // Read from groupEvents.json (CODEX pattern: one file, all group event config)
     let eventsDb = {};
     try { eventsDb = JSON.parse(fs.readFileSync('./database/groupEvents.json', 'utf8')); } catch {}
     const cfg = eventsDb[id] || {};
