@@ -1,153 +1,104 @@
 
 /**
- * .tts <text> — text-to-speech
+ * TTS helper — uses the same provider as the text AI (apis.prexzyvilla.site).
+ * Returns proper ENGLISH voices (the previous Gemini-TTS endpoint only
+ * rendered foreign-language audio reliably).
  *
- * Fix: the previous version assumed prexzyapis.com/tts/tts-en always
- * returns JSON with a nested audio URL. Elsewhere in this codebase
- * (utils/ttsHelper.js, commands/general/speak.js) the SAME family of TTS
- * endpoints is treated as returning raw audio bytes directly — and that
- * assumption is what's proven to work. The mismatch is the likely cause
- * of '.tts' silently failing.
+ * Returns: { buffer, mimetype } on success, or null on failure.
  *
- * New behaviour:
- * 1. Try prexzyapis.com/tts/tts-en directly, sniffing the response —
- * if it's audio bytes, use them; if it's JSON, walk it for a URL (covers
- * either possible response shape without guessing wrong).
- * 2. Fall back to utils/ttsHelper.js's generateVoice() — already used
- * elsewhere in this bot and known to work, tries several prexzyvilla
- * voice endpoints and transcodes to a real WhatsApp voice note.
- * 3. Fall back to Google Translate TTS (same approach as .speak) — a
- * dependable last resort with no API key needed.
+ * WhatsApp voice notes (PTT) MUST be OGG/Opus to render as a real voice
+ * bubble. We transcode the upstream MP3 to ogg/opus with ffmpeg-static.
+ *
+ * voiceName mapping (kept compatible with existing callers):
+ * - "Leda"   → soft female English (used for Hinatu)   → /tts/olivia
+ * - "Charon" → deep male  English (used for Sukuna)    → /tts/marcus
+ * Anything else falls back to /tts/tts-en (generic English).
  */
-'use strict';
 const axios = require('axios');
-const { generateVoice } = require('../../utils/ttsHelper');
+const { spawn } = require('child_process');
 
-const AUDIO_RE = /\.(mp3|ogg|m4a|wav|aac|opus)(\?|$)/i;
-const URL_RE = /^https?:\/\//i;
+const BASE = 'https://apis.prexzyvilla.site';
 
-function walkAudioUrls(node, out) {
-    if (!node) return;
-    if (typeof node === 'string') {
-        if (URL_RE.test(node) && AUDIO_RE.test(node)) out.push(node);
-        return;
-    }
-    if (Array.isArray(node)) { for (const v of node) walkAudioUrls(v, out); return; }
-    if (typeof node === 'object') { for (const v of Object.values(node)) walkAudioUrls(v, out); }
-}
-
-// ─── Step 1: try prexzyvilla directly, accepting EITHER response shape ──────
-async function tryPrexzyvillaDirect(text) {
-    try {
-        const url = `https://prexzyapis.com/tts/tts-en?text=${encodeURIComponent(text)}`;
-        const res = await axios.get(url, {
-            responseType: 'arraybuffer',
-            timeout: 30000,
-            headers: { 'User-Agent': 'Mozilla/5.0 (SUKUNA-MD)' },
-            validateStatus: () => true,
-        });
-        if (res.status >= 400) return null;
-
-        const contentType = String(res.headers['content-type'] || '');
-
-        // Shape A: raw audio bytes
-        if (contentType.includes('audio') || contentType.includes('octet-stream') || contentType.includes('mpeg')) {
-            const buf = Buffer.from(res.data);
-            if (buf && buf.length > 1024) return { buffer: buf, mimetype: 'audio/mpeg' };
-            return null;
-        }
-
-        // Shape B: JSON with a nested audio URL somewhere
-        if (contentType.includes('json')) {
-            let parsed;
-            try { parsed = JSON.parse(Buffer.from(res.data).toString('utf8')); } catch { return null; }
-            const urls = [];
-            walkAudioUrls(parsed, urls);
-            if (!urls.length) return null;
-            const audioRes = await axios.get(urls[0], { responseType: 'arraybuffer', timeout: 30000 });
-            const buf = Buffer.from(audioRes.data);
-            if (buf && buf.length > 1024) return { buffer: buf, mimetype: 'audio/mpeg' };
-        }
-        return null;
-    } catch (e) {
-        console.error('[tts] prexzyvilla direct failed:', e.message);
-        return null;
-    }
-}
-
-// ─── Step 3: Google Translate TTS — dependable, no key needed ───────────────
-async function tryGoogleTranslateTts(text) {
-    try {
-        const url = 'https://translate.google.com/translate_tts?ie=UTF-8&q=' +
-            encodeURIComponent(text) + '&tl=en&client=tw-ob';
-        const res = await axios.get(url, {
-            responseType: 'arraybuffer',
-            timeout: 20000,
-            headers: { 'User-Agent': 'Mozilla/5.0' },
-        });
-        const buf = Buffer.from(res.data);
-        if (buf && buf.length > 512) return { buffer: buf, mimetype: 'audio/mpeg' };
-        return null;
-    } catch (e) {
-        console.error('[tts] Google Translate TTS failed:', e.message);
-        return null;
-    }
-}
-
-module.exports = {
-    name: 'tts',
-    aliases: ['say', 'voice'],
-    description: 'Convert text to speech (English)',
-    category: 'media',
-    reactions: { start: '⏳' },
-
-    async execute(bot, m, args) {
-        if (!args.length) {
-            await bot.sendMessage(m.chat, { react: { text: '', key: m.key } }).catch(() => {});
-            return m.reply(
-                `*Text to Speech*\n\n` +
-                `Usage: .tts <text>\n` +
-                `Example: .tts hello world`
-            );
-        }
-        
-        const text = args.join(' ').trim().slice(0, 600);
-        
-        if (!text) {
-            await bot.sendMessage(m.chat, { react: { text: '', key: m.key } }).catch(() => {});
-            return m.reply('Please provide some text.');
-        }
-
-        try {
-            let result = await tryPrexzyvillaDirect(text);
-            if (!result) result = await generateVoice(text, 'Leda').catch(() => null);
-            if (!result) result = await tryGoogleTranslateTts(text);
-
-            if (!result || !result.buffer || result.buffer.length < 512) {
-                await bot.sendMessage(m.chat, { react: { text: '', key: m.key } }).catch(() => {});
-                return m.reply('TTS failed — all providers are currently unavailable. Try again shortly.');
-            }
-
-            try {
-                await bot.sendMessage(m.chat, {
-                    audio: result.buffer,
-                    mimetype: result.mimetype || 'audio/mpeg',
-                    ptt: result.mimetype?.includes('opus') || false,
-                }, { quoted: m });
-            } catch (e) {
-                console.error('[tts] audio send failed:', e.message);
-                await bot.sendMessage(m.chat, { react: { text: '', key: m.key } }).catch(() => {});
-                return m.reply('Generated audio but failed to send it. Try again.');
-            }
-            
-            // Unreact on success
-            await bot.sendMessage(m.chat, { react: { text: '', key: m.key } }).catch(() => {});
-            
-        } catch (err) {
-            console.error('[tts] error:', err.message);
-            await bot.sendMessage(m.chat, { react: { text: '', key: m.key } }).catch(() => {});
-            m.reply('TTS failed. Try again later.');
-        }
-    },
+// Primary voice per character + a couple of English fallbacks.
+const VOICE_MAP = {
+    Leda:   ['/tts/olivia',  '/tts/sophia',  '/tts/emma',   '/tts/tts-en'],
+    Charon: ['/tts/marcus',  '/tts/ethan',   '/tts/jackson','/tts/tts-en'],
 };
-  
+
+let ffmpegPath = null;
+try { ffmpegPath = require('ffmpeg-static'); } catch (_) { ffmpegPath = null; }
+
+function transcodeMp3ToOpus(mp3Buffer) {
+    return new Promise((resolve) => {
+        if (!ffmpegPath) return resolve(null);
+        const args = [
+            '-hide_banner', '-loglevel', 'error',
+            '-i', 'pipe:0',
+            '-vn',
+            '-c:a', 'libopus',
+            '-b:a', '64k',
+            '-ar', '48000',
+            '-ac', '1',
+            '-f', 'ogg',
+            'pipe:1'
+        ];
+        const ff = spawn(ffmpegPath, args);
+        const chunks = [];
+        ff.stdout.on('data', c => chunks.push(c));
+        ff.on('error', () => resolve(null));
+        ff.on('close', code => {
+            if (code !== 0 || chunks.length === 0) return resolve(null);
+            resolve(Buffer.concat(chunks));
+        });
+        ff.stdin.on('error', () => {});
+        ff.stdin.end(mp3Buffer);
+    });
+}
+
+async function fetchTtsMp3(endpoint, text) {
+    try {
+        const url = `${BASE}${endpoint}?text=${encodeURIComponent(text)}`;
+        const res = await axios.get(url, {
+            responseType: 'arraybuffer',
+            timeout: 35000,
+            validateStatus: s => s >= 200 && s < 500,
+        });
+        if (res.status !== 200) return null;
+        const ct = String(res.headers['content-type'] || '');
+        if (!ct.includes('audio') && !ct.includes('octet-stream') && !ct.includes('mpeg')) return null;
+        const buf = Buffer.from(res.data);
+        if (!buf || buf.length < 1024) return null;
+        return buf;
+    } catch (e) {
+        console.error('[TTS]', endpoint, e.message);
+        return null;
+    }
+}
+
+async function generateVoice(text, voiceName = 'Leda') {
+    if (!text || !text.trim()) return null;
+    // Keep it short — WhatsApp PTT works best under ~600 chars.
+    const safeText = text.trim().slice(0, 600);
+
+    const candidates = VOICE_MAP[voiceName] || VOICE_MAP.Leda;
+
+    let mp3 = null;
+    for (const ep of candidates) {
+        mp3 = await fetchTtsMp3(ep, safeText);
+        if (mp3) break;
+    }
+    if (!mp3) {
+        console.error('[TTS] all candidate endpoints failed');
+        return null;
+    }
+
+    // Transcode to ogg/opus for proper WhatsApp voice notes.
+    const opus = await transcodeMp3ToOpus(mp3);
+    if (opus && opus.length > 0) {
+        return { buffer: opus, mimetype: 'audio/ogg; codecs=opus' };
+    }
+    // Fallback: raw mp3 (plays as audio file rather than voice bubble).
+    return { buffer: mp3, mimetype: 'audio/mpeg' };
+}
+
+module.exports = { generateVoice };
