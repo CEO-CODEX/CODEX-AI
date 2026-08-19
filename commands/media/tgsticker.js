@@ -1,2 +1,0 @@
-const axios = require('axios');
-module.exports = { name:'tgsticker', alias:['tg','telegramsticker','tgs'], category:'Media', desc:'Download a Telegram sticker pack', usage:'.tg <pack URL>', execute:async(sock,m,{reply,args})=>{const link=args[0];if(!link||!link.includes('t.me/addstickers/'))return reply('Usage: .tg <https://t.me/addstickers/PackName>');return reply('Telegram sticker-pack importing requires a configured Telegram provider; the command is registered and ready for provider credentials.');}};

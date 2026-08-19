@@ -40,6 +40,31 @@ function tempDir() {
   return directory;
 }
 
+// ffmpeg's built-in WebP demuxer only supports still-image WebP — it does
+// NOT understand the ANIM/ANMF chunks that make a WhatsApp sticker animated.
+// Feeding it an animated sticker fails with "skipping unsupported chunk:
+// ANIM/ANMF" followed by "image data not found", no matter how ffmpeg is
+// installed or configured. Detect that case and pre-decode with sharp
+// (already a project dependency, backed by libvips, which handles animated
+// WebP correctly) into a GIF, which ffmpeg reads natively and reliably.
+// Static/non-animated WebP and non-WebP input pass through unchanged.
+async function normalizeInput(buffer, mime) {
+  if (!/webp/.test(mime || '')) return { buffer, ext: null };
+  try {
+    const sharp = require('sharp');
+    const img = sharp(buffer, { animated: true });
+    const meta = await img.metadata();
+    if (meta.pages && meta.pages > 1) {
+      const gifBuffer = await img.gif().toBuffer();
+      return { buffer: gifBuffer, ext: 'gif' };
+    }
+  } catch {
+    // sharp missing, or decode failed — fall through and let ffmpeg try
+    // the original buffer (works fine for static WebP).
+  }
+  return { buffer, ext: null };
+}
+
 async function ffmpeg(input, output, args) {
   try {
     await execFileAsync(ffmpegBinary, ['-y', '-i', input, ...args, output]);
@@ -57,4 +82,4 @@ function cleanup(...files) {
   }
 }
 
-module.exports = { fs, path, quotedMessage, mimeOf, download, tempDir, ffmpeg, cleanup };
+module.exports = { fs, path, quotedMessage, mimeOf, download, tempDir, ffmpeg, cleanup, normalizeInput };
