@@ -1,0 +1,1 @@
+const { runAdventure } = require('../../lib/economyAdventure'); module.exports={name:'arena',aliases:['fightclub'],category:'economy',execute:async(bot,m,args)=>runAdventure(m,{key:'arena',label:'Underground Arena',cost:100,reward:[800,4800],risk:.32,xp:75,text:'You survived the arena and claimed the purse.'})};

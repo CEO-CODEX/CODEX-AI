@@ -1,0 +1,1 @@
+const { runAdventure } = require('../../lib/economyAdventure'); module.exports={name:'warehouse',aliases:['warehousejob'],category:'economy',execute:async(bot,m,args)=>runAdventure(m,{key:'warehouse',label:'Warehouse Job',cost:250,reward:[1000,5200],risk:.25,xp:50,text:'The warehouse inventory was delivered.'})};

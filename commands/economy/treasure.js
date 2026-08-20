@@ -1,0 +1,1 @@
+const { runAdventure } = require('../../lib/economyAdventure'); module.exports={name:'treasure',aliases:['treasurehunt'],category:'economy',execute:async(bot,m,args)=>runAdventure(m,{key:'treasure',label:'Treasure Hunt',reward:[600,7000],risk:.3,xp:60,text:'A hidden cache was found beneath the old ruins.'})};

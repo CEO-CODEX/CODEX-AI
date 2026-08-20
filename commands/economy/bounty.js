@@ -1,0 +1,1 @@
+const { runAdventure } = require('../../lib/economyAdventure'); module.exports={name:'bounty',aliases:['huntbounty'],category:'economy',execute:async(bot,m,args)=>runAdventure(m,{key:'bounty',label:'Bounty Hunt',reward:[700,4200],risk:.3,xp:45,text:'Target located and bounty collected.'})};

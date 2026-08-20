@@ -1,0 +1,1 @@
+const { runAdventure } = require('../../lib/economyAdventure'); module.exports={name:'dungeon',aliases:['dungeonrun'],category:'economy',execute:async(bot,m,args)=>runAdventure(m,{key:'dungeon',label:'Demon Dungeon',cost:100,reward:[1200,6500],risk:.3,xp:100,text:'The dungeon boss fell and dropped rare loot.'})};
