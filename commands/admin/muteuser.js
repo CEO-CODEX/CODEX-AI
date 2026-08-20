@@ -1,6 +1,13 @@
 const { getTarget }                        = require('../../lib/getTarget');
 const muteStore                            = require('../../lib/muteStore');
-const { parseTime, humanize, schedule, cancelAll } = require('../../lib/mute-core');
+const {
+    parseTime,
+    humanize,
+    schedule,
+    cancelAll,
+    parseTimeOfDay,
+    addRecurring,
+} = require('../../lib/mute-core');
 
 module.exports = {
     name: 'muteuser', aliases: ['mute -u'], category: 'admin', reactions: { start: '🛡️' },
@@ -12,7 +19,30 @@ module.exports = {
         if (!target) return m.reply(`Reply to a message or tag a user.\n${bot.prefix}muteuser @user [1h] [after 2h]`);
 
         const key    = muteStore._keyOf(target);
-        const joined = args.filter(a => !a.startsWith('@')).join(' ');
+        const joined = args.filter(a => !a.startsWith('@')).join(' ').trim();
+        const recurring = joined.match(/^(?:\.?(?:sch[\s-]+)?-?muteuser\s+)?(.+?)\s+to\s+(.+)$/i);
+
+        if (recurring) {
+            const timeFrom = parseTimeOfDay(recurring[1]);
+            const timeTo = parseTimeOfDay(recurring[2]);
+            if (!timeFrom || !timeTo) {
+                return m.reply('⚠️ Bad schedule. Use: .sch -muteuser 2am to 6am');
+            }
+
+            addRecurring({
+                chat: m.chat,
+                target: key,
+                mutedBy: m.sender,
+                type: 'sch-muteUser',
+                timeFrom,
+                timeTo,
+            });
+            return m.reply(
+                `🕒 @${target.split('@')[0]} will be muted daily from ${recurring[1]} to ${recurring[2]}.`,
+                { mentions: [target] },
+            );
+        }
+
         const isAfterMode = /\bafter\b/i.test(joined);
         const timeStr     = joined.replace(/\bafter\b/i, '').trim();
         const ms          = timeStr ? parseTime(timeStr) : null;
