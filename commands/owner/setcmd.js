@@ -40,12 +40,16 @@ module.exports = {
         const reply  = (t) => m.reply(t);
         const prefix = bot.prefix;
 
-        const quotedMsg = m.contextInfo?.quotedMessage ||
+        const quotedMsg = m.quoted?.message ||
+            m.quoted?.msg ||
+            m.contextInfo?.quotedMessage ||
             m.msg?.contextInfo?.quotedMessage ||
             m.message?.extendedTextMessage?.contextInfo?.quotedMessage ||
             m.message?.imageMessage?.contextInfo?.quotedMessage ||
             m.message?.videoMessage?.contextInfo?.quotedMessage;
-        const stickerData = quotedMsg?.stickerMessage;
+        const stickerData = quotedMsg?.stickerMessage ||
+            (quotedMsg?.message?.stickerMessage) ||
+            (m.quoted?.stickerMessage);
 
         if (!stickerData) {
             return reply(
