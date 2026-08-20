@@ -1,0 +1,1 @@
+module.exports = { name: 'delpp', aliases: ['removepp', 'deletepp'], category: 'owner', ownerOnly: true, execute: async (sock, m, { reply }) => { try { await sock.removeProfilePicture(sock.user.id); return reply('Profile picture removed successfully.'); } catch (error) { return reply(`Failed to remove profile picture: ${error.message}`); } } };

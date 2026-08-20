@@ -1,0 +1,5 @@
+const fs = require('fs-extra');
+const FILE = './database/autosavestatus.json';
+function load() { try { return JSON.parse(fs.readFileSync(FILE, 'utf8')); } catch { return { enabled: false, mode: 'dm', target: null }; } }
+function save(value) { fs.ensureFileSync(FILE); fs.writeFileSync(FILE, JSON.stringify(value, null, 2)); }
+module.exports = { name: 'autosavestatus', aliases: ['autostatussave', 'ass'], category: 'owner', ownerOnly: true, execute: async (sock, m, { args, reply }) => { const action = String(args[0] || '').toLowerCase(); const db = load(); if (!['on', 'off', 'status', 'dm'].includes(action)) return reply('Usage: .autosavestatus on|off|status|dm'); if (action === 'status') return reply(`Auto-save status: ${db.enabled ? 'ON' : 'OFF'} | mode: ${db.mode || 'dm'}`); if (action === 'dm') { db.mode = 'dm'; db.target = m.sender || null; db.enabled = true; } else db.enabled = action === 'on'; save(db); return reply(`Auto-save status: ${db.enabled ? 'ON' : 'OFF'}${db.enabled ? ` (${db.mode || 'dm'})` : ''}`); } };
