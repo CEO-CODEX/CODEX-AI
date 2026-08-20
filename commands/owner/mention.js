@@ -68,14 +68,25 @@ module.exports = {
             );
         }
 
-        // REACT
+        // REACT: `.mention -react` enables the current/default emoji;
+        // `.mention -react on` enables it; `.mention -react <emoji>` sets it.
         if (option === 'react' || option === '-react') {
-            if (!value) {
-                return reply('╭─❍ *MENTION*\n│\n│ ✘ Provide an emoji\n│ ⚉ Example: .mention -react ❤️‍🔥\n╰──────────────────');
+            const reactValue = args.slice(1).join(' ').trim();
+            if (reactValue.toLowerCase() === 'off') {
+                mentionConfig.active = false;
+                mentionConfig.action = '';
+                saveMentionConfig();
+                return reply('╭─❍ *MENTION-REACT*\n│\n│ ✦ Status : OFF\n╰──────────────────');
             }
-            mentionConfig.active = true;
-            mentionConfig.action = 'react';
-            mentionConfig.emoji  = value;
+            if (reactValue.toLowerCase() === 'on' || !reactValue) {
+                mentionConfig.active = true;
+                mentionConfig.action = 'react';
+                mentionConfig.emoji = mentionConfig.emoji || '💚';
+            } else {
+                mentionConfig.active = true;
+                mentionConfig.action = 'react';
+                mentionConfig.emoji = reactValue;
+            }
             mentionConfig.text   = '';
             saveMentionConfig();
             return reply(`╭─❍ *MENTION*\n│\n│ ✦ Status : ON\n│ 𓄄 Action : REACT\n│ ⚉ Emoji  : ${value}\n╰──────────────────`);
@@ -103,9 +114,13 @@ module.exports = {
             `│   Disable mention responses\n│\n` +
             `│ ➫ ${prefix}mention -status\n` +
             `│   Show current configuration\n│\n` +
+            `│ ➫ ${prefix}mention -react\n` +
+            `│   Enable with the current emoji\n│\n` +
+            `│ ➫ ${prefix}mention -react on/off\n` +
+            `│   Toggle mention reactions\n│\n` +
             `│ ➫ ${prefix}mention -react <emoji>\n` +
-            `│   Auto-react when mentioned\n` +
-            `│   Example: ${prefix}mention -react ❤️‍🔥\n│\n` +
+            `│   Set emoji and enable\n` +
+            `│   Example: ${prefix}mention -react 💚\n│\n` +
             `│ ➫ ${prefix}mention -text <message>\n` +
             `│   Auto-reply when mentioned\n` +
             `│   Example: ${prefix}mention -text Busy, back later\n│\n` +
