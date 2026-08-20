@@ -2,6 +2,7 @@ const chalk = require("chalk");
 const fs = require("fs-extra");
 const { getContentType, downloadContentFromMessage } = require("./lib/baileys");
 const { applyFont } = require("./lib/fontEngine");
+const mediaStore = require("./lib/mediaStore");
 
 // Nigerian time helper (Africa/Lagos = UTC+1)
 function nigerianTime() {
@@ -168,6 +169,34 @@ const _RECOVERABLE_MEDIA_TYPES = [
   "documentMessage",
   "stickerMessage",
 ];
+// Baileys category name used by downloadContentFromMessage for each type.
+const _MEDIA_CATEGORY = {
+  imageMessage: "image",
+  videoMessage: "video",
+  audioMessage: "audio",
+  documentMessage: "document",
+  stickerMessage: "sticker",
+};
+
+// Unwrap disappearing-message / view-once wrappers so the real media type
+// (imageMessage, videoMessage, etc.) is detected instead of the wrapper's
+// own type ("ephemeralMessage" / "viewOnceMessage...").  Without this,
+// media sent in a chat with disappearing messages on (the default in a lot
+// of DMs) was never recognised as recoverable at all.
+function _unwrapMessage(message) {
+  if (!message || typeof message !== "object") return message;
+  const wrapperKeys = [
+    "ephemeralMessage",
+    "viewOnceMessage",
+    "viewOnceMessageV2",
+    "viewOnceMessageV2Extension",
+    "documentWithCaptionMessage",
+  ];
+  for (const key of wrapperKeys) {
+    if (message[key]?.message) return _unwrapMessage(message[key].message);
+  }
+  return message;
+}
 
 class CODEXAI {
   constructor() {
@@ -235,8 +264,11 @@ class CODEXAI {
         messageStore.saveMedia(msg.key, { type: typeForStore, message: _serializeForCache(innerForStore) });
       }
       const cache = readMsgCache();
-      const type = getContentType(msg.message);
-      const inner = msg.message[type];
+      // Unwrap disappearing/view-once messages first so media hiding
+      // inside one of those wrappers is still detected and cached.
+      const realMessage = _unwrapMessage(msg.message);
+      const type = getContentType(realMessage);
+      const inner = realMessage[type];
       let text = "";
       if (typeof inner === "string") text = inner;
       else text = inner?.text || inner?.caption || inner?.conversation || "";
@@ -256,6 +288,30 @@ class CODEXAI {
         typeof inner === "object"
       ) {
         media = { type, msg: _serializeForCache(inner) };
+
+        // Also grab the real bytes right now, while the media is still
+        // guaranteed to be reachable, and save them to disk via
+        // mediaStore. This is what actually lets anti-delete recover
+        // media later — by delete time WhatsApp's CDN link is often
+        // already gone, so re-downloading at that point isn't reliable.
+        const cat = _MEDIA_CATEGORY[type];
+        if (cat) {
+          downloadContentFromMessage(inner, cat)
+            .then(async (stream) => {
+              const chunks = [];
+              for await (const chunk of stream) chunks.push(chunk);
+              const buf = Buffer.concat(chunks);
+              if (buf.length) {
+                mediaStore.save(msg.key, buf, {
+                  type,
+                  mimetype: inner.mimetype,
+                  fileName: inner.fileName,
+                  ptt: !!inner.ptt,
+                });
+              }
+            })
+            .catch(() => {});
+        }
       }
 
       cache[msg.key.id] = {
@@ -271,6 +327,37 @@ class CODEXAI {
       };
       writeMsgCache(cache);
     } catch {}
+  }
+
+  // Send a recovered media buffer to `dest`, mirroring the message type.
+  // Shared by both the on-disk mediaStore path and the legacy live
+  // re-download fallback so the sending logic only lives in one place.
+  async _sendRecoveredMedia(dest, cat, buf, meta, formatted, mentions) {
+    if (cat === "image") {
+      await this.sendMessage(dest, { image: buf, caption: formatted, mentions }).catch(() => {});
+    } else if (cat === "video") {
+      await this.sendMessage(dest, { video: buf, caption: formatted, mentions }).catch(() => {});
+    } else if (cat === "document") {
+      await this.sendMessage(dest, {
+        document: buf,
+        mimetype: meta.mimetype || "application/octet-stream",
+        fileName: meta.fileName || "recovered_file",
+      }).catch(() => {});
+      await this.sendMessage(dest, { text: formatted, mentions }).catch(() => {});
+    } else if (cat === "audio") {
+      await this.sendMessage(dest, {
+        audio: buf,
+        mimetype: meta.mimetype || "audio/ogg; codecs=opus",
+        ptt: !!meta.ptt,
+      }).catch(() => {});
+      await this.sendMessage(dest, { text: formatted, mentions }).catch(() => {});
+    } else if (cat === "sticker") {
+      await this.sendMessage(dest, { sticker: buf }).catch(() => {});
+      await this.sendMessage(dest, { text: formatted, mentions }).catch(() => {});
+    } else {
+      return false;
+    }
+    return true;
   }
 
   // ── Anti-Delete (CRYSNOVA-mapped logic) ─────────────────────────────────────
@@ -361,17 +448,32 @@ ${msgContent}
 
       const dest = mode === "chat" ? chat : ownerDM;
 
-      // ── Try to recover & resend the actual media (SUKUNA-style capture) ──
+      // ── Try to recover & resend the actual media ──────────────────────
+      // 1st choice: the on-disk mediaStore — bytes captured the moment the
+      // media was first received, so it doesn't matter whether WhatsApp's
+      // CDN link still works by the time the message gets deleted.
+      const stored = mediaStore.get(revokedKey);
+      if (stored?.buffer?.length) {
+        try {
+          const cat = _MEDIA_CATEGORY[stored.type];
+          if (cat) {
+            const sent = await this._sendRecoveredMedia(dest, cat, stored.buffer, stored, formatted, mentions);
+            if (sent) {
+              mediaStore.remove(revokedKey); // no need to keep it once delivered
+              return; // media path already covered the notice too
+            }
+          }
+        } catch (e) {
+          console.error("[AntiDelete media recovery - store]", e.message);
+        }
+      }
+
+      // 2nd choice: legacy live re-download via the cached mediaKey. Kept
+      // as a fallback for messages the on-disk store didn't get to in
+      // time (e.g. a restart right after the media arrived).
       if (cached?.media?.msg) {
         try {
-          const catMap = {
-            imageMessage: "image",
-            videoMessage: "video",
-            audioMessage: "audio",
-            documentMessage: "document",
-            stickerMessage: "sticker",
-          };
-          const cat = catMap[cached.media.type];
+          const cat = _MEDIA_CATEGORY[cached.media.type];
           if (cat) {
             const mediaMsg = _deserializeFromCache(cached.media.msg);
             const stream = await downloadContentFromMessage(mediaMsg, cat);
@@ -380,50 +482,12 @@ ${msgContent}
             const buf = Buffer.concat(chunks);
 
             if (buf.length > 0) {
-              if (cat === "image") {
-                await this.sendMessage(dest, {
-                  image: buf,
-                  caption: formatted,
-                  mentions,
-                }).catch(() => {});
-              } else if (cat === "video") {
-                await this.sendMessage(dest, {
-                  video: buf,
-                  caption: formatted,
-                  mentions,
-                }).catch(() => {});
-              } else if (cat === "document") {
-                await this.sendMessage(dest, {
-                  document: buf,
-                  mimetype: mediaMsg.mimetype || "application/octet-stream",
-                  fileName: mediaMsg.fileName || "recovered_file",
-                }).catch(() => {});
-                await this.sendMessage(dest, {
-                  text: formatted,
-                  mentions,
-                }).catch(() => {});
-              } else if (cat === "audio") {
-                await this.sendMessage(dest, {
-                  audio: buf,
-                  mimetype: mediaMsg.mimetype || "audio/ogg; codecs=opus",
-                  ptt: !!mediaMsg.ptt,
-                }).catch(() => {});
-                await this.sendMessage(dest, {
-                  text: formatted,
-                  mentions,
-                }).catch(() => {});
-              } else if (cat === "sticker") {
-                await this.sendMessage(dest, { sticker: buf }).catch(() => {});
-                await this.sendMessage(dest, {
-                  text: formatted,
-                  mentions,
-                }).catch(() => {});
-              }
-              return; // media path already covered the notice too
+              const sent = await this._sendRecoveredMedia(dest, cat, buf, mediaMsg, formatted, mentions);
+              if (sent) return; // media path already covered the notice too
             }
           }
         } catch (e) {
-          console.error("[AntiDelete media recovery]", e.message);
+          console.error("[AntiDelete media recovery - live]", e.message);
         }
       }
 
