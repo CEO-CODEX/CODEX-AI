@@ -23,7 +23,6 @@
   "antiGroupMention":  { "enabled": false, "action": "warn", "maxWarns": 3 },
   "antiDelete":        { "enabled": false, "forwardTo": "dm" },
   "antiEdit":          { "enabled": false, "forwardTo": "dm" },
-  "mentionReact":      { "enabled": false, "emoji": "❤️" },
   "autoReact":         { "enabled": false, "emoji": "❤️" },
   "welcome": false,
   "goodbye": false,
