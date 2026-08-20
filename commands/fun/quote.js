@@ -1,0 +1,1 @@
+module.exports = { name: 'quote', category: 'Fun', description: 'Get an inspirational quote', async execute(bot, m) { const quotes = ['Small steps still move you forward.', 'Do something today your future self will thank you for.', 'Consistency beats intensity.']; return m.reply(`“${quotes[Math.floor(Math.random() * quotes.length)]}”`); } };

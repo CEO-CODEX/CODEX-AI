@@ -1,0 +1,1 @@
+module.exports = { name: 'truth', category: 'Games', description: 'Get a truth question', async execute(bot, m) { const questions = ['What is your biggest secret?', 'What is your most embarrassing moment?', 'Who was your first crush?', 'What habit would you like to change?']; return m.reply(`🟦 Truth:\n${questions[Math.floor(Math.random() * questions.length)]}`); } };

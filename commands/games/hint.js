@@ -1,0 +1,1 @@
+module.exports = { name: 'hint', category: 'Games', description: 'Get a random hint', async execute(bot, m) { const hints = ['Look for patterns.', 'Start with the simplest option.', 'Try again with different wording.', 'The answer may be in the question.']; return m.reply(`💡 ${hints[Math.floor(Math.random() * hints.length)]}`); } };

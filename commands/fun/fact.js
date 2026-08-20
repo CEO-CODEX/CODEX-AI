@@ -1,0 +1,1 @@
+module.exports = { name: 'fact', category: 'Fun', description: 'Get a random fact', async execute(bot, m) { const facts = ['Octopuses have three hearts.', 'Honey can remain edible for a very long time.', 'A day on Venus is longer than its year.']; return m.reply(`Did you know? ${facts[Math.floor(Math.random() * facts.length)]}`); } };

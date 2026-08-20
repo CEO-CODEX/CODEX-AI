@@ -1,0 +1,1 @@
+module.exports = { name: 'ascii', category: 'Fun', description: 'Render text in a simple block style', async execute(bot, m, args) { const text = args.join(' ').trim(); if (!text) return m.reply(`Usage: ${bot.prefix}ascii text`); return m.reply(text.toUpperCase().split('').join(' ')); } };

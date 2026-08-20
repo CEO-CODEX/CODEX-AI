@@ -1,0 +1,1 @@
+module.exports = { name: 'emojimix', category: 'Fun', description: 'Mix two emojis', async execute(bot, m, args) { if (args.length < 2) return m.reply(`Usage: ${bot.prefix}emojimix 😀 😎`); return m.reply(`${args[0]}${args[1]}`); } };

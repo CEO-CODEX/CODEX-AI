@@ -1,0 +1,1 @@
+module.exports = { name: 'meme', category: 'Fun', description: 'Get a meme prompt', async execute(bot, m) { const memes = ['When the code works on the first try.', 'Me checking production after one tiny change.', 'When the group says the bot is offline but it is just thinking.']; return m.reply(`Meme idea: ${memes[Math.floor(Math.random() * memes.length)]}`); } };

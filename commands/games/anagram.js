@@ -1,0 +1,1 @@
+module.exports = { name: 'anagram', category: 'Games', description: 'Get an anagram challenge', async execute(bot, m) { const words = ['planet', 'orange', 'rabbit', 'silver', 'coding']; const word = words[Math.floor(Math.random() * words.length)]; const mixed = word.split('').sort(() => Math.random() - 0.5).join(''); return m.reply(`🔤 Unscramble: *${mixed}*`); } };

@@ -1,0 +1,1 @@
+module.exports = { name: 'dare', category: 'Games', description: 'Get a dare', async execute(bot, m) { const dares = ['Send a kind message to someone.', 'Do ten jumping jacks.', 'Change your profile photo for five minutes.', 'Tell the group a funny story.']; return m.reply(`🟥 Dare:\n${dares[Math.floor(Math.random() * dares.length)]}`); } };
