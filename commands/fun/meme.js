@@ -1,1 +1,39 @@
-module.exports = { name: 'meme', category: 'Fun', description: 'Get a meme prompt', async execute(bot, m) { const memes = ['When the code works on the first try.', 'Me checking production after one tiny change.', 'When the group says the bot is offline but it is just thinking.']; return m.reply(`Meme idea: ${memes[Math.floor(Math.random() * memes.length)]}`); } };
+module.exports = {
+  name: 'meme',
+  aliases: ['memes', 'cheems'],
+  description: 'Fetch a random Cheems meme',
+  category: 'Fun',
+  reactions: { start: '💬', success: '🤗' },
+
+  async execute(sock, m, { reply }) {
+    try {
+      await sock.sendPresenceUpdate('composing', m.chat);
+
+      const response = await fetch(
+        'https://shizoapi.onrender.com/api/memes/cheems?apikey=shizo',
+      );
+
+      if (!response.ok) throw new Error('Meme API request failed');
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('image')) throw new Error('Invalid meme media');
+
+      const image = Buffer.from(await response.arrayBuffer());
+
+      await sock.sendMessage(
+        m.chat,
+        {
+          image,
+          caption:
+            '╭─❍ *CODEX MEME*\n│\n│ 🐕 Cheems meme loaded\n╰──────────────────',
+        },
+        { quoted: m },
+      );
+
+      await sock.sendPresenceUpdate('paused', m.chat);
+    } catch (error) {
+      console.error('[meme]', error.message);
+      await reply('❌ Failed to fetch a meme right now.');
+    }
+  },
+};

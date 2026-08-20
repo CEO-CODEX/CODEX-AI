@@ -1,1 +1,0 @@
-module.exports = { name: 'jok', aliases: ['hackjokes'], category: 'Fun', description: 'Get a quick joke', async execute(bot, m) { const jokes = ['I would tell you a UDP joke, but you might not get it.', 'There are only 10 kinds of people: those who understand binary and those who do not.']; return m.reply(jokes[Math.floor(Math.random() * jokes.length)]); } };
