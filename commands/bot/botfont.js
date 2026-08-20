@@ -1,4 +1,4 @@
-const { applyFancyFont, FANCY_FONT_COUNT } = require('../../lib/fontEngine');
+const { applyFancyFont, FANCY_FONT_COUNT, FONT_NAMES } = require('../../lib/fontEngine');
 
 module.exports = {
     name: 'botfont',
@@ -11,7 +11,7 @@ module.exports = {
         const PREVIEW = 'CODEX-AI';
         let text = '';
         for (let i = 1; i <= FANCY_FONT_COUNT; i++) {
-            text += `${i}. ${applyFancyFont(PREVIEW, i)}\n`;
+            text += `${i}. ${applyFancyFont(PREVIEW, i)} — ${FONT_NAMES[i - 1] || `style-${i}`}\n`;
         }
         await m.reply(text.trim());
     }
