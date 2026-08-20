@@ -9,12 +9,10 @@ module.exports = {
 
     async execute(bot, m, args) {
         if (args.length < 2) return await m.reply(
-`fancy text generator
-Usage: ${bot.prefix}fancy <number> <text>
-Example: ${bot.prefix}fancy 1 Hello World
-
-Total styles: ${FANCY_FONT_COUNT}
-See all styles: ${bot.prefix}botfont`);
+`Usage: ${bot.prefix}fancy <number> <text>
+Example: ${bot.prefix}fancy 1 CODEX-AI
+Styles: ${FANCY_FONT_COUNT}
+List: ${bot.prefix}botfont`);
 
         const num  = parseInt(args[0]);
         const text = args.slice(1).join(' ');
