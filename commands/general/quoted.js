@@ -13,8 +13,12 @@ module.exports = {
         const quoted = ctx.quotedMessage;
         if (!quoted) return reply('Reply to a message to extract it.');
 
-        // If the command itself is a tagged reply, recover the message that reply quoted.
-        const taggedReply = quoted?.extendedTextMessage?.contextInfo;
+        // If the command itself is a tagged reply, recover the message that
+        // reply was quoting. The quoted message could itself be plain text
+        // OR media (image/video/audio/document/sticker) that was sent as a
+        // reply, and it may be wrapped in a disappearing-message/view-once
+        // envelope — look through all of those, not just extendedTextMessage.
+        const taggedReply = getContextInfo(quoted);
         const original = taggedReply?.quotedMessage || quoted;
         const originalCtx = taggedReply || ctx;
         const key = {
@@ -22,10 +26,28 @@ module.exports = {
             id: originalCtx.stanzaId || `quoted-${Date.now()}`,
             participant: originalCtx.participant,
         };
-        store.saveMessage(key, { key, message: original, pushName: originalCtx.pushName || '' });
+        store.saveMessage({ key, message: original, pushName: originalCtx.pushName || '' });
         return forward(sock, m.chat, original, originalCtx.participant, m);
     }
 };
+
+// Pull contextInfo out of a message object regardless of which message
+// type is carrying it (text reply, or a media message sent as a reply),
+// unwrapping ephemeral/view-once envelopes first if needed.
+function getContextInfo(message) {
+    const msg = unwrap(message);
+    if (!msg) return null;
+    const CONTEXT_KEYS = [
+        'extendedTextMessage', 'imageMessage', 'videoMessage', 'audioMessage',
+        'documentMessage', 'stickerMessage', 'contactMessage', 'locationMessage',
+        'documentWithCaptionMessage',
+    ];
+    for (const key of CONTEXT_KEYS) {
+        const ctx = msg[key]?.contextInfo;
+        if (ctx?.quotedMessage) return ctx;
+    }
+    return null;
+}
 
 async function forward(sock, chat, message, sender, m) {
     const unwrapped = unwrap(message);
@@ -59,4 +81,5 @@ function unwrap(message) {
         if (message?.[key]?.message) return unwrap(message[key].message);
     }
     return message?.message || message;
-}
+                                                              }
+        
