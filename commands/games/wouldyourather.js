@@ -31,7 +31,6 @@ module.exports = {
 
   async execute(sock, m) {
     const question = QUESTIONS[Math.floor(Math.random() * QUESTIONS.length)];
-    await sock.sendMessage(m.chat, { react: { text: '🤔', key: m.key } });
     await sock.sendMessage(m.chat, {
       poll: {
         name: '🎯 Would You Rather',
@@ -39,6 +38,5 @@ module.exports = {
         selectableCount: 1,
       },
     });
-    await sock.sendMessage(m.chat, { react: { text: '🎭', key: m.key } });
   },
 };

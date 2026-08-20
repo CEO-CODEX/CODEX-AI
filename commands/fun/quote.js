@@ -15,6 +15,6 @@ module.exports = {
 
   async execute(sock, m, { reply }) {
     const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-    return reply(`╭─❍ *MOTIVATION*\n│\n│ 💬 ${quote}\n╰──────────────────`);
+    return reply(` *MOTIVATION*\n\n 💬 ${quote}\n`);
   },
 };

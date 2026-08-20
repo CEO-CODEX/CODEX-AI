@@ -59,16 +59,12 @@ module.exports = {
         maxGuesses: 6,
       };
 
-      await sock.sendMessage(m.chat, {
-        react: { text: '🎮', key: m.key },
-      });
-
       return reply(
-        `╭─❍ *WORDLE*\n│\n` +
-          `│ 🎯 Guess the word in six tries.\n` +
-          `│ 🟢 Correct spot\n│ 🟡 Wrong spot\n│ ⬜ Not in word\n│\n` +
-          `│ Usage: ${prefix}wordle <five-letter-word>\n` +
-          `╰──────────────────`,
+        ` *WORDLE*\n\n` +
+          ` 🎯 Guess the word in six tries.\n` +
+          ` 🟢 Correct spot\n 🟡 Wrong spot\n ⬜ Not in word\n\n` +
+          ` Usage: ${prefix}wordle <five-letter-word>\n` +
+          ``,
       );
     }
 
@@ -90,16 +86,12 @@ module.exports = {
       .join('\n');
 
     await reply(
-      `╭─❍ *WORDLE*\n│ Attempt ${game.guesses.length}/${game.maxGuesses}\n│\n` +
-        `${board}\n│\n` +
-        `│ ${won ? '🎉 You win!' : lost ? `😢 The word was ${game.word.toUpperCase()}.` : `${game.maxGuesses - game.guesses.length} attempts left.`}\n` +
-        `╰──────────────────`,
+      ` *WORDLE*\n Attempt ${game.guesses.length}/${game.maxGuesses}\n\n` +
+        `${board}\n\n` +
+        ` ${won ? '🎉 You win!' : lost ? `😢 The word was ${game.word.toUpperCase()}.` : `${game.maxGuesses - game.guesses.length} attempts left.`}\n` +
+        ``,
     );
 
     if (won || lost) delete global.wordleGames[m.chat];
-
-    await sock.sendMessage(m.chat, {
-      react: { text: won ? '🎉' : lost ? '😢' : '👌', key: m.key },
-    });
   },
 };

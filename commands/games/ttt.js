@@ -21,7 +21,7 @@ function draw(board) {
 }
 
 function render(board) {
-  return `${board.slice(0, 3).join(' │ ')}\n${board.slice(3, 6).join(' │ ')}\n${board.slice(6).join(' │ ')}`;
+  return `${board.slice(0, 3).join('  ')}\n${board.slice(3, 6).join('  ')}\n${board.slice(6).join('  ')}`;
 }
 
 async function play(sock, m, game, position, reply) {
@@ -41,8 +41,6 @@ async function play(sock, m, game, position, reply) {
     : isDraw
       ? '🤝 Draw!'
       : `⏳ @${game.current.split('@')[0]}\'s turn`;
-
-  await sock.sendMessage(m.chat, { react: { text: winningMark ? '🎉' : isDraw ? '🤝' : '🎭', key: m.key } });
   await sock.sendMessage(m.chat, {
     text: `🎮 *TIC-TAC-TOE*\n\n${render(game.board)}\n\n${status}`,
     mentions: [game.x, game.o],
@@ -78,8 +76,6 @@ module.exports = {
       const first = Math.random() < 0.5 ? m.sender : opponent;
       const game = { board: createBoard(), x: first, o: first === m.sender ? opponent : m.sender, current: first };
       games.set(m.chat, game);
-
-      await sock.sendMessage(m.chat, { react: { text: '🎮', key: m.key } });
       return sock.sendMessage(m.chat, {
         text: `🎮 *TIC-TAC-TOE STARTED*\n\n${render(game.board)}\n\nFirst turn: @${first.split('@')[0]}`,
         mentions: [m.sender, opponent],

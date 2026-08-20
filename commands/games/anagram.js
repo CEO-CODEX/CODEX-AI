@@ -29,16 +29,12 @@ module.exports = {
     global.anagramAnswers ??= {};
     global.anagramAnswers[m.chat] = answer;
 
-    await sock.sendMessage(m.chat, {
-      react: { text: '🔤', key: m.key },
-    });
-
     await reply(
-      `╭─❍ *ANAGRAM CHALLENGE*\n│\n` +
-        `│ 🔤 Scrambled: *${scrambled.toUpperCase()}*\n` +
-        `│ 📝 Letters: ${scrambled.length}\n` +
-        `│ 💡 Use .hint to reveal the answer.\n` +
-        `╰──────────────────`,
+      ` *ANAGRAM CHALLENGE*\n\n` +
+        ` 🔤 Scrambled: *${scrambled.toUpperCase()}*\n` +
+        ` 📝 Letters: ${scrambled.length}\n` +
+        ` 💡 Use .hint to reveal the answer.\n` +
+        ``,
     );
   },
 };

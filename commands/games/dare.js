@@ -25,22 +25,15 @@ module.exports = {
   reactions: { start: '😈', success: '🎭' },
 
   async execute(sock, m, { reply }) {
-    await sock.sendMessage(m.chat, {
-      react: { text: '😈', key: m.key },
-    });
 
     const dare = DARES[Math.floor(Math.random() * DARES.length)];
 
     await reply(
-      `╭─❍ *DARE*\n│\n` +
-        `│ 😈 Challenge: ${dare}\n│\n` +
-        `│ ✅ Done? React 👍\n` +
-        `│ ❌ Skipped? React 👎\n` +
-        `╰──────────────────`,
+      ` *DARE*\n\n` +
+        ` 😈 Challenge: ${dare}\n\n` +
+        ` ✅ Done? React 👍\n` +
+        ` ❌ Skipped? React 👎\n` +
+        ``,
     );
-
-    await sock.sendMessage(m.chat, {
-      react: { text: '😈', key: m.key },
-    });
   },
 };

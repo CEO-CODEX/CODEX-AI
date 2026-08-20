@@ -28,18 +28,10 @@ module.exports = {
       return reply('✘ No active game. Play trivia, riddle, or anagram first.');
     }
 
-    await sock.sendMessage(m.chat, {
-      react: { text: '💡', key: m.key },
-    });
-
     await reply(
-      `╭─❍ *${game.toUpperCase()} ANSWER*\n│\n` +
-        `│ ✅ Answer: *${answer}*\n` +
-        `╰──────────────────`,
+      ` *${game.toUpperCase()} ANSWER*\n\n` +
+        ` ✅ Answer: *${answer}*\n` +
+        ``,
     );
-
-    await sock.sendMessage(m.chat, {
-      react: { text: '🎭', key: m.key },
-    });
   },
 };

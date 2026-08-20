@@ -32,28 +32,20 @@ module.exports = {
 
     if (!question) {
       return reply(
-        `╭─❍ *MAGIC 8-BALL*\n│\n` +
-          `│ ⚉ Usage: ${prefix}8ball <question>\n│\n` +
-          `│ Example: ${prefix}8ball Will I be rich?\n` +
-          `╰──────────────────`,
+        ` *MAGIC 8-BALL*\n\n` +
+          ` ⚉ Usage: ${prefix}8ball <question>\n\n` +
+          ` Example: ${prefix}8ball Will I be rich?\n` +
+          ``,
       );
     }
-
-    await sock.sendMessage(m.chat, {
-      react: { text: '🎱', key: m.key },
-    });
 
     const answer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
 
     await reply(
-      `╭─❍ *MAGIC 8-BALL*\n│\n` +
-        `│ ❓ Question: ${question}\n│\n` +
-        `│ 🔮 Answer: *${answer}*\n` +
-        `╰──────────────────`,
+      ` *MAGIC 8-BALL*\n\n` +
+        ` ❓ Question: ${question}\n\n` +
+        ` 🔮 Answer: *${answer}*\n` +
+        ``,
     );
-
-    await sock.sendMessage(m.chat, {
-      react: { text: '🎭', key: m.key },
-    });
   },
 };

@@ -22,14 +22,12 @@ module.exports = {
 
     if (!sign || !SIGNS.includes(sign)) {
       return reply(
-        `╭─❍ *HOROSCOPE*\n│\n` +
-          `│ Usage: ${prefix}horoscope <sign>\n` +
-          `│ Signs: ${SIGNS.join(', ')}\n` +
-          `╰──────────────────`,
+        ` *HOROSCOPE*\n\n` +
+          ` Usage: ${prefix}horoscope <sign>\n` +
+          ` Signs: ${SIGNS.join(', ')}\n` +
+          ``,
       );
     }
-
-    await sock.sendMessage(m.chat, { react: { text: '⭐', key: m.key } });
 
     try {
       const response = await fetch(
@@ -39,18 +37,15 @@ module.exports = {
       const data = await response.json();
 
       await reply(
-        `╭─❍ *${SIGN_EMOJIS[sign]} ${sign.toUpperCase()}*\n│\n` +
-          `│ 📅 ${data.current_date || 'Today'}\n` +
-          `│ 📝 ${data.description || 'No reading available.'}\n│\n` +
-          `│ 💖 Compatibility: ${data.compatibility || 'Unknown'}\n` +
-          `│ 🎨 Color: ${data.color || 'Unknown'}\n` +
-          `│ 🔢 Lucky number: ${data.lucky_number || 'Unknown'}\n` +
-          `╰──────────────────`,
+        ` *${SIGN_EMOJIS[sign]} ${sign.toUpperCase()}*\n\n` +
+          ` 📅 ${data.current_date || 'Today'}\n` +
+          ` 📝 ${data.description || 'No reading available.'}\n\n` +
+          ` 💖 Compatibility: ${data.compatibility || 'Unknown'}\n` +
+          ` 🎨 Color: ${data.color || 'Unknown'}\n` +
+          ` 🔢 Lucky number: ${data.lucky_number || 'Unknown'}\n` +
+          ``,
       );
-
-      await sock.sendMessage(m.chat, { react: { text: '👽', key: m.key } });
     } catch {
-      await sock.sendMessage(m.chat, { react: { text: '🏗️', key: m.key } });
       await reply('✘ Failed to get the horoscope right now.');
     }
   },

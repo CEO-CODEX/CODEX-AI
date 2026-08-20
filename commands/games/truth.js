@@ -25,21 +25,14 @@ module.exports = {
   reactions: { start: '😳', success: '🎭' },
 
   async execute(sock, m, { reply }) {
-    await sock.sendMessage(m.chat, {
-      react: { text: '😳', key: m.key },
-    });
 
     const truth = TRUTHS[Math.floor(Math.random() * TRUTHS.length)];
 
     await reply(
-      `╭─❍ *TRUTH*\n│\n` +
-        `│ 😳 Question: ${truth}\n│\n` +
-        `│ 💬 Reply: Answer honestly!\n` +
-        `╰──────────────────`,
+      ` *TRUTH*\n\n` +
+        ` 😳 Question: ${truth}\n\n` +
+        ` 💬 Reply: Answer honestly!\n` +
+        ``,
     );
-
-    await sock.sendMessage(m.chat, {
-      react: { text: '🎭', key: m.key },
-    });
   },
 };

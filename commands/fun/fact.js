@@ -16,7 +16,6 @@ module.exports = {
   reactions: { start: '🧠', success: '✨', error: '❔' },
 
   async execute(sock, m, { reply }) {
-    await sock.sendMessage(m.chat, { react: { text: '🧠', key: m.key } });
 
     let fact = null;
     let source = 'CODEX knowledge base';
@@ -35,12 +34,10 @@ module.exports = {
     fact ??= FALLBACK_FACTS[Math.floor(Math.random() * FALLBACK_FACTS.length)];
 
     await reply(
-      `╭─❍ *RANDOM FACT*\n│\n` +
-        `│ 💡 ${fact}\n│\n` +
-        `│ 📡 Source: ${source}\n` +
-        `╰──────────────────`,
+      ` *RANDOM FACT*\n\n` +
+        ` 💡 ${fact}\n\n` +
+        ` 📡 Source: ${source}\n` +
+        ``,
     );
-
-    await sock.sendMessage(m.chat, { react: { text: '✨', key: m.key } });
   },
 };

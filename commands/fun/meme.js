@@ -25,7 +25,7 @@ module.exports = {
         {
           image,
           caption:
-            '╭─❍ *CODEX MEME*\n│\n│ 🐕 Cheems meme loaded\n╰──────────────────',
+            ' *CODEX MEME*\n\n 🐕 Cheems meme loaded\n',
         },
         { quoted: m },
       );

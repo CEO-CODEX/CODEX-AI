@@ -27,14 +27,12 @@ module.exports = {
 
   async execute(sock, m, { reply }) {
     const statement = STATEMENTS[Math.floor(Math.random() * STATEMENTS.length)];
-    await sock.sendMessage(m.chat, { react: { text: '🙈', key: m.key } });
     await reply(
-      `╭─❍ *NEVER HAVE I EVER*\n│\n` +
-        `│ 🙈 Never have I ever... ${statement}\n│\n` +
-        `│ ✅ If you have: React 👍\n` +
-        `│ ❌ If you have not: React 👎\n` +
-        `╰──────────────────`,
+      ` *NEVER HAVE I EVER*\n\n` +
+        ` 🙈 Never have I ever... ${statement}\n\n` +
+        ` ✅ If you have: React 👍\n` +
+        ` ❌ If you have not: React 👎\n` +
+        ``,
     );
-    await sock.sendMessage(m.chat, { react: { text: '👍', key: m.key } });
   },
 };
