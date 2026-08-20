@@ -12,9 +12,18 @@ module.exports = {
         const ctx = m.contextInfo || m.msg?.contextInfo || m.message?.extendedTextMessage?.contextInfo || {};
         const quoted = ctx.quotedMessage;
         if (!quoted) return reply('Reply to a message to extract it.');
-        const key = { remoteJid: ctx.remoteJid || m.chat, id: ctx.stanzaId || `quoted-${Date.now()}`, participant: ctx.participant };
-        store.saveMessage(key, { key, message: quoted, pushName: ctx.pushName || '' });
-        return forward(sock, m.chat, quoted, ctx.participant, m);
+
+        // If the command itself is a tagged reply, recover the message that reply quoted.
+        const taggedReply = quoted?.extendedTextMessage?.contextInfo;
+        const original = taggedReply?.quotedMessage || quoted;
+        const originalCtx = taggedReply || ctx;
+        const key = {
+            remoteJid: originalCtx.remoteJid || m.chat,
+            id: originalCtx.stanzaId || `quoted-${Date.now()}`,
+            participant: originalCtx.participant,
+        };
+        store.saveMessage(key, { key, message: original, pushName: originalCtx.pushName || '' });
+        return forward(sock, m.chat, original, originalCtx.participant, m);
     }
 };
 
