@@ -89,7 +89,7 @@ module.exports = {
             }
             mentionConfig.text   = '';
             saveMentionConfig();
-            return reply(`╭─❍ *MENTION*\n│\n│ ✦ Status : ON\n│ 𓄄 Action : REACT\n│ ⚉ Emoji  : ${value}\n╰──────────────────`);
+            return reply(`╭─❍ *MENTION*\n│\n│ ✦ Status : ON\n│ 𓄄 Action : REACT\n│ ⚉ Emoji  : ${mentionConfig.emoji}\n╰──────────────────`);
         }
 
         // TEXT
@@ -132,3 +132,4 @@ module.exports = {
 module.exports.mentionConfig     = mentionConfig;
 module.exports.loadMentionConfig = loadMentionConfig;
 module.exports.norm = norm;
+        
