@@ -243,7 +243,7 @@ module.exports = {
     category: 'general',
     reactions: { start: '👥' },
     description: "Post text, link, image, video, audio or document to the group's status feed. Supports broadcasting to all groups and clearing tracked statuses.",
-    groupOnly: true,
+    groupOnly: false,
 
     async execute(bot, m, args) {
         const sock    = bot.sock;

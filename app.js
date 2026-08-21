@@ -81,6 +81,11 @@ const {
         null,
         2,
       ),
+      "./database/antidelete.json": JSON.stringify(
+        { enabled: false, mode: "dm" },
+        null,
+        2,
+      ),
       "./database/autoreact.json": JSON.stringify(
         {
           enabled: false,
@@ -368,7 +373,6 @@ class CODEXAI {
       if (!chat || !msgId) return;
 
       const isGroup = chat.endsWith("@g.us");
-      const isPrivate = !isGroup;
       const isStatus = chat === "status@broadcast";
       if (isStatus) return;
 
@@ -377,11 +381,11 @@ class CODEXAI {
         db = JSON.parse(fs.readFileSync("./database/antidelete.json", "utf8"));
       } catch {}
 
-      const enabledForChat = !!db[chat];
-      const enabledGlobally = isPrivate && !!db._globalPriv;
-      if (!enabledForChat && !enabledGlobally) return;
+      // Single global switch — applies to every chat the bot is in,
+      // private and group alike. No more per-chat/global-private split.
+      if (!db.enabled) return;
 
-      const mode = db._mode || "dm";
+      const mode = db.mode || "dm";
       const ownerDM =
         (typeof this.config.owner === "object"
           ? this.config.owner?.number
@@ -655,7 +659,7 @@ ${newText || "(could not read new text)"}
 —͟͟͞͞𖣘 *CMDS:* ${this.successCmds} loaded
 —͟͟͞͞𖣘 *TIME:* ${time}
 
-—͟͟͞͞𖣘 *ANTIDELETE* ${Object.keys(antiDelDb).filter((k) => !k.startsWith("_")).length > 0 ? "✓" : "✗"}
+—͟͟͞͞𖣘 *ANTIDELETE* ${Object.keys(antiDelDb).filter((k) => !k.startsWith("_")).length > 0 ? "���" : "✗"}
 —͟͟͞͞𖣘 *ANTIEDIT* ${Object.keys(antiEditDb.chats || {}).length > 0 ? "✓" : "✗"}
 —͟͟͞͞𖣘 *AUTOREACT* ${autoReactDb.enabled ? "✓" : "✗"}
 —͟͟͞͞𖣘 *AUTOREPLY* ${autoRepDb.enabled ? "✓" : "✗"}
@@ -738,6 +742,7 @@ ${GROUP_LINK}
     const cfg = eventsDb[id] || {};
 
     if (action === 'add') {
+      // Welcome is disabled unless explicitly enabled for this group.
       const enabled = cfg.welcomeEnabled === true;
       if (!enabled) return;
 
@@ -787,7 +792,7 @@ ${GROUP_LINK}
       }
 
     } else if (action === 'remove') {
-      // Goodbye uses goodbyeEnabled ONLY — never touches welcomeEnabled
+      // Goodbye is disabled unless explicitly enabled for this group.
       const enabled = cfg.goodbyeEnabled === true;
       if (!enabled) return;
 
@@ -834,7 +839,7 @@ ${GROUP_LINK}
     }
   }
 
-  // ── Send message ──────────────────────────────────────────────────────────
+  // ── Send message ──────���───────────────────────────────────────────────────
   // Single pipeline: font + character/emoji applied here for ALL commands.
   async sendMessage(jid, content, options = {}) {
     try {
