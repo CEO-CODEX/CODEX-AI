@@ -3,7 +3,7 @@ module.exports = {
     name: 'mdhelp',
     alias: ['syntaxhelp', 'languages'],
     desc: 'Show supported languages for syntax highlighting',
-    category: 'Tools',
+    category: 'utils',
     reactions: { start: '📚' },
     
     execute: async (sock, m, { reply, prefix }) => {
