@@ -5,7 +5,7 @@ module.exports = {
     name: 'sketcher',
     alias: ['sketch', 'pencil', 'draw'],
     desc: 'Convert image to pencil sketch',
-    category: 'image',
+    category: 'utils',
     reactions: { start: '📝' },
 
     execute: async (sock, m, { reply }) => {
