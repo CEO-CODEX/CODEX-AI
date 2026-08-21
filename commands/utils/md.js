@@ -3,7 +3,7 @@ module.exports = {
     name: 'md',
     alias: ['syntax', 'code'],
     desc: 'Send syntax-highlighted code block',
-    category: 'Tools',
+    category: 'utils',
     reactions: { start: '💻' },
     
     execute: async (sock, m, { args, reply, prefix }) => {
