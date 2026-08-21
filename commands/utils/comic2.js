@@ -6,7 +6,7 @@ module.exports = {
     name: 'comic2',
     alias: ['cartoon2', 'toon2', 'anime'],
     desc: 'Real comic book style filter',
-    category: 'image',
+    category: 'utils',
     reactions: { start: '🎨' },
 
     execute: async (sock, m, { reply }) => {
