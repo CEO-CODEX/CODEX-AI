@@ -428,7 +428,7 @@ class CODEXAI {
         formatted += `_❏◦Deleted by_ •⌲ @${deleterNum}
 `;
       } else {
-        formatted += `_❏◦Chat_ •⌲ ${pushName}
+        formatted += `_❏��Chat_ •⌲ ${pushName}
 `;
         formatted += `_𓋎◦Sender_ •⌲ @${senderNum}
 `;
@@ -738,7 +738,7 @@ ${GROUP_LINK}
     const cfg = eventsDb[id] || {};
 
     if (action === 'add') {
-      const enabled = cfg.welcomeEnabled ?? (this.config.welcome !== false);
+      const enabled = cfg.welcomeEnabled === true;
       if (!enabled) return;
 
       let meta = null;
@@ -788,7 +788,7 @@ ${GROUP_LINK}
 
     } else if (action === 'remove') {
       // Goodbye uses goodbyeEnabled ONLY — never touches welcomeEnabled
-      const enabled = cfg.goodbyeEnabled ?? (this.config.goodbye !== false);
+      const enabled = cfg.goodbyeEnabled === true;
       if (!enabled) return;
 
       let meta = null;
