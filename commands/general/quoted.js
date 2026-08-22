@@ -10,8 +10,8 @@ module.exports = {
 
     async execute(sock, m, { args, reply }) {
         const ctx = m.contextInfo || m.msg?.contextInfo || m.message?.extendedTextMessage?.contextInfo || {};
-        const quoted = ctx.quotedMessage;
-        if (!quoted) return reply('Reply to a message to extract it.');
+        const quoted = m.quoted?.message || m.quoted?.msg || ctx.quotedMessage;
+        if (!quoted) return reply('Reply to a message first');
 
         // If the command itself is a tagged reply, recover the message that
         // reply was quoting. The quoted message could itself be plain text
@@ -21,13 +21,14 @@ module.exports = {
         const taggedReply = getContextInfo(quoted);
         const original = taggedReply?.quotedMessage || quoted;
         const originalCtx = taggedReply || ctx;
+        const quotedSender = originalCtx.participant || ctx.participant || m.quoted?.sender;
         const key = {
             remoteJid: originalCtx.remoteJid || m.chat,
             id: originalCtx.stanzaId || `quoted-${Date.now()}`,
             participant: originalCtx.participant,
         };
         store.saveMessage({ key, message: original, pushName: originalCtx.pushName || '' });
-        return forward(sock, m.chat, original, originalCtx.participant, m);
+        return forward(sock, m.chat, original, quotedSender, m);
     }
 };
 
@@ -53,10 +54,11 @@ async function forward(sock, chat, message, sender, m) {
     const unwrapped = unwrap(message);
     const type = getContentType(unwrapped);
     const body = unwrapped?.[type];
+    const normalizedType = type === 'documentWithCaptionMessage' ? 'documentMessage' : type;
     const mention = sender ? [sender] : [];
     const from = sender ? `From @${sender.split('@')[0]}\n` : '';
     if (!type || body == null) return sock.sendMessage(chat, { text: `${from}Unable to read the quoted message.`, mentions: mention });
-    if (type === 'conversation' || type === 'extendedTextMessage') {
+    if (normalizedType === 'conversation' || normalizedType === 'extendedTextMessage') {
         const text = typeof body === 'string' ? body : body.text || '';
         return sock.sendMessage(chat, { text: `${from}${text}`, mentions: mention });
     }
