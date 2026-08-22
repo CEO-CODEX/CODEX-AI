@@ -1,0 +1,2 @@
+const { CATALOG, buy, user } = require('../../lib/gtaFeatures');
+module.exports={name:'property',aliases:['properties','house'],category:'gta',description:'Buy properties',async execute(bot,m,args){const {u}=user(m.sender);if(!args[0]||args[0]==='list')return m.reply(`PROPERTIES\n${Object.entries(CATALOG.properties).map(([k,v])=>`${k}: ${v.toLocaleString()} codex`).join('\n')}\n\nOwned: ${u.properties.join(', ')||'none'}`);const r=buy(m.sender,'properties',args[0].toLowerCase());return m.reply(r.ok?'Property purchased.':r.message);}};

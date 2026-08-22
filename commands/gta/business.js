@@ -1,0 +1,2 @@
+const { CATALOG, buy, user } = require('../../lib/gtaFeatures');
+module.exports={name:'business',aliases:['businesses','empire'],category:'gta',description:'Buy businesses',async execute(bot,m,args){const {u}=user(m.sender);if(!args[0]||args[0]==='list')return m.reply(`BUSINESSES\n${Object.entries(CATALOG.businesses).map(([k,v])=>`${k}: ${v.toLocaleString()} codex`).join('\n')}\n\nOwned: ${u.businesses.join(', ')||'none'}`);const r=buy(m.sender,'businesses',args[0].toLowerCase());return m.reply(r.ok?'Business purchased.':r.message);}};
