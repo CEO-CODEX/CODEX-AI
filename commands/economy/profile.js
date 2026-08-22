@@ -14,7 +14,7 @@ function getRank(level) {
 }
 
 // ── Canvas card ────────────────────────────────────────────────────────────
-async function buildCard(user, phoneNum, rankTitle, gta) {
+async function buildCard(user, displayName, rankTitle, gta) {
     const { createCanvas } = require('@napi-rs/canvas');
 
     const W = 800, H = 560;
@@ -40,7 +40,7 @@ async function buildCard(user, phoneNum, rankTitle, gta) {
 
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 32px monospace';
-    ctx.fillText('+' + phoneNum, 24, 76);
+    ctx.fillText(displayName, 24, 76);
 
     const xpNeeded = xpForLevel(user.level + 1);
     const xpPrev   = xpForLevel(user.level);
@@ -244,7 +244,7 @@ async function buildCard(user, phoneNum, rankTitle, gta) {
 }
 
 // ── Text fallback (if canvas not installed) ──────────────────────────────
-function buildText(user, phoneNum, rankTitle) {
+function buildText(user, displayName, rankTitle) {
     const xpNeeded = xpForLevel(user.level + 1);
     const xpPrev   = xpForLevel(user.level);
     const xpPct    = Math.round(((user.xp - xpPrev) / Math.max(xpNeeded - xpPrev, 1)) * 100);
@@ -254,7 +254,7 @@ function buildText(user, phoneNum, rankTitle) {
     const p   = user.pet;
 
     return `// CODEX IDENTITY CARD //
-+${phoneNum}${' '.repeat(Math.max(1,30 - phoneNum.length))}W:${b.wins} L:${b.losses}
+${displayName}${' '.repeat(Math.max(1,30 - displayName.length))}W:${b.wins} L:${b.losses}
 ${rankTitle.replace(/[^\w\s]/g,'').trim().toUpperCase()} • LV.${user.level} • ${fmt(user.xp)} XP total
 
 — ECONOMY —————————————— BATTLE STATS ——
@@ -291,6 +291,7 @@ module.exports = {
         const isSelf    = targetJid === m.sender.replace(/:[0-9]+@/, '@');
         const user      = getUser(db, targetJid);
         const phoneNum  = targetJid.split('@')[0];
+        const displayName = user.profileCard?.name || user.profileCard?.knownas || m.pushName || 'CODEX User';
         const rankTitle = getRank(user.level);
 
         // Load GTA data
@@ -338,7 +339,7 @@ ${GANGS[gta.gang]?.emoji} *${GANGS[gta.gang]?.name}* member`;
         if (canvasAvail) {
             try {
                 await m.reply('_Generating your ID card..._');
-                const imgBuf = await buildCard(user, phoneNum, rankTitle, gta);
+                const imgBuf = await buildCard(user, displayName, rankTitle, gta);
                 await bot.sendMessage(m.chat, { image: imgBuf, caption }, { quoted: m });
                 return;
             } catch(e) {
@@ -347,6 +348,6 @@ ${GANGS[gta.gang]?.emoji} *${GANGS[gta.gang]?.name}* member`;
         }
 
         // Fallback to text
-        await m.reply(buildText(user, phoneNum, rankTitle));
+        await m.reply(buildText(user, displayName, rankTitle));
     }
 };

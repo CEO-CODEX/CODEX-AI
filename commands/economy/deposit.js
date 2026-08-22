@@ -1,4 +1,5 @@
 const { loadDB, saveDB, getUser, fmt, CURRENCY } = require('../../lib/economyEngine');
+const { requirePin } = require('../../lib/economyPin');
 
 module.exports = {
     name: 'deposit',
@@ -13,6 +14,8 @@ module.exports = {
 
         const input = (args[0] || '').toLowerCase();
         const amount = input === 'all' ? user.wallet : parseInt(input);
+        const pinCheck = requirePin(user, args[1]);
+        if (!pinCheck.ok) return await m.reply(pinCheck.message);
 
         if (!amount || amount < 1) return await m.reply(`Usage: *.deposit <amount>* or *.deposit all*`);
         if (amount > user.wallet) return await m.reply(`❌ You only have *${fmt(user.wallet)}* ${CURRENCY} in your wallet.`);
