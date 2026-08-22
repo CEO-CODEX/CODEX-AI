@@ -18,7 +18,7 @@ module.exports = {
         // OR media (image/video/audio/document/sticker) that was sent as a
         // reply, and it may be wrapped in a disappearing-message/view-once
         // envelope — look through all of those, not just extendedTextMessage.
-        const taggedReply = getContextInfo(quoted);
+        const taggedReply = getContextInfo(quoted) || getContextInfo(m.quoted?.msg) || getContextInfo(m.quoted?.message);
         const original = taggedReply?.quotedMessage || quoted;
         const originalCtx = taggedReply || ctx;
         const quotedSender = originalCtx.participant || originalCtx.participantAlt || ctx.participant || m.quoted?.sender;
@@ -35,11 +35,13 @@ module.exports = {
 // Pull contextInfo out of a message object regardless of which message
 // type is carrying it (text reply, or a media message sent as a reply),
 // unwrapping ephemeral/view-once envelopes first if needed.
-function getContextInfo(message) {
+function getContextInfo(message, seen = new Set()) {
+    if (!message || typeof message !== 'object' || seen.has(message)) return null;
+    seen.add(message);
     const msg = unwrap(message);
-    if (!msg) return null;
+    if (!msg || typeof msg !== 'object') return null;
     if (msg.contextInfo?.quotedMessage) return msg.contextInfo;
-    if (message?.contextInfo?.quotedMessage) return message.contextInfo;
+    if (message.contextInfo?.quotedMessage) return message.contextInfo;
     const CONTEXT_KEYS = [
         'extendedTextMessage', 'imageMessage', 'videoMessage', 'audioMessage',
         'documentMessage', 'stickerMessage', 'contactMessage', 'locationMessage',
@@ -48,6 +50,10 @@ function getContextInfo(message) {
     for (const key of CONTEXT_KEYS) {
         const ctx = msg[key]?.contextInfo;
         if (ctx?.quotedMessage) return ctx;
+    }
+    for (const value of Object.values(msg)) {
+        const nested = getContextInfo(value, seen);
+        if (nested) return nested;
     }
     return null;
 }
