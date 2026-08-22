@@ -21,7 +21,7 @@ module.exports = {
         const taggedReply = getContextInfo(quoted);
         const original = taggedReply?.quotedMessage || quoted;
         const originalCtx = taggedReply || ctx;
-        const quotedSender = originalCtx.participant || ctx.participant || m.quoted?.sender;
+        const quotedSender = originalCtx.participant || originalCtx.participantAlt || ctx.participant || m.quoted?.sender;
         const key = {
             remoteJid: originalCtx.remoteJid || m.chat,
             id: originalCtx.stanzaId || `quoted-${Date.now()}`,
@@ -38,6 +38,8 @@ module.exports = {
 function getContextInfo(message) {
     const msg = unwrap(message);
     if (!msg) return null;
+    if (msg.contextInfo?.quotedMessage) return msg.contextInfo;
+    if (message?.contextInfo?.quotedMessage) return message.contextInfo;
     const CONTEXT_KEYS = [
         'extendedTextMessage', 'imageMessage', 'videoMessage', 'audioMessage',
         'documentMessage', 'stickerMessage', 'contactMessage', 'locationMessage',
