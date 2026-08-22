@@ -12,8 +12,8 @@ importers:
         specifier: ^0.2.4
         version: 0.2.4
       '@codexverified/baileys':
-        specifier: 2.8.9
-        version: 2.8.9(jimp@1.6.1)(sharp@0.35.3)
+        specifier: 2.10.11
+        version: 2.10.11(jimp@1.6.1)(sharp@0.35.3)
       '@distube/ytdl-core':
         specifier: ^4.16.12
         version: 4.16.12
@@ -258,8 +258,8 @@ packages:
   '@cacheable/utils@2.5.0':
     resolution: {integrity: sha512-buipgOVDkkPXNR5+xBpDw7Zk2n1EvU7qBJCNUcL7rhQ//kfpOXPAvQ511Os0vpLYJ1pZnvudNytkQt2hst3wqA==}
 
-  '@codexverified/baileys@2.8.9':
-    resolution: {integrity: sha512-tJLp8f5d3+tKyV2wGrUaF4sBPdvQ02fPxHp1MIZkPWZa9I5eD8bm+K7zNFG5rflIqbekoBZhx0ZoGe2qg40JBg==}
+  '@codexverified/baileys@2.10.11':
+    resolution: {integrity: sha512-u69GWsOQJgFhbaF3o4UxCk120KY6cNDWHriM/dHmvM99CPJSYA8rpweAYHD9AyofBOP7RBBdQo5Xb8t5r3jAWw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       '@napi-rs/image': ~1.12.0
@@ -3382,7 +3382,7 @@ snapshots:
       hashery: 1.5.1
       keyv: 5.6.0
 
-  '@codexverified/baileys@2.8.9(jimp@1.6.1)(sharp@0.35.3)':
+  '@codexverified/baileys@2.10.11(jimp@1.6.1)(sharp@0.35.3)':
     dependencies:
       '@adiwajshing/keyed-db': 0.2.4
       '@cacheable/node-cache': 1.7.6
