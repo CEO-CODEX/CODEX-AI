@@ -18,7 +18,21 @@ module.exports = {
         // OR media (image/video/audio/document/sticker) that was sent as a
         // reply, and it may be wrapped in a disappearing-message/view-once
         // envelope — look through all of those, not just extendedTextMessage.
-        const taggedReply = getContextInfo(quoted) || getContextInfo(m.quoted?.msg) || getContextInfo(m.quoted?.message);
+        let taggedReply = getContextInfo(quoted) || getContextInfo(m.quoted?.msg) || getContextInfo(m.quoted?.message);
+
+        // WhatsApp trims the contextInfo it embeds in the "quotedMessage" it
+        // hands us — it does NOT include the quoted message's own contextInfo,
+        // so the lookups above almost always come back empty for a reply-to-a-
+        // reply chain. We already cache every message we receive in full
+        // (including its real contextInfo) when it first arrives, so fall back
+        // to that authoritative copy, keyed by the quoted message's own id.
+        // Note: private (@lid) chats don't always relay contextInfo at all —
+        // when that's the case this simply falls through to the immediate
+        // quoted message below, which is the best we can do.
+        if (!taggedReply && ctx.stanzaId) {
+            const stored = store.getMessage({ remoteJid: m.chat, id: ctx.stanzaId });
+            if (stored?.message) taggedReply = getContextInfo(stored.message);
+        }
         const original = taggedReply?.quotedMessage || quoted;
         const originalCtx = taggedReply || ctx;
         const quotedSender = originalCtx.participant || originalCtx.participantAlt || ctx.participant || m.quoted?.sender;
@@ -92,4 +106,4 @@ function unwrap(message) {
     }
     return message?.message || message;
                                                               }
-        
+
